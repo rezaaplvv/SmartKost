@@ -176,7 +176,7 @@ def update_profile(user_id, nama_lengkap, foto_profil=None):
 def get_log_aktivitas(limit=50):
     """Mengambil daftar log aktivitas terbaru."""
     query = """
-        SELECT id, username, role, aksi, detail, DATE_FORMAT(created_at, '%%d/%%m/%%Y %%H:%%i') AS waktu
+        SELECT id, username, role, aksi, detail, DATE_FORMAT(created_at, '%d/%m/%Y %H:%i') AS waktu
         FROM log_aktivitas
         ORDER BY id DESC
         LIMIT %s

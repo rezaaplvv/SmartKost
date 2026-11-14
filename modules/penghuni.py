@@ -56,9 +56,9 @@ def get_daftar_booking(status=None):
     query = f"""
         SELECT b.id, b.kamar_id, k.nomor_kamar, k.tipe AS tipe_kamar, k.harga_sewa,
                b.nama_pemohon, b.no_hp, b.pekerjaan, b.asal_kota,
-               DATE_FORMAT(b.tanggal_mulai, '%%d/%%m/%%Y') AS tanggal_mulai,
+               DATE_FORMAT(b.tanggal_mulai, '%d/%m/%Y') AS tanggal_mulai,
                b.durasi_bulan, b.catatan, b.foto_ktp, b.status, b.alasan_penolakan,
-               DATE_FORMAT(b.created_at, '%%d/%%m/%%Y %%H:%%i') AS waktu_pengajuan
+               DATE_FORMAT(b.created_at, '%d/%m/%Y %H:%i') AS waktu_pengajuan
         FROM booking b
         JOIN kamar k ON b.kamar_id = k.id
         {where_clause}
@@ -202,8 +202,8 @@ def get_daftar_penghuni(status="Aktif", search=None):
 
     query = f"""
         SELECT p.id, p.user_id, p.kamar_id, p.nama, p.no_hp, p.pekerjaan, p.asal_kota,
-               DATE_FORMAT(p.tanggal_masuk, '%%d/%%m/%%Y') AS tanggal_masuk,
-               DATE_FORMAT(p.tanggal_keluar, '%%d/%%m/%%Y') AS tanggal_keluar,
+               DATE_FORMAT(p.tanggal_masuk, '%d/%m/%Y') AS tanggal_masuk,
+               DATE_FORMAT(p.tanggal_keluar, '%d/%m/%Y') AS tanggal_keluar,
                p.foto_ktp, p.status,
                k.nomor_kamar, k.tipe AS tipe_kamar, k.harga_sewa,
                u.username
@@ -220,8 +220,8 @@ def get_detail_penghuni(penghuni_id):
     """Mengambil biodata detail penghuni dan riwayat tagihannya."""
     query_p = """
         SELECT p.id, p.user_id, p.kamar_id, p.nama, p.no_hp, p.pekerjaan, p.asal_kota,
-               DATE_FORMAT(p.tanggal_masuk, '%%d/%%m/%%Y') AS tanggal_masuk,
-               DATE_FORMAT(p.tanggal_keluar, '%%d/%%m/%%Y') AS tanggal_keluar,
+               DATE_FORMAT(p.tanggal_masuk, '%d/%m/%Y') AS tanggal_masuk,
+               DATE_FORMAT(p.tanggal_keluar, '%d/%m/%Y') AS tanggal_keluar,
                p.foto_ktp, p.status,
                k.nomor_kamar, k.tipe AS tipe_kamar, k.harga_sewa, k.fasilitas,
                u.username
@@ -237,8 +237,8 @@ def get_detail_penghuni(penghuni_id):
     # Riwayat Tagihan
     query_t = """
         SELECT id, kode_invoice, bulan_tahun, nominal, denda, total_bayar,
-               DATE_FORMAT(jatuh_tempo, '%%d/%%m/%%Y') AS jatuh_tempo,
-               DATE_FORMAT(tanggal_bayar, '%%d/%%m/%%Y') AS tanggal_bayar,
+               DATE_FORMAT(jatuh_tempo, '%d/%m/%Y') AS jatuh_tempo,
+               DATE_FORMAT(tanggal_bayar, '%d/%m/%Y') AS tanggal_bayar,
                metode_pembayaran, status, bukti_transfer
         FROM tagihan_pembayaran
         WHERE penghuni_id = %s

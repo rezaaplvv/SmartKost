@@ -37,8 +37,8 @@ def get_daftar_tagihan(filter_status=None, bulan_tahun=None, search=None, penghu
         SELECT t.id, t.penghuni_id, t.kamar_id, t.kode_invoice, t.bulan_tahun,
                t.nominal, t.denda, t.total_bayar,
                t.jatuh_tempo,
-               DATE_FORMAT(t.jatuh_tempo, '%%d/%%m/%%Y') AS tgl_jatuh_tempo,
-               DATE_FORMAT(t.tanggal_bayar, '%%d/%%m/%%Y') AS tgl_bayar,
+               DATE_FORMAT(t.jatuh_tempo, '%d/%m/%Y') AS tgl_jatuh_tempo,
+               DATE_FORMAT(t.tanggal_bayar, '%d/%m/%Y') AS tgl_bayar,
                t.metode_pembayaran, t.bukti_transfer, t.status, t.catatan,
                p.nama AS nama_penghuni, p.no_hp AS no_hp_penghuni,
                k.nomor_kamar, k.tipe AS tipe_kamar
@@ -187,8 +187,8 @@ def get_data_kuitansi(tagihan_id):
     """
     query = """
         SELECT t.id, t.kode_invoice, t.bulan_tahun, t.nominal, t.denda, t.total_bayar,
-               DATE_FORMAT(t.jatuh_tempo, '%%d/%%m/%%Y') AS jatuh_tempo,
-               DATE_FORMAT(t.tanggal_bayar, '%%d/%%m/%%Y') AS tanggal_bayar,
+               DATE_FORMAT(t.jatuh_tempo, '%d/%m/%Y') AS jatuh_tempo,
+               DATE_FORMAT(t.tanggal_bayar, '%d/%m/%Y') AS tanggal_bayar,
                t.metode_pembayaran, t.status, t.catatan,
                p.nama AS nama_penghuni, p.no_hp AS no_hp_penghuni,
                k.nomor_kamar, k.tipe AS tipe_kamar,
@@ -209,7 +209,7 @@ def get_daftar_pengeluaran(bulan_tahun=None, kategori=None):
     params = []
 
     if bulan_tahun and bulan_tahun != "Semua":
-        conditions.append("DATE_FORMAT(tanggal, '%%Y-%%m') = %s")
+        conditions.append("DATE_FORMAT(tanggal, '%Y-%m') = %s")
         params.append(bulan_tahun)
 
     if kategori and kategori != "Semua":
@@ -220,7 +220,7 @@ def get_daftar_pengeluaran(bulan_tahun=None, kategori=None):
 
     query = f"""
         SELECT id, kategori, keterangan, nominal,
-               DATE_FORMAT(tanggal, '%%d/%%m/%%Y') AS tgl_format, tanggal,
+               DATE_FORMAT(tanggal, '%d/%m/%Y') AS tgl_format, tanggal,
                bukti_nota
         FROM pengeluaran
         {where_clause}
@@ -305,7 +305,7 @@ def get_daftar_keluhan(status=None, penghuni_id=None):
     query = f"""
         SELECT c.id, c.penghuni_id, c.kamar_id, c.judul, c.deskripsi, c.prioritas,
                c.foto_keluhan, c.status, c.tindakan, c.biaya_perbaikan,
-               DATE_FORMAT(c.created_at, '%%d/%%m/%%Y %%H:%%i') AS waktu_lapor,
+               DATE_FORMAT(c.created_at, '%d/%m/%Y %H:%i') AS waktu_lapor,
                p.nama AS nama_penghuni, p.no_hp AS no_hp_penghuni,
                k.nomor_kamar
         FROM keluhan c

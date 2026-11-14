@@ -58,7 +58,7 @@ def get_kpi_dashboard():
 
     # 2. Pengeluaran Bulan Ini
     q_exp = """
-        SELECT DATE_FORMAT(tanggal, '%%Y-%%m') AS bulan_tahun, nominal
+        SELECT DATE_FORMAT(tanggal, '%Y-%m') AS bulan_tahun, nominal
         FROM pengeluaran
     """
     res_e = execute_query(q_exp, fetchall=True)
@@ -142,9 +142,9 @@ def get_chart_cashflow(tahun=None):
 
     # 2. Pengeluaran
     q_pengeluaran = """
-        SELECT DATE_FORMAT(tanggal, '%%m') AS bulan_str, nominal
+        SELECT DATE_FORMAT(tanggal, '%m') AS bulan_str, nominal
         FROM pengeluaran
-        WHERE DATE_FORMAT(tanggal, '%%Y') = %s
+        WHERE DATE_FORMAT(tanggal, '%Y') = %s
     """
     res_e = execute_query(q_pengeluaran, (tahun,), fetchall=True)
     if res_e["status"] and res_e["data"]:
@@ -207,7 +207,7 @@ def get_chart_kategori_pengeluaran(bulan_tahun=None):
     conditions = []
     params = []
     if bulan_tahun and bulan_tahun != "Semua":
-        conditions.append("DATE_FORMAT(tanggal, '%%Y-%%m') = %s")
+        conditions.append("DATE_FORMAT(tanggal, '%Y-%m') = %s")
         params.append(bulan_tahun)
 
     where_clause = " WHERE " + " AND ".join(conditions) if conditions else ""
@@ -255,7 +255,7 @@ def export_laporan_keuangan_excel(tahun=None, output_filename=None):
                t.denda AS 'Denda',
                t.total_bayar AS 'Total Bayar',
                t.status AS 'Status',
-               DATE_FORMAT(t.tanggal_bayar, '%%d/%%m/%%Y') AS 'Tanggal Bayar',
+               DATE_FORMAT(t.tanggal_bayar, '%d/%m/%Y') AS 'Tanggal Bayar',
                t.metode_pembayaran AS 'Metode Pembayaran'
         FROM tagihan_pembayaran t
         JOIN penghuni p ON t.penghuni_id = p.id
@@ -268,12 +268,12 @@ def export_laporan_keuangan_excel(tahun=None, output_filename=None):
 
     # 2. Query Pengeluaran
     q_e = """
-        SELECT DATE_FORMAT(tanggal, '%%d/%%m/%%Y') AS 'Tanggal',
+        SELECT DATE_FORMAT(tanggal, '%d/%m/%Y') AS 'Tanggal',
                kategori AS 'Kategori',
                keterangan AS 'Keterangan',
                nominal AS 'Nominal Pengeluaran'
         FROM pengeluaran
-        WHERE DATE_FORMAT(tanggal, '%%Y') = %s
+        WHERE DATE_FORMAT(tanggal, '%Y') = %s
         ORDER BY tanggal ASC
     """
     res_e = execute_query(q_e, (tahun,), fetchall=True)
@@ -317,8 +317,8 @@ def export_data_penghuni_excel(output_filename=None):
                p.no_hp AS 'No. Kontak / WhatsApp',
                p.pekerjaan AS 'Pekerjaan / Instansi',
                p.asal_kota AS 'Asal Kota',
-               DATE_FORMAT(p.tanggal_masuk, '%%d/%%m/%%Y') AS 'Tanggal Masuk',
-               DATE_FORMAT(p.tanggal_keluar, '%%d/%%m/%%Y') AS 'Tanggal Keluar',
+               DATE_FORMAT(p.tanggal_masuk, '%d/%m/%Y') AS 'Tanggal Masuk',
+               DATE_FORMAT(p.tanggal_keluar, '%d/%m/%Y') AS 'Tanggal Keluar',
                p.status AS 'Status Huni'
         FROM penghuni p
         LEFT JOIN kamar k ON p.kamar_id = k.id
@@ -360,7 +360,7 @@ def export_laporan_csv(jenis="pemasukan", tahun=None):
         q = """
             SELECT tanggal, kategori, keterangan, nominal
             FROM pengeluaran
-            WHERE DATE_FORMAT(tanggal, '%%Y') = %s
+            WHERE DATE_FORMAT(tanggal, '%Y') = %s
         """
         filename = f"Pengeluaran_{tahun}.csv"
 

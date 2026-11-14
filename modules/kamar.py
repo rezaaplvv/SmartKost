@@ -36,7 +36,7 @@ def get_semua_kamar(filter_lantai=None, filter_status=None, filter_tipe=None, se
         SELECT k.id, k.nomor_kamar, k.lantai, k.tipe, k.harga_sewa, k.luas_kamar,
                k.fasilitas, k.deskripsi, k.foto_kamar, k.status,
                p.id AS penghuni_id, p.nama AS nama_penghuni, p.no_hp AS no_hp_penghuni,
-               DATE_FORMAT(p.tanggal_masuk, '%%d/%%m/%%Y') AS tgl_masuk_penghuni
+               DATE_FORMAT(p.tanggal_masuk, '%d/%m/%Y') AS tgl_masuk_penghuni
         FROM kamar k
         LEFT JOIN penghuni p ON k.id = p.kamar_id AND p.status = 'Aktif'
         {where_clause}
@@ -53,7 +53,7 @@ def get_kamar_by_id(kamar_id):
                k.fasilitas, k.deskripsi, k.foto_kamar, k.status,
                p.id AS penghuni_id, p.nama AS nama_penghuni, p.no_hp AS no_hp_penghuni,
                p.pekerjaan, p.asal_kota,
-               DATE_FORMAT(p.tanggal_masuk, '%%d/%%m/%%Y') AS tgl_masuk_penghuni
+               DATE_FORMAT(p.tanggal_masuk, '%d/%m/%Y') AS tgl_masuk_penghuni
         FROM kamar k
         LEFT JOIN penghuni p ON k.id = p.kamar_id AND p.status = 'Aktif'
         WHERE k.id = %s
