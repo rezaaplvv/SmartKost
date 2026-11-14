@@ -148,10 +148,10 @@ CREATE TABLE IF NOT EXISTS log_aktivitas (
 -- Default Data: Profil Kos
 INSERT INTO pengaturan_kos (nama_kos, tagline, deskripsi, alamat, no_wa, denda_per_hari)
 VALUES (
-    'SmartKost Residence',
-    'Hunian Nyaman, Bersih, dan Terpercaya di Pusat Kota',
-    'SmartKost Residence menyediakan kamar kos modern dengan fasilitas lengkap (AC, Kamar Mandi Dalam, WiFi super cepat, Water Heater, Smart Lock) serta lingkungan yang asri dan tenang.',
-    'Jl. Melati No. 45, Coblong, Kota Bandung, Jawa Barat',
+    'Kost Cemara',
+    'Hunian Eksklusif, Bersih & Strategis dengan Fasilitas Lengkap',
+    'Kost Cemara menyediakan kenyamanan hunian eksklusif berstandar tinggi dengan penawaran harga bersahabat mahasiswa, fasilitas lengkap (AC, Kamar Mandi Dalam, WiFi kencang, Water Heater), serta keamanan terjamin.',
+    'Jl. Cemara No. 18, Dago, Coblong, Kota Bandung, Jawa Barat 40132',
     '081234567890',
     10000
 ) ON DUPLICATE KEY UPDATE id=id;

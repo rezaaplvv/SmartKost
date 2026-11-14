@@ -196,10 +196,10 @@ def init_database():
             cursor.execute("""
                 INSERT INTO pengaturan_kos (nama_kos, tagline, deskripsi, alamat, no_wa, denda_per_hari)
                 VALUES (
-                    'SmartKost Residence',
+                    'Kost Cemara',
                     'Hunian Eksklusif, Bersih & Strategis dengan Fasilitas Lengkap',
-                    'SmartKost Residence adalah pilihan hunian modern terbaik dekat kampus dan kawasan bisnis. Dilengkapi fasilitas berkecepatan tinggi, keamanan CCTV 24 jam, kamar mandi dalam, AC, dan lingkungan yang kondusif.',
-                    'Jl. Ganesha No. 10, Coblong, Kota Bandung, Jawa Barat 40132',
+                    'Kost Cemara menyediakan kenyamanan hunian eksklusif berstandar tinggi dengan penawaran harga bersahabat mahasiswa, fasilitas lengkap (AC, Kamar Mandi Dalam, WiFi kencang, Water Heater), serta keamanan terjamin.',
+                    'Jl. Cemara No. 18, Dago, Coblong, Kota Bandung, Jawa Barat 40132',
                     '081234567890',
                     10000
                 )

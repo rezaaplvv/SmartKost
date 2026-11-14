@@ -8,9 +8,13 @@
 let allRooms = [];
 let currentFilter = 'Semua';
 let searchQuery = '';
+let selectedFacility = 'Semua';
 let selectedRoomForBooking = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Setup navbar scroll transition
+    setupNavbarScroll();
+
     // Cek status sesi yang tersimpan
     checkExistingSession();
 
@@ -23,6 +27,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupModals();
     setupForms();
 });
+
+/**
+ * Mengatur tampilan navbar agar transparan di atas hero dan solid saat di-scroll
+ */
+function setupNavbarScroll() {
+    const navbar = document.getElementById('main-navbar');
+    if (!navbar) return;
+
+    const toggleScrolled = () => {
+        if (window.scrollY > 30) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    };
+
+    toggleScrolled();
+    window.addEventListener('scroll', toggleScrolled, { passive: true });
+}
 
 /**
  * Memeriksa apakah user sudah login sebelumnya
@@ -63,14 +86,14 @@ async function loadKosProfile() {
         const res = await eel.get_pengaturan()();
         if (res.status && res.data) {
             const d = res.data;
-            document.querySelectorAll('.app-nama-kos').forEach(el => el.textContent = d.nama_kos || 'SmartKost Residence');
-            document.querySelectorAll('.app-tagline').forEach(el => el.textContent = d.tagline || 'Hunian Modern & Strategis');
+            document.querySelectorAll('.app-nama-kos').forEach(el => el.textContent = d.nama_kos || 'Kost Cemara');
+            document.querySelectorAll('.app-tagline').forEach(el => el.textContent = d.tagline || 'Hunian Terbaik untuk Mahasiswa');
             document.querySelectorAll('.app-deskripsi').forEach(el => el.textContent = d.deskripsi || '');
             document.querySelectorAll('.app-alamat').forEach(el => el.textContent = d.alamat || '');
 
             const waLinks = document.querySelectorAll('.app-wa-link');
             const cleanWa = (d.no_wa || '081234567890').replace(/[^0-9]/g, '');
-            const waUrl = `https://wa.me/62${cleanWa.startsWith('0') ? cleanWa.slice(1) : cleanWa}?text=Halo%20Pengelola%20SmartKost,%20saya%20tertarik%20dengan%20kamar%20kos`;
+            const waUrl = `https://wa.me/62${cleanWa.startsWith('0') ? cleanWa.slice(1) : cleanWa}?text=Halo%20Pengelola%20Kost%20Cemara,%20saya%20tertarik%20dengan%20kamar%20kos`;
             waLinks.forEach(link => link.setAttribute('href', waUrl));
 
             if (d.foto_banner) {
@@ -137,6 +160,12 @@ function renderRoomCards() {
         if (currentFilter === 'Reguler' && room.tipe !== 'Reguler') return false;
         if (currentFilter === 'VIP' && room.tipe !== 'VIP') return false;
         if (currentFilter === 'Eksklusif' && room.tipe !== 'Eksklusif') return false;
+
+        // Facility Filter from Hero Search Bar
+        if (selectedFacility && selectedFacility !== 'Semua') {
+            const fStr = (room.fasilitas || '').toLowerCase();
+            if (!fStr.includes(selectedFacility.toLowerCase())) return false;
+        }
 
         // Search Query
         if (searchQuery.trim() !== '') {
@@ -257,8 +286,52 @@ function setupCatalogFilters() {
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value;
+            const heroInput = document.getElementById('hero-search-input');
+            if (heroInput) heroInput.value = searchQuery;
             renderRoomCards();
         });
+    }
+
+    const heroInput = document.getElementById('hero-search-input');
+    if (heroInput) {
+        heroInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleHeroSearch();
+            }
+        });
+    }
+
+    const heroFacility = document.getElementById('hero-facility-select');
+    if (heroFacility) {
+        heroFacility.addEventListener('change', () => {
+            handleHeroSearch();
+        });
+    }
+}
+
+/**
+ * Handler tombol Cari Kamar dari Hero Search Bar
+ */
+function handleHeroSearch() {
+    const heroInput = document.getElementById('hero-search-input');
+    const heroFacility = document.getElementById('hero-facility-select');
+
+    if (heroInput) {
+        searchQuery = heroInput.value.trim();
+        const catalogInput = document.getElementById('catalog-search-input');
+        if (catalogInput) catalogInput.value = searchQuery;
+    }
+
+    if (heroFacility) {
+        selectedFacility = heroFacility.value;
+    }
+
+    renderRoomCards();
+
+    const catalogSection = document.getElementById('katalog');
+    if (catalogSection) {
+        catalogSection.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
@@ -551,3 +624,4 @@ function switchAuthTab(tab) {
         if (title) title.textContent = 'Masuk ke SmartKost Pro';
     }
 }
+
