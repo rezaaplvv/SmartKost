@@ -377,7 +377,7 @@ a:hover {
     height: 100%;
     object-fit: cover;
     object-position: center 35%;
-    filter: brightness(0.88) contrast(1.04) saturate(0.86);
+    filter: brightness(0.96) contrast(1.05);
 }
 
 .hero-bg-architectural-svg {
@@ -387,24 +387,18 @@ a:hover {
     object-fit: cover;
 }
 
-/* Soft Blue-Navy Architectural Overlay - Aksen biru soft tipis agar suasana malam selaras referensi */
+/* Neutral Dark Overlay - Tanpa aksen biru, hanya shadow transparan alami untuk keterbacaan teks */
 .hero-bg-overlay {
     position: absolute;
     inset: 0;
     z-index: 1;
-    background:
-        linear-gradient(
-            100deg,
-            rgba(16, 28, 52, 0.72) 0%,
-            rgba(22, 42, 74, 0.44) 44%,
-            rgba(26, 48, 84, 0.32) 72%,
-            rgba(16, 26, 48, 0.56) 100%
-        ),
-        radial-gradient(
-            circle at 52% 40%,
-            rgba(56, 102, 175, 0.16) 0%,
-            rgba(18, 30, 56, 0.12) 100%
-        );
+    background: linear-gradient(
+        95deg,
+        rgba(16, 16, 32, 0.70) 0%,
+        rgba(16, 16, 32, 0.35) 45%,
+        rgba(16, 16, 32, 0.15) 70%,
+        rgba(16, 16, 32, 0.50) 100%
+    );
 }
 
 /* Curved Soft Navy Shape on Right Side */
