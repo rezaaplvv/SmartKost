@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Console - Kost Cemara</title>
+    <!-- Plus Jakarta Sans Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Eel Bridge -->
+    <script type="text/javascript" src="/eel.js"></script>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+    <div class="admin-layout">
+        <!-- ==========================================================
+             SIDEBAR NAVIGASI ADMIN (Dark Navy & Golden Yellow)
+             ========================================================== -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                </div>
+                <div class="sidebar-brand-text">
+                    <span class="sidebar-brand-title app-nama-kos">Kost Cemara</span>
+                    <span class="sidebar-brand-sub">Admin Console</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="sidebar-section-label">Utama</div>
+                <button type="button" class="sidebar-link active" data-tab="overview">
+                    <span class="sidebar-link-main">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <span>Dashboard</span>
+                    </span>
+                </button>
+                <button type="button" class="sidebar-link" data-tab="kamar">
+                    <span class="sidebar-link-main">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
+                        <span>Denah &amp; Kamar</span>
+                    </span>
+                </button>
+
+                <div class="sidebar-section-label">Operasional</div>
+                <button type="button" class="sidebar-link" data-tab="booking">
+                    <span class="sidebar-link-main">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                        <span>Booking Online</span>
+                    </span>
+                    <span class="sidebar-badge" id="badge-pending-booking" style="display:none;">0</span>
+                </button>
+                <button type="button" class="sidebar-link" data-tab="penghuni">
+                    <span class="sidebar-link-main">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span>Data Penghuni</span>
+                    </span>
+                </button>
+                <button type="button" class="sidebar-link" data-tab="keluhan">
+                    <span class="sidebar-link-main">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                        <span>Keluhan &amp; Perbaikan</span>
+                    </span>
+                    <span class="sidebar-badge" id="badge-active-keluhan" style="display:none;">0</span>
+                </button>
+
+                <div class="sidebar-section-label">Keuangan &amp; Laporan</div>
+                <button type="button" class="sidebar-link" data-tab="tagihan">
+                    <span class="sidebar-link-main">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                        <span>Tagihan &amp; Bayar</span>
+                    </span>
+                </button>
+                <button type="button" class="sidebar-link" data-tab="pengeluaran">
+                    <span class="sidebar-link-main">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                        <span>Pengeluaran Kos</span>
+                    </span>
+                </button>
+                <button type="button" class="sidebar-link" data-tab="laporan">
+                    <span class="sidebar-link-main">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                        <span>Ekspor &amp; Log</span>
+                    </span>
+                </button>
+
+                <div class="sidebar-section-label">Sistem</div>
+                <button type="button" class="sidebar-link" data-tab="pengaturan">
+                    <span class="sidebar-link-main">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <span>Pengaturan Kos</span>
+                    </span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="index.html" class="sidebar-home-link">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    <span>Lihat Halaman Publik</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ==========================================================
+             MAIN WORKSPACE
+             ========================================================== -->
+        <main class="admin-main">
+            <!-- Topbar -->
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <button type="button" class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Buka Menu">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    <div class="topbar-title-group">
+                        <h1 id="topbar-page-title">Dashboard Analitik</h1>
+                        <p id="topbar-page-subtitle">Ringkasan operasional, arus kas, dan okupansi hunian secara real-time</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <button type="button" class="topbar-theme-btn" onclick="handleAdminThemeToggle()" title="Ubah Tema Terang / Gelap" aria-label="Toggle Theme">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </button>
+
+                    <div class="admin-user-pill">
+                        <div class="admin-avatar" id="admin-avatar-initial">A</div>
+                        <div class="admin-user-meta">
+                            <span class="admin-user-name" id="admin-display-name">Administrator</span>
+                            <span class="admin-user-role">Pengelola Utama</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="handleLogout()" title="Keluar dari sistem">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>Keluar</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Container -->
+            <div class="admin-content">
+
+                <!-- ====================================================
+                     TAB 1: DASHBOARD OVERVIEW & ANALITIK PANDAS
+                     ==================================================== -->
+                <section class="admin-tab-panel active" id="tab-overview">
+                    <!-- 4 KPI Cards -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-top">
+                                <span class="kpi-label">Pemasukan Bulan Ini</span>
+                                <div class="kpi-icon-box">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-pemasukan">Rp 0</div>
+                            <div class="kpi-sub" id="kpi-growth-text">Memuat pertumbuhan...</div>
+                        </div>
+
+                        <div class="kpi-card kpi-success">
+                            <div class="kpi-top">
+                                <span class="kpi-label">Laba Bersih Bulan Ini</span>
+                                <div class="kpi-icon-box success">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-laba">Rp 0</div>
+                            <div class="kpi-sub">Pengeluaran: <strong id="kpi-pengeluaran">Rp 0</strong></div>
+                        </div>
+
+                        <div class="kpi-card kpi-navy">
+                            <div class="kpi-top">
+                                <span class="kpi-label">Okupansi Kamar</span>
+                                <div class="kpi-icon-box navy">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-okupansi">0%</div>
+                            <div class="kpi-sub"><span id="kpi-kamar-terisi">0</span> terisi dari <span id="kpi-kamar-total">0</span> unit (<span id="kpi-kamar-tersedia">0</span> tersedia)</div>
+                        </div>
+
+                        <div class="kpi-card kpi-danger">
+                            <div class="kpi-top">
+                                <span class="kpi-label">Total Tunggakan Aktif</span>
+                                <div class="kpi-icon-box danger">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                </div>
+                            </div>
+                            <div class="kpi-value" id="kpi-tunggakan">Rp 0</div>
+                            <div class="kpi-sub"><span id="kpi-pending-info">0 booking pending, 0 keluhan aktif</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action Banner -->
+                    <div class="quick-action-strip">
+                        <div class="quick-action-info">
+                            <h3>Aksi Cepat Operasional</h3>
+                            <p>Terbitkan tagihan bulanan otomatis, terima penghuni baru, atau ekspor laporan keuangan Excel.</p>
+                        </div>
+                        <div class="quick-action-btns">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="handleGenerateTagihan()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                <span>Generate Tagihan Bulan Ini</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="openCheckinModal()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                                <span>Check-In Penghuni</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="handleExportKeuanganExcel()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                <span>Ekspor Excel</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row 1 -->
+                    <div class="charts-grid-main">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <div>
+                                    <h3 class="panel-title">Arus Kas Tahunan (Pemasukan vs Pengeluaran)</h3>
+                                    <p class="panel-subtitle">Agregasi otomatis 12 bulan menggunakan Pandas</p>
+                                </div>
+                                <select id="chart-cashflow-year" class="admin-select" onchange="loadOverviewCharts()">
+                                    <option value="2026">Tahun 2026</option>
+                                    <option value="2025">Tahun 2025</option>
+                                </select>
+                            </div>
+                            <div class="chart-canvas-wrap">
+                                <canvas id="canvas-cashflow"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <div>
+                                    <h3 class="panel-title">Okupansi per Tipe Kamar</h3>
+                                    <p class="panel-subtitle">Perbandingan unit terisi vs total unit</p>
+                                </div>
+                            </div>
+                            <div class="chart-canvas-wrap">
+                                <canvas id="canvas-okupansi"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row 2 + Action Center -->
+                    <div class="charts-grid-sub">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <div>
+                                    <h3 class="panel-title">Komposisi Pengeluaran</h3>
+                                    <p class="panel-subtitle">Distribusi beban operasional per kategori</p>
+                                </div>
+                            </div>
+                            <div class="chart-canvas-wrap-sm">
+                                <canvas id="canvas-pengeluaran"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <div>
+                                    <h3 class="panel-title">Perlu Tindak Lanjut Segera</h3>
+                                    <p class="panel-subtitle">Ringkasan booking pending dan tagihan menunggu verifikasi</p>
+                                </div>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="switchAdminTab('tagihan')">Lihat Semua Tagihan</button>
+                            </div>
+                            <div id="overview-action-list" style="display:flex;flex-direction:column;gap:10px;">
+                                <p style="color:var(--text-muted);font-size:0.88rem;">Memuat daftar tindak lanjut...</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     TAB 2: DENAH & MANAJEMEN KAMAR
+                     ==================================================== -->
+                <section class="admin-tab-panel" id="tab-kamar">
+                    <div class="admin-toolbar">
+                        <div class="toolbar-filters">
+                            <button type="button" class="btn btn-primary btn-sm" id="btn-view-denah" onclick="setRoomViewMode('denah')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                                <span>Tampilan Denah</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" id="btn-view-table" onclick="setRoomViewMode('table')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                                <span>Tampilan Tabel</span>
+                            </button>
+                            <select id="filter-kamar-status" class="admin-select" onchange="loadRoomsAdmin()">
+                                <option value="Semua">Semua Status</option>
+                                <option value="Tersedia">Tersedia</option>
+                                <option value="Terisi">Terisi</option>
+                                <option value="Perbaikan">Perbaikan</option>
+                            </select>
+                        </div>
+
+                        <div class="toolbar-actions">
+                            <div class="admin-search-input">
+                                <svg class="icon" style="color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input type="text" id="search-kamar-admin" placeholder="Cari no kamar / fasilitas..." oninput="loadRoomsAdmin()">
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="openKamarModal()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <span>Tambah Kamar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="kamar-denah-container"></div>
+
+                    <div class="panel-card" id="kamar-table-container" style="display:none;">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>No. Kamar</th>
+                                        <th>Lantai</th>
+                                        <th>Tipe &amp; Luas</th>
+                                        <th>Tarif / Bulan</th>
+                                        <th>Fasilitas</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="kamar-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     TAB 3: BOOKING ONLINE
+                     ==================================================== -->
+                <section class="admin-tab-panel" id="tab-booking">
+                    <div class="admin-toolbar">
+                        <div class="toolbar-filters">
+                            <select id="filter-booking-status" class="admin-select" onchange="loadBookingsAdmin()">
+                                <option value="Semua">Semua Status Booking</option>
+                                <option value="Pending">Menunggu Konfirmasi (Pending)</option>
+                                <option value="Disetujui">Disetujui</option>
+                                <option value="Ditolak">Ditolak</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-actions">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="loadBookingsAdmin()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                                <span>Muat Ulang</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pemohon</th>
+                                        <th>Kamar Tujuan</th>
+                                        <th>Rencana Masuk &amp; Durasi</th>
+                                        <th>Identitas &amp; Catatan</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="booking-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     TAB 4: DATA PENGHUNI
+                     ==================================================== -->
+                <section class="admin-tab-panel" id="tab-penghuni">
+                    <div class="admin-toolbar">
+                        <div class="toolbar-filters">
+                            <select id="filter-penghuni-status" class="admin-select" onchange="loadPenghuniAdmin()">
+                                <option value="Aktif">Penghuni Aktif</option>
+                                <option value="Alumni">Alumni (Sudah Check-Out)</option>
+                                <option value="Semua">Semua Penghuni</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-actions">
+                            <div class="admin-search-input">
+                                <svg class="icon" style="color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input type="text" id="search-penghuni-admin" placeholder="Cari nama / no HP / kamar..." oninput="loadPenghuniAdmin()">
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="openCheckinModal()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                                <span>Check-In Penghuni</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Penghuni</th>
+                                        <th>Kamar</th>
+                                        <th>Kontak / WA</th>
+                                        <th>Profesi &amp; Kota Asal</th>
+                                        <th>Tanggal Masuk</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="penghuni-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     TAB 5: TAGIHAN & PEMBAYARAN
+                     ==================================================== -->
+                <section class="admin-tab-panel" id="tab-tagihan">
+                    <div class="admin-toolbar">
+                        <div class="toolbar-filters">
+                            <select id="filter-tagihan-status" class="admin-select" onchange="loadTagihanAdmin()">
+                                <option value="Semua">Semua Status</option>
+                                <option value="Belum Bayar">Belum Bayar</option>
+                                <option value="Menunggu Konfirmasi">Menunggu Konfirmasi</option>
+                                <option value="Lunas">Lunas</option>
+                            </select>
+                            <input type="month" id="filter-tagihan-bulan" class="admin-select" onchange="loadTagihanAdmin()" title="Filter Bulan (Kosongkan untuk semua)">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="resetTagihanFilter()">Reset</button>
+                        </div>
+                        <div class="toolbar-actions">
+                            <div class="admin-search-input">
+                                <svg class="icon" style="color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input type="text" id="search-tagihan-admin" placeholder="Cari invoice / nama / kamar..." oninput="loadTagihanAdmin()">
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="handleGenerateTagihan()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                <span>Generate Tagihan Massal</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kode Invoice</th>
+                                        <th>Periode</th>
+                                        <th>Penghuni &amp; Kamar</th>
+                                        <th>Total Bayar</th>
+                                        <th>Jatuh Tempo</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tagihan-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     TAB 6: PENGELUARAN KOS
+                     ==================================================== -->
+                <section class="admin-tab-panel" id="tab-pengeluaran">
+                    <div class="admin-toolbar">
+                        <div class="toolbar-filters">
+                            <select id="filter-pengeluaran-kategori" class="admin-select" onchange="loadPengeluaranAdmin()">
+                                <option value="Semua">Semua Kategori</option>
+                                <option value="Listrik">Listrik</option>
+                                <option value="Air">Air</option>
+                                <option value="Internet">Internet</option>
+                                <option value="Kebersihan">Kebersihan</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                            <input type="month" id="filter-pengeluaran-bulan" class="admin-select" onchange="loadPengeluaranAdmin()">
+                        </div>
+                        <div class="toolbar-actions">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="openPengeluaranModal()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <span>Catat Pengeluaran Baru</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Kategori</th>
+                                        <th>Keterangan</th>
+                                        <th>Nominal</th>
+                                        <th>Bukti Nota</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pengeluaran-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     TAB 7: KELUHAN & PERBAIKAN
+                     ==================================================== -->
+                <section class="admin-tab-panel" id="tab-keluhan">
+                    <div class="admin-toolbar">
+                        <div class="toolbar-filters">
+                            <select id="filter-keluhan-status" class="admin-select" onchange="loadKeluhanAdmin()">
+                                <option value="Semua">Semua Tiket Keluhan</option>
+                                <option value="Menunggu">Menunggu</option>
+                                <option value="Diproses">Diproses</option>
+                                <option value="Selesai">Selesai</option>
+                            </select>
+                        </div>
+                        <div class="toolbar-actions">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="loadKeluhanAdmin()">Muat Ulang</button>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Waktu &amp; Pelapor</th>
+                                        <th>Judul &amp; Deskripsi Keluhan</th>
+                                        <th>Prioritas</th>
+                                        <th>Tindakan &amp; Biaya</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="keluhan-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     TAB 8: EKSPOR LAPORAN & LOG AKTIVITAS
+                     ==================================================== -->
+                <section class="admin-tab-panel" id="tab-laporan">
+                    <div class="export-grid">
+                        <div class="export-card">
+                            <div>
+                                <h4>Laporan Keuangan Komprehensif (.xlsx)</h4>
+                                <p>Ekspor 3 sheet otomatis (Pemasukan, Pengeluaran, &amp; Laba Bersih) per tahun menggunakan Pandas.</p>
+                            </div>
+                            <div style="display:flex;gap:10px;align-items:center;">
+                                <select id="export-year-select" class="admin-select">
+                                    <option value="2026">2026</option>
+                                    <option value="2025">2025</option>
+                                </select>
+                                <button type="button" class="btn btn-primary btn-sm" style="flex:1;" onclick="handleExportKeuanganExcel()">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    <span>Ekspor Excel</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="export-card">
+                            <div>
+                                <h4>Rekap Data Penghuni &amp; Kamar (.xlsx)</h4>
+                                <p>Ekspor daftar lengkap penghuni aktif, alumni, nomor kontak, dan kamar yang ditempati ke Excel.</p>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="handleExportPenghuniExcel()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                <span>Ekspor Data Penghuni</span>
+                            </button>
+                        </div>
+
+                        <div class="export-card">
+                            <div>
+                                <h4>Data Mentah CSV (.csv)</h4>
+                                <p>Unduh dataset mentah untuk kebutuhan olah data lanjutan atau arsip ringan.</p>
+                            </div>
+                            <div style="display:flex;gap:8px;">
+                                <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="handleExportCSV('pemasukan')">CSV Pemasukan</button>
+                                <button type="button" class="btn btn-secondary btn-sm" style="flex:1;" onclick="handleExportCSV('pengeluaran')">CSV Pengeluaran</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="export-result-banner" class="panel-card" style="display:none;border-color:var(--success);background:var(--success-light);">
+                        <strong style="color:var(--success);display:block;margin-bottom:4px;">Berhasil Diekspor</strong>
+                        <p id="export-result-path" style="font-size:0.88rem;color:var(--text-main);word-break:break-all;"></p>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <div>
+                                <h3 class="panel-title">Log Aktivitas Sistem</h3>
+                                <p class="panel-subtitle">50 catatan aktivitas terbaru Admin dan Penghuni</p>
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="loadLogsAdmin()">Segarkan Log</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Waktu</th>
+                                        <th>Pengguna</th>
+                                        <th>Role</th>
+                                        <th>Aksi</th>
+                                        <th>Detail</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="logs-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     TAB 9: PENGATURAN KOS & AKUN ADMIN
+                     ==================================================== -->
+                <section class="admin-tab-panel" id="tab-pengaturan">
+                    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:22px;align-items:start;">
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <div>
+                                    <h3 class="panel-title">Profil &amp; Konfigurasi Kos</h3>
+                                    <p class="panel-subtitle">Informasi yang tampil di Landing Page dan Kuitansi Resmi</p>
+                                </div>
+                            </div>
+                            <form id="form-pengaturan-kos">
+                                <div class="form-group">
+                                    <label class="form-label" for="set-nama-kos">Nama Kos</label>
+                                    <input type="text" id="set-nama-kos" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="set-tagline">Tagline</label>
+                                    <input type="text" id="set-tagline" class="form-control">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="set-no-wa">Nomor WhatsApp Pengelola</label>
+                                        <input type="text" id="set-no-wa" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="set-denda">Denda Keterlambatan / Hari (Rp)</label>
+                                        <input type="number" id="set-denda" class="form-control" min="0" value="10000">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="set-alamat">Alamat Lengkap</label>
+                                    <input type="text" id="set-alamat" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="set-deskripsi">Deskripsi Singkat</label>
+                                    <textarea id="set-deskripsi" class="form-control" rows="3"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Simpan Perubahan Profil Kos</button>
+                            </form>
+                        </div>
+
+                        <div class="panel-card">
+                            <div class="panel-header">
+                                <div>
+                                    <h3 class="panel-title">Keamanan Akun Admin</h3>
+                                    <p class="panel-subtitle">Perbarui kata sandi akun yang sedang aktif</p>
+                                </div>
+                            </div>
+                            <form id="form-ganti-password">
+                                <div class="form-group">
+                                    <label class="form-label" for="pass-lama">Password Saat Ini</label>
+                                    <input type="password" id="pass-lama" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="pass-baru">Password Baru</label>
+                                    <input type="password" id="pass-baru" class="form-control" minlength="4" required>
+                                </div>
+                                <button type="submit" class="btn btn-secondary" style="width:100%;">Perbarui Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ==========================================================
+         MODALS ADMIN
+         ========================================================== -->
+
+    <!-- Modal 1: Tambah / Edit Kamar -->
+    <div class="modal-backdrop" id="modal-kamar">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-kamar-title">Tambah Kamar Baru</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-kamar">
+                <input type="hidden" id="kamar-edit-id">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="kamar-nomor">Nomor Kamar *</label>
+                            <input type="text" id="kamar-nomor" class="form-control" placeholder="Contoh: A-01" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="kamar-lantai">Lantai *</label>
+                            <input type="number" id="kamar-lantai" class="form-control" min="1" value="1" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="kamar-tipe">Tipe Kamar *</label>
+                            <select id="kamar-tipe" class="form-control">
+                                <option value="Reguler">Reguler</option>
+                                <option value="VIP">VIP</option>
+                                <option value="Eksklusif">Eksklusif</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="kamar-harga">Tarif Sewa / Bulan (Rp) *</label>
+                            <input type="number" id="kamar-harga" class="form-control" min="100000" step="50000" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="kamar-luas">Luas Kamar</label>
+                            <input type="text" id="kamar-luas" class="form-control" placeholder="3x4 m" value="3x4 m">
+                        </div>
+                        <div class="form-group" id="group-kamar-status" style="display:none;">
+                            <label class="form-label" for="kamar-status">Status Kamar</label>
+                            <select id="kamar-status" class="form-control">
+                                <option value="Tersedia">Tersedia</option>
+                                <option value="Terisi">Terisi</option>
+                                <option value="Perbaikan">Perbaikan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="kamar-fasilitas">Fasilitas (pisahkan dengan koma)</label>
+                        <input type="text" id="kamar-fasilitas" class="form-control" placeholder="AC, WiFi, Kamar Mandi Dalam, Lemari">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="kamar-deskripsi">Deskripsi Kamar</label>
+                        <textarea id="kamar-deskripsi" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">Foto Kamar (Opsional)</label>
+                        <input type="file" id="kamar-foto-file" class="form-control" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close-modal>Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Data Kamar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Check-In Penghuni Baru -->
+    <div class="modal-backdrop" id="modal-checkin">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">Check-In Penghuni Baru</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-checkin">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="checkin-kamar-id">Pilih Kamar Tersedia *</label>
+                        <select id="checkin-kamar-id" class="form-control" required></select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="checkin-nama">Nama Lengkap *</label>
+                            <input type="text" id="checkin-nama" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="checkin-nohp">Nomor WhatsApp / HP *</label>
+                            <input type="tel" id="checkin-nohp" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="checkin-pekerjaan">Profesi / Kampus</label>
+                            <input type="text" id="checkin-pekerjaan" class="form-control" placeholder="Mahasiswa / Karyawan">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="checkin-asal">Kota Asal</label>
+                            <input type="text" id="checkin-asal" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="checkin-tgl">Tanggal Masuk *</label>
+                            <input type="date" id="checkin-tgl" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="checkin-ktp-file">Foto KTP (Opsional)</label>
+                            <input type="file" id="checkin-ktp-file" class="form-control" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label style="display:flex;align-items:center;gap:8px;font-size:0.88rem;font-weight:600;cursor:pointer;">
+                            <input type="checkbox" id="checkin-buat-user" checked>
+                            <span>Otomatis buatkan akun login Portal Penghuni (password default: user123)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close-modal>Batal</button>
+                    <button type="submit" class="btn btn-primary">Proses Check-In &amp; Terbitkan Tagihan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Edit Penghuni -->
+    <div class="modal-backdrop" id="modal-edit-penghuni">
+        <div class="modal-dialog" style="max-width:480px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Ubah Data Penghuni</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-edit-penghuni">
+                <input type="hidden" id="edit-penghuni-id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="edit-penghuni-nama">Nama Lengkap *</label>
+                        <input type="text" id="edit-penghuni-nama" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="edit-penghuni-nohp">Nomor HP / WA *</label>
+                        <input type="tel" id="edit-penghuni-nohp" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="edit-penghuni-pekerjaan">Profesi / Kampus</label>
+                            <input type="text" id="edit-penghuni-pekerjaan" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="edit-penghuni-asal">Kota Asal</label>
+                            <input type="text" id="edit-penghuni-asal" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close-modal>Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Pindah Kamar -->
+    <div class="modal-backdrop" id="modal-pindah-kamar">
+        <div class="modal-dialog" style="max-width:440px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Mutasi / Pindah Kamar</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-pindah-kamar">
+                <input type="hidden" id="pindah-penghuni-id">
+                <div class="modal-body">
+                    <p id="pindah-info-text" style="font-size:0.9rem;margin-bottom:14px;color:var(--text-muted);"></p>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label" for="pindah-kamar-baru-id">Pilih Kamar Tujuan (Tersedia) *</label>
+                        <select id="pindah-kamar-baru-id" class="form-control" required></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close-modal>Batal</button>
+                    <button type="submit" class="btn btn-primary">Proses Pindah Kamar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 5: Tolak Booking -->
+    <div class="modal-backdrop" id="modal-tolak-booking">
+        <div class="modal-dialog" style="max-width:440px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Tolak Permohonan Booking</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-tolak-booking">
+                <input type="hidden" id="tolak-booking-id">
+                <div class="modal-body">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label" for="tolak-booking-alasan">Alasan Penolakan *</label>
+                        <textarea id="tolak-booking-alasan" class="form-control" rows="3" placeholder="Contoh: Kamar sudah dibooking lebih dulu / dokumen tidak lengkap" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close-modal>Batal</button>
+                    <button type="submit" class="btn btn-danger">Tolak Permohonan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 6: Pelunasan Tagihan oleh Admin -->
+    <div class="modal-backdrop" id="modal-bayar-admin">
+        <div class="modal-dialog" style="max-width:440px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Catat Pelunasan Tagihan</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-bayar-admin">
+                <input type="hidden" id="bayar-tagihan-id">
+                <div class="modal-body">
+                    <p id="bayar-info-label" style="font-size:0.9rem;margin-bottom:14px;font-weight:600;"></p>
+                    <div class="form-group">
+                        <label class="form-label" for="bayar-metode">Metode Pembayaran</label>
+                        <select id="bayar-metode" class="form-control">
+                            <option value="Transfer Bank">Transfer Bank</option>
+                            <option value="Tunai / Cash">Tunai / Cash</option>
+                            <option value="QRIS / E-Wallet">QRIS / E-Wallet</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label" for="bayar-catatan">Catatan Pembayaran</label>
+                        <input type="text" id="bayar-catatan" class="form-control" placeholder="Diterima langsung oleh Admin">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close-modal>Batal</button>
+                    <button type="submit" class="btn btn-primary">Sahkan Pembayaran Lunas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 7: Kuitansi Resmi (Siap Cetak) -->
+    <div class="modal-backdrop" id="modal-kuitansi">
+        <div class="modal-dialog modal-dialog-lg">
+            <div class="modal-header">
+                <h3 class="modal-title">Kuitansi Pembayaran Resmi</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="receipt-paper" id="receipt-print-area">
+                    <div class="receipt-header">
+                        <div class="receipt-brand">
+                            <h2 id="rec-nama-kos">Kost Cemara</h2>
+                            <p id="rec-alamat-kos">-</p>
+                            <p>WhatsApp: <span id="rec-wa-kos">-</span></p>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="receipt-stamp" id="rec-status">LUNAS</div>
+                            <p style="font-size:0.82rem;margin-top:6px;font-weight:700;" id="rec-kode-inv">INV/...</p>
+                        </div>
+                    </div>
+
+                    <div class="receipt-grid">
+                        <div>
+                            <span class="receipt-row-label">Telah Terima Dari</span>
+                            <strong id="rec-nama-penghuni">-</strong>
+                        </div>
+                        <div>
+                            <span class="receipt-row-label">Unit Kamar</span>
+                            <strong id="rec-kamar">-</strong>
+                        </div>
+                        <div>
+                            <span class="receipt-row-label">Periode Tagihan</span>
+                            <strong id="rec-periode">-</strong>
+                        </div>
+                        <div>
+                            <span class="receipt-row-label">Tanggal &amp; Metode Bayar</span>
+                            <strong id="rec-tgl-metode">-</strong>
+                        </div>
+                    </div>
+
+                    <div class="receipt-total-box">
+                        <div>
+                            <span style="font-size:0.82rem;color:#64748B;display:block;">Total Pembayaran Diterima</span>
+                            <span style="font-size:0.8rem;color:#475569;" id="rec-rincian-nominal">Sewa: Rp 0 + Denda: Rp 0</span>
+                        </div>
+                        <div style="font-size:1.45rem;font-weight:800;color:#101020;" id="rec-total-bayar">Rp 0</div>
+                    </div>
+
+                    <div class="receipt-footer">
+                        <div>Catatan: <span id="rec-catatan">-</span></div>
+                        <div style="text-align:center;">
+                            <span style="display:block;margin-bottom:28px;">Pengelola Kos</span>
+                            <strong>Kost Cemara Admin</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-close-modal>Tutup</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    <span>Cetak / Simpan PDF</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 8: Catat Pengeluaran -->
+    <div class="modal-backdrop" id="modal-pengeluaran">
+        <div class="modal-dialog" style="max-width:480px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Catat Pengeluaran Operasional</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-pengeluaran">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="exp-kategori">Kategori *</label>
+                            <select id="exp-kategori" class="form-control">
+                                <option value="Listrik">Listrik</option>
+                                <option value="Air">Air</option>
+                                <option value="Internet">Internet</option>
+                                <option value="Kebersihan">Kebersihan</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="exp-tanggal">Tanggal *</label>
+                            <input type="date" id="exp-tanggal" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="exp-nominal">Nominal (Rp) *</label>
+                        <input type="number" id="exp-nominal" class="form-control" min="1000" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="exp-keterangan">Keterangan *</label>
+                        <textarea id="exp-keterangan" class="form-control" rows="2" placeholder="Contoh: Token listrik lantai 1 & 2" required></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label" for="exp-nota-file">Foto Nota / Struk (Opsional)</label>
+                        <input type="file" id="exp-nota-file" class="form-control" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close-modal>Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Pengeluaran</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 9: Tindak Lanjut Keluhan -->
+    <div class="modal-backdrop" id="modal-keluhan">
+        <div class="modal-dialog" style="max-width:480px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Tindak Lanjut Keluhan</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-keluhan">
+                <input type="hidden" id="keluhan-edit-id">
+                <div class="modal-body">
+                    <p id="keluhan-info-title" style="font-weight:700;margin-bottom:12px;"></p>
+                    <div class="form-group">
+                        <label class="form-label" for="keluhan-status">Status Penanganan *</label>
+                        <select id="keluhan-status" class="form-control">
+                            <option value="Menunggu">Menunggu</option>
+                            <option value="Diproses">Diproses</option>
+                            <option value="Selesai">Selesai</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="keluhan-tindakan">Catatan Tindakan</label>
+                        <textarea id="keluhan-tindakan" class="form-control" rows="2" placeholder="Contoh: Teknisi sudah membersihkan filter AC"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label" for="keluhan-biaya">Biaya Perbaikan (Rp)</label>
+                        <input type="number" id="keluhan-biaya" class="form-control" min="0" value="0">
+                        <span style="font-size:0.76rem;color:var(--text-muted);display:block;margin-top:4px;">Jika status diubah menjadi Selesai dan biaya &gt; 0, sistem otomatis mencatat ke Pengeluaran Maintenance.</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close-modal>Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Status Keluhan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 10: Preview Gambar (KTP / Bukti Transfer / Nota / Keluhan) -->
+    <div class="modal-backdrop" id="modal-image-preview">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title" id="preview-img-title">Pratinjau Dokumen</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align:center;">
+                <img id="preview-img-el" src="" alt="Preview" style="max-width:100%;max-height:70vh;border-radius:10px;border:1px solid var(--border-color);">
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
