@@ -377,7 +377,7 @@ a:hover {
     height: 100%;
     object-fit: cover;
     object-position: center 35%;
-    filter: brightness(0.95) contrast(1.05);
+    filter: brightness(0.88) contrast(1.04) saturate(0.86);
 }
 
 .hero-bg-architectural-svg {
@@ -387,21 +387,27 @@ a:hover {
     object-fit: cover;
 }
 
-/* Dark Navy Gradient Overlay - Transparan dan halus agar gambar arsitektur terlihat jelas */
+/* Soft Blue-Navy Architectural Overlay - Aksen biru soft tipis agar suasana malam selaras referensi */
 .hero-bg-overlay {
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: linear-gradient(
-        95deg,
-        rgba(16, 16, 32, 0.72) 0%,
-        rgba(16, 24, 40, 0.42) 45%,
-        rgba(16, 24, 40, 0.22) 70%,
-        rgba(16, 16, 32, 0.62) 100%
-    );
+    background:
+        linear-gradient(
+            100deg,
+            rgba(16, 28, 52, 0.72) 0%,
+            rgba(22, 42, 74, 0.44) 44%,
+            rgba(26, 48, 84, 0.32) 72%,
+            rgba(16, 26, 48, 0.56) 100%
+        ),
+        radial-gradient(
+            circle at 52% 40%,
+            rgba(56, 102, 175, 0.16) 0%,
+            rgba(18, 30, 56, 0.12) 100%
+        );
 }
 
-/* Curved Dark Navy Shape on Right Side */
+/* Curved Soft Navy Shape on Right Side */
 .hero-curve-right {
     position: absolute;
     top: 0;
@@ -411,7 +417,7 @@ a:hover {
     height: 100%;
     z-index: 2;
     pointer-events: none;
-    opacity: 0.9;
+    opacity: 0.92;
 }
 
 /* Bottom Sweeping Wave & Golden Yellow Diagonal Wedge */
