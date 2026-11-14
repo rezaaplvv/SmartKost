@@ -571,45 +571,30 @@ function renderDenahRooms(list) {
     const floors = Object.keys(grouped).sort((a, b) => Number(a) - Number(b));
     container.innerHTML = floors.map(lt => {
         const cards = grouped[lt].map(k => {
-            const badgeCls = k.status === 'Tersedia' ? 'badge-success' : (k.status === 'Terisi' ? 'badge-neutral' : 'badge-warning');
             const photoUrl = getRoomPhotoUrl(k);
-            const tenantRow = (k.status === 'Terisi' && k.nama_penghuni)
-                ? `<div class="denah-room-tenant">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <span>${escapeHtml(k.nama_penghuni)}</span>
-                   </div>`
-                : '';
-
             return `
                 <div class="denah-room-card status-${escapeHtml(k.status)}">
-                    <div class="denah-room-photo" onclick="previewKamarPhoto(${k.id})" title="Klik untuk memperbesar foto kamar">
+                    <div class="denah-room-photo" onclick="previewKamarPhoto(${k.id})" title="Klik untuk melihat foto kamar">
                         <img src="${photoUrl}" alt="Foto Kamar ${escapeHtml(k.nomor_kamar)}">
-                        <div class="denah-photo-gradient"></div>
-                        <div class="denah-photo-top-badges">
-                            <span class="denah-type-pill">${escapeHtml(k.tipe)}</span>
-                            <span class="badge ${badgeCls}">${escapeHtml(k.status)}</span>
-                        </div>
-                        <span class="denah-photo-zoom-hint">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                            <span>Lihat Foto</span>
-                        </span>
+                        <span class="denah-photo-badge status-${escapeHtml(k.status)}">${escapeHtml(k.status)}</span>
                     </div>
                     <div class="denah-room-body">
                         <div>
                             <div class="denah-room-top">
-                                <div>
+                                <div style="min-width:0;">
                                     <div class="denah-room-no">Kamar ${escapeHtml(k.nomor_kamar)}</div>
-                                    <div class="denah-room-meta">Lantai ${lt} • ${escapeHtml(k.luas_kamar || '3x4 m')}</div>
+                                    <div class="denah-room-meta">${escapeHtml(k.tipe)} • Lt ${lt} • ${escapeHtml(k.luas_kamar || '3x4 m')}</div>
                                 </div>
+                                <button type="button" class="denah-more-btn" onclick="openKamarModal(${k.id})" title="Lihat detail &amp; edit kamar">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>
+                                </button>
                             </div>
-                            ${tenantRow}
-                            <div class="denah-room-price">${formatRupiah(k.harga_sewa)} <span style="font-weight:500;font-size:0.75rem;color:var(--text-muted);">/ bln</span></div>
-                            <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;line-height:1.45;">${escapeHtml((k.fasilitas || '-').slice(0, 68))}</p>
+                            <div class="denah-room-price">${formatRupiah(k.harga_sewa)} <span>/bln</span></div>
                         </div>
-                        <div class="table-actions">
-                            <button type="button" class="btn btn-secondary btn-xs" onclick="openKamarModal(${k.id})">Edit</button>
-                            ${k.status === 'Tersedia' ? `<button type="button" class="btn btn-primary btn-xs" onclick="openCheckinModal(${k.id})">Check-In</button>` : ''}
-                            <button type="button" class="btn btn-danger btn-xs" onclick="handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}')">Hapus</button>
+                        <div class="denah-card-actions">
+                            <button type="button" class="denah-btn denah-btn-edit" onclick="openKamarModal(${k.id})">Edit</button>
+                            ${k.status === 'Tersedia' ? `<button type="button" class="denah-btn denah-btn-checkin" onclick="openCheckinModal(${k.id})">Check-In</button>` : ''}
+                            <button type="button" class="denah-btn denah-btn-del" onclick="handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}')">Hapus</button>
                         </div>
                     </div>
                 </div>
