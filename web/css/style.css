@@ -346,7 +346,7 @@ a:hover {
 .hero-section {
     position: relative;
     background: var(--dark-navy);
-    padding: 88px 0 92px;
+    padding: 112px 0 116px;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -405,12 +405,13 @@ a:hover {
 .hero-curve-right {
     position: absolute;
     top: 0;
+    left: 0;
     right: 0;
-    width: 52%;
+    width: 100%;
     height: 100%;
     z-index: 2;
     pointer-events: none;
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
 /* Bottom Sweeping Wave & Golden Yellow Diagonal Wedge */
@@ -420,7 +421,7 @@ a:hover {
     right: 0;
     bottom: -1px;
     width: 100%;
-    height: 120px;
+    height: 125px;
     z-index: 3;
     pointer-events: none;
 }
@@ -468,12 +469,12 @@ a:hover {
 }
 
 .hero-title-main {
-    font-size: clamp(2.3rem, 3.6vw, 3.2rem);
+    font-size: clamp(2.5rem, 3.85vw, 3.45rem);
     font-weight: 800;
-    line-height: 1.12;
+    line-height: 1.08;
     letter-spacing: -0.025em;
     color: #ffffff;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .text-golden {
@@ -481,11 +482,11 @@ a:hover {
 }
 
 .hero-desc-sub {
-    font-size: 1rem;
+    font-size: 1.02rem;
     line-height: 1.55;
     color: var(--border-color);
     max-width: 470px;
-    margin-bottom: 24px;
+    margin-bottom: 26px;
     font-weight: 400;
     opacity: 0.92;
 }
@@ -501,8 +502,8 @@ a:hover {
 .hero-chip {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 18px;
+    gap: 9px;
+    padding: 7px 15px;
     background: rgba(16, 16, 32, 0.55);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -529,14 +530,14 @@ a:hover {
 }
 
 .chip-title {
-    font-size: 0.84rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #ffffff;
     line-height: 1.2;
 }
 
 .chip-sub {
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     color: #cbd5e1;
     line-height: 1.2;
 }
@@ -554,15 +555,15 @@ a:hover {
 .room-cards-stack {
     position: relative;
     width: 100%;
-    max-width: 470px;
-    height: 360px;
-    margin-right: 16px;
+    max-width: 480px;
+    height: 375px;
+    margin-right: 12px;
 }
 
 /* Decorative Yellow Burst Lines (Top Right) */
 .showcase-burst-yellow {
     position: absolute;
-    top: -12px;
+    top: -10px;
     right: -12px;
     width: 36px;
     height: 36px;
@@ -574,7 +575,7 @@ a:hover {
 /* Decorative Dot Matrix (Right) */
 .showcase-dots-matrix {
     position: absolute;
-    top: 52px;
+    top: 56px;
     right: -24px;
     width: 38px;
     height: 54px;
@@ -600,9 +601,9 @@ a:hover {
 /* Card 1: Back Left (Wardrobe & Plant) */
 .room-card-back {
     left: 4px;
-    top: 34px;
-    width: 185px;
-    height: 248px;
+    top: 38px;
+    width: 188px;
+    height: 252px;
     z-index: 1;
     transform: rotate(-10deg);
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.52);
@@ -610,10 +611,10 @@ a:hover {
 
 /* Card 2: Middle (Living & Work Desk) */
 .room-card-middle {
-    left: 108px;
-    top: 52px;
-    width: 205px;
-    height: 268px;
+    left: 110px;
+    top: 56px;
+    width: 208px;
+    height: 272px;
     z-index: 2;
     transform: rotate(-2.5deg);
     box-shadow: 0 20px 42px rgba(0, 0, 0, 0.58);
@@ -622,9 +623,9 @@ a:hover {
 /* Card 3: Front Dominant (Warm Cozy Bedroom with Red Bed & TV) */
 .room-card-front {
     right: 12px;
-    top: 8px;
-    width: 242px;
-    height: 318px;
+    top: 10px;
+    width: 248px;
+    height: 326px;
     z-index: 3;
     transform: rotate(7.5deg);
     box-shadow: 0 24px 50px rgba(0, 0, 0, 0.68);
@@ -650,7 +651,7 @@ a:hover {
     position: relative;
     z-index: 10;
     margin-top: -54px;
-    padding: 0 24px 36px;
+    padding: 0 24px 20px;
 }
 
 .hero-search-bar {
