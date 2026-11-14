@@ -572,23 +572,45 @@ function renderDenahRooms(list) {
     container.innerHTML = floors.map(lt => {
         const cards = grouped[lt].map(k => {
             const badgeCls = k.status === 'Tersedia' ? 'badge-success' : (k.status === 'Terisi' ? 'badge-neutral' : 'badge-warning');
+            const photoUrl = getRoomPhotoUrl(k);
+            const tenantRow = (k.status === 'Terisi' && k.nama_penghuni)
+                ? `<div class="denah-room-tenant">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span>${escapeHtml(k.nama_penghuni)}</span>
+                   </div>`
+                : '';
+
             return `
                 <div class="denah-room-card status-${escapeHtml(k.status)}">
-                    <div>
-                        <div class="denah-room-top">
-                            <div>
-                                <div class="denah-room-no">Kamar ${escapeHtml(k.nomor_kamar)}</div>
-                                <div class="denah-room-meta">${escapeHtml(k.tipe)} • ${escapeHtml(k.luas_kamar || '3x4 m')}</div>
-                            </div>
+                    <div class="denah-room-photo" onclick="previewKamarPhoto(${k.id})" title="Klik untuk memperbesar foto kamar">
+                        <img src="${photoUrl}" alt="Foto Kamar ${escapeHtml(k.nomor_kamar)}">
+                        <div class="denah-photo-gradient"></div>
+                        <div class="denah-photo-top-badges">
+                            <span class="denah-type-pill">${escapeHtml(k.tipe)}</span>
                             <span class="badge ${badgeCls}">${escapeHtml(k.status)}</span>
                         </div>
-                        <div class="denah-room-price" style="margin-top:10px;">${formatRupiah(k.harga_sewa)} <span style="font-weight:500;font-size:0.75rem;color:var(--text-muted);">/ bln</span></div>
-                        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;line-height:1.4;">${escapeHtml((k.fasilitas || '-').slice(0, 65))}</p>
+                        <span class="denah-photo-zoom-hint">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <span>Lihat Foto</span>
+                        </span>
                     </div>
-                    <div class="table-actions">
-                        <button type="button" class="btn btn-secondary btn-xs" onclick="openKamarModal(${k.id})">Edit</button>
-                        ${k.status === 'Tersedia' ? `<button type="button" class="btn btn-primary btn-xs" onclick="openCheckinModal(${k.id})">Check-In</button>` : ''}
-                        <button type="button" class="btn btn-danger btn-xs" onclick="handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}')">Hapus</button>
+                    <div class="denah-room-body">
+                        <div>
+                            <div class="denah-room-top">
+                                <div>
+                                    <div class="denah-room-no">Kamar ${escapeHtml(k.nomor_kamar)}</div>
+                                    <div class="denah-room-meta">Lantai ${lt} • ${escapeHtml(k.luas_kamar || '3x4 m')}</div>
+                                </div>
+                            </div>
+                            ${tenantRow}
+                            <div class="denah-room-price">${formatRupiah(k.harga_sewa)} <span style="font-weight:500;font-size:0.75rem;color:var(--text-muted);">/ bln</span></div>
+                            <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;line-height:1.45;">${escapeHtml((k.fasilitas || '-').slice(0, 68))}</p>
+                        </div>
+                        <div class="table-actions">
+                            <button type="button" class="btn btn-secondary btn-xs" onclick="openKamarModal(${k.id})">Edit</button>
+                            ${k.status === 'Tersedia' ? `<button type="button" class="btn btn-primary btn-xs" onclick="openCheckinModal(${k.id})">Check-In</button>` : ''}
+                            <button type="button" class="btn btn-danger btn-xs" onclick="handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}')">Hapus</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -609,6 +631,12 @@ function renderDenahRooms(list) {
     }).join('');
 }
 
+function previewKamarPhoto(kamarId) {
+    const k = roomsCache.find(r => r.id === kamarId);
+    if (!k) return;
+    openImagePreview(getRoomPhotoUrl(k), `Foto Kamar ${k.nomor_kamar} (${k.tipe})`);
+}
+
 function renderTableRooms(list) {
     const tbody = document.getElementById('kamar-table-body');
     if (!tbody) return;
@@ -619,9 +647,15 @@ function renderTableRooms(list) {
 
     tbody.innerHTML = list.map(k => {
         const badgeCls = k.status === 'Tersedia' ? 'badge-success' : (k.status === 'Terisi' ? 'badge-neutral' : 'badge-warning');
+        const photoUrl = getRoomPhotoUrl(k);
         return `
             <tr>
-                <td><strong>${escapeHtml(k.nomor_kamar)}</strong></td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <img src="${photoUrl}" alt="Kamar ${escapeHtml(k.nomor_kamar)}" class="denah-table-thumb" onclick="previewKamarPhoto(${k.id})" title="Lihat Foto">
+                        <strong>${escapeHtml(k.nomor_kamar)}</strong>
+                    </div>
+                </td>
                 <td>Lantai ${k.lantai}</td>
                 <td>${escapeHtml(k.tipe)} <span style="color:var(--text-muted);font-size:0.8rem;">(${escapeHtml(k.luas_kamar || '-')})</span></td>
                 <td><strong>${formatRupiah(k.harga_sewa)}</strong></td>
@@ -639,11 +673,25 @@ function renderTableRooms(list) {
     }).join('');
 }
 
+function selectKamarPreset(imgPath) {
+    const presetInput = document.getElementById('kamar-foto-preset');
+    const previewImg = document.getElementById('kamar-foto-preview');
+    const sourceLbl = document.getElementById('kamar-foto-source-label');
+    const fileInput = document.getElementById('kamar-foto-file');
+    if (fileInput) fileInput.value = '';
+    if (presetInput) presetInput.value = imgPath;
+    if (previewImg) previewImg.src = imgPath;
+    if (sourceLbl) sourceLbl.textContent = 'Foto Preset';
+}
+
 function openKamarModal(kamarId = null) {
     const form = document.getElementById('form-kamar');
     form.reset();
     document.getElementById('kamar-edit-id').value = '';
+    document.getElementById('kamar-foto-preset').value = '';
     const statusGroup = document.getElementById('group-kamar-status');
+    const previewImg = document.getElementById('kamar-foto-preview');
+    const sourceLbl = document.getElementById('kamar-foto-source-label');
 
     if (kamarId) {
         const k = roomsCache.find(r => r.id === kamarId);
@@ -659,9 +707,13 @@ function openKamarModal(kamarId = null) {
         document.getElementById('kamar-deskripsi').value = k.deskripsi || '';
         document.getElementById('kamar-status').value = k.status;
         statusGroup.style.display = 'block';
+        if (previewImg) previewImg.src = getRoomPhotoUrl(k);
+        if (sourceLbl) sourceLbl.textContent = k.foto_kamar ? 'Foto Tersimpan' : 'Foto Bawaan';
     } else {
         document.getElementById('modal-kamar-title').textContent = 'Tambah Kamar Baru';
         statusGroup.style.display = 'none';
+        if (previewImg) previewImg.src = 'assets/img/room-back.jpg';
+        if (sourceLbl) sourceLbl.textContent = 'Foto Bawaan';
     }
     openModal('modal-kamar');
 }
@@ -673,6 +725,7 @@ async function handleHapusKamar(id, nomor) {
     if (res.status) {
         await loadRoomsAdmin();
         await loadKpiCards();
+        notifyRoomCatalogUpdated();
     }
 }
 
@@ -737,6 +790,7 @@ async function handleApproveBooking(id, nama) {
     if (res.status) {
         await loadBookingsAdmin();
         await loadKpiCards();
+        notifyRoomCatalogUpdated();
     }
 }
 
@@ -861,6 +915,7 @@ async function handleCheckoutPenghuni(id, nama) {
     if (res.status) {
         await loadPenghuniAdmin();
         await loadKpiCards();
+        notifyRoomCatalogUpdated();
     }
 }
 
@@ -1183,6 +1238,19 @@ async function loadKosSettings() {
 }
 
 function setupAdminForms() {
+    // Live preview upload foto kamar
+    document.getElementById('kamar-foto-file')?.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const b64 = await fileToBase64(file);
+        const previewImg = document.getElementById('kamar-foto-preview');
+        const sourceLbl = document.getElementById('kamar-foto-source-label');
+        const presetInput = document.getElementById('kamar-foto-preset');
+        if (previewImg && b64) previewImg.src = b64;
+        if (sourceLbl) sourceLbl.textContent = 'Foto Baru';
+        if (presetInput) presetInput.value = '';
+    });
+
     // Form Tambah / Edit Kamar
     document.getElementById('form-kamar')?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1196,13 +1264,14 @@ function setupAdminForms() {
         const deskripsi = document.getElementById('kamar-deskripsi').value.trim();
         const status = document.getElementById('kamar-status').value;
         const file = document.getElementById('kamar-foto-file').files[0];
-        const fotoB64 = file ? await fileToBase64(file) : null;
+        const presetFoto = document.getElementById('kamar-foto-preset')?.value || '';
+        const fotoPayload = file ? await fileToBase64(file) : (presetFoto || (!editId ? getRoomPhotoUrl({ tipe }) : null));
 
         let res;
         if (editId) {
-            res = await eel.ubah_kamar(parseInt(editId, 10), nomor, lantai, tipe, harga, luas, fasilitas, deskripsi, status, fotoB64, adminUsername())();
+            res = await eel.ubah_kamar(parseInt(editId, 10), nomor, lantai, tipe, harga, luas, fasilitas, deskripsi, status, fotoPayload, adminUsername())();
         } else {
-            res = await eel.tambah_kamar(nomor, lantai, tipe, harga, luas, fasilitas, deskripsi, fotoB64, adminUsername())();
+            res = await eel.tambah_kamar(nomor, lantai, tipe, harga, luas, fasilitas, deskripsi, fotoPayload, adminUsername())();
         }
 
         showToast(res.pesan, res.status ? 'success' : 'error');
@@ -1210,6 +1279,7 @@ function setupAdminForms() {
             closeModal('modal-kamar');
             await loadRoomsAdmin();
             await loadKpiCards();
+            notifyRoomCatalogUpdated();
         }
     });
 
@@ -1233,6 +1303,7 @@ function setupAdminForms() {
             if (currentTab === 'penghuni') await loadPenghuniAdmin();
             if (currentTab === 'kamar') await loadRoomsAdmin();
             await loadKpiCards();
+            notifyRoomCatalogUpdated();
         }
     });
 
@@ -1265,6 +1336,7 @@ function setupAdminForms() {
             closeModal('modal-pindah-kamar');
             await loadPenghuniAdmin();
             await loadKpiCards();
+            notifyRoomCatalogUpdated();
         }
     });
 

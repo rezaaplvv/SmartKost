@@ -26,6 +26,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupCatalogFilters();
     setupModals();
     setupForms();
+
+    // Auto-sinkronisasi jika Admin memperbarui kamar/foto dari tab Admin Console
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'smartkost_rooms_updated') {
+            loadRoomCatalog();
+        }
+    });
+    window.addEventListener('focus', () => {
+        loadRoomCatalog();
+    });
 });
 
 /**
@@ -192,13 +202,9 @@ function renderRoomCards() {
         const fasilitasArr = (room.fasilitas || '').split(',').map(f => f.trim()).filter(Boolean).slice(0, 4);
         const fasilitasTags = fasilitasArr.map(f => `<span class="facility-tag">${f}</span>`).join('');
 
-        // Gambar atau placeholder arsitektural SVG
-        const imgHtml = room.foto_kamar 
-            ? `<img src="${room.foto_kamar}" alt="Kamar ${room.nomor_kamar}">`
-            : `<div class="hero-banner-placeholder">
-                 <svg class="icon-xl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
-                 <span style="font-size:0.85rem;">Foto Kamar ${room.nomor_kamar}</span>
-               </div>`;
+        // Gambar kamar dinamis dari database (fallback otomatis ke foto tipe kamar)
+        const roomPhotoUrl = getRoomPhotoUrl(room);
+        const imgHtml = `<img src="${roomPhotoUrl}" alt="Kamar ${room.nomor_kamar}">`;
 
         return `
             <div class="room-card">
@@ -383,12 +389,8 @@ function showRoomDetailModal(roomId) {
 
     const imgContainer = document.getElementById('detail-room-img-box');
     if (imgContainer) {
-        imgContainer.innerHTML = room.foto_kamar
-            ? `<img src="${room.foto_kamar}" style="width:100%;height:100%;object-fit:cover;">`
-            : `<div class="hero-banner-placeholder">
-                 <svg class="icon-xl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
-                 <span>Foto Kamar ${room.nomor_kamar}</span>
-               </div>`;
+        const roomPhotoUrl = getRoomPhotoUrl(room);
+        imgContainer.innerHTML = `<img src="${roomPhotoUrl}" alt="Kamar ${room.nomor_kamar}" style="width:100%;height:100%;object-fit:cover;">`;
     }
 
     document.getElementById('detail-room-title').textContent = `Kamar ${room.nomor_kamar} (Lantai ${room.lantai})`;

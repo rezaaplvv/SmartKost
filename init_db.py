@@ -218,19 +218,19 @@ def init_database():
         if cursor.fetchone()["total"] == 0:
             kamar_data = [
                 # Lantai 1
-                ('A-01', 1, 'Reguler', 1200000, '3x4 m', 'Kasur Springbed, Lemari Pakaian, Meja Belajar, WiFi, Kamar Mandi Luar', 'Kamar reguler lantai 1 dengan pencahayaan alami yang baik.', 'Terisi'),
-                ('A-02', 1, 'VIP', 1800000, '4x4 m', 'AC Inverter, Kasur Queen, Kamar Mandi Dalam, Water Heater, Meja Kerja, WiFi', 'Kamar VIP nyaman dengan kamar mandi dalam & water heater.', 'Terisi'),
-                ('A-03', 1, 'Reguler', 1200000, '3x4 m', 'Kasur Springbed, Lemari Pakaian, Meja Belajar, WiFi, Kamar Mandi Luar', 'Kamar nyaman dekat ruang santai dan dapur bersama.', 'Tersedia'),
-                ('A-04', 1, 'Eksklusif', 2500000, '5x4 m', 'Smart TV 43\", AC, Kulkas Mini, Balkon Pribadi, Water Heater, Smart Lock', 'Kamar suite mewah dengan balkon pribadi & fasilitas lengkap.', 'Perbaikan'),
+                ('A-01', 1, 'Reguler', 1200000, '3x4 m', 'Kasur Springbed, Lemari Pakaian, Meja Belajar, WiFi, Kamar Mandi Luar', 'Kamar reguler lantai 1 dengan pencahayaan alami yang baik.', 'assets/img/room-back.jpg', 'Terisi'),
+                ('A-02', 1, 'VIP', 1800000, '4x4 m', 'AC Inverter, Kasur Queen, Kamar Mandi Dalam, Water Heater, Meja Kerja, WiFi', 'Kamar VIP nyaman dengan kamar mandi dalam & water heater.', 'assets/img/room-middle.jpg', 'Terisi'),
+                ('A-03', 1, 'Reguler', 1200000, '3x4 m', 'Kasur Springbed, Lemari Pakaian, Meja Belajar, WiFi, Kamar Mandi Luar', 'Kamar nyaman dekat ruang santai dan dapur bersama.', 'assets/img/room-back.jpg', 'Tersedia'),
+                ('A-04', 1, 'Eksklusif', 2500000, '5x4 m', 'Smart TV 43\", AC, Kulkas Mini, Balkon Pribadi, Water Heater, Smart Lock', 'Kamar suite mewah dengan balkon pribadi & fasilitas lengkap.', 'assets/img/room-front.jpg', 'Perbaikan'),
                 # Lantai 2
-                ('B-01', 2, 'VIP', 1850000, '4x4 m', 'AC Inverter, Kasur Queen, Kamar Mandi Dalam, Water Heater, WiFi 100 Mbps', 'Kamar VIP lantai 2 yang tenang dengan sirkulasi udara sejuk.', 'Terisi'),
-                ('B-02', 2, 'Reguler', 1250000, '3x4 m', 'Kasur Springbed, Lemari Pakaian, Meja Belajar, WiFi, Kamar Mandi Luar', 'Kamar reguler lantai 2 berpemandangan taman asri.', 'Terisi'),
-                ('B-03', 2, 'VIP', 1900000, '4x4 m', 'AC, Kamar Mandi Dalam, Balkon View Taman, WiFi, Meja Kerja Ergonomis', 'Kamar VIP lantai 2 siap huni dengan balkon sejuk.', 'Tersedia'),
-                ('B-04', 2, 'Eksklusif', 2600000, '5x4 m', 'Smart TV 43\", AC Inverter, Kulkas Mini, Balkon Luas, Water Heater, Smart Door Lock', 'Kamar paling luas di lantai 2 dengan privasi maksimal.', 'Tersedia'),
+                ('B-01', 2, 'VIP', 1850000, '4x4 m', 'AC Inverter, Kasur Queen, Kamar Mandi Dalam, Water Heater, WiFi 100 Mbps', 'Kamar VIP lantai 2 yang tenang dengan sirkulasi udara sejuk.', 'assets/img/room-middle.jpg', 'Terisi'),
+                ('B-02', 2, 'Reguler', 1250000, '3x4 m', 'Kasur Springbed, Lemari Pakaian, Meja Belajar, WiFi, Kamar Mandi Luar', 'Kamar reguler lantai 2 berpemandangan taman asri.', 'assets/img/room-back.jpg', 'Terisi'),
+                ('B-03', 2, 'VIP', 1900000, '4x4 m', 'AC, Kamar Mandi Dalam, Balkon View Taman, WiFi, Meja Kerja Ergonomis', 'Kamar VIP lantai 2 siap huni dengan balkon sejuk.', 'assets/img/room-middle.jpg', 'Tersedia'),
+                ('B-04', 2, 'Eksklusif', 2600000, '5x4 m', 'Smart TV 43\", AC Inverter, Kulkas Mini, Balkon Luas, Water Heater, Smart Door Lock', 'Kamar paling luas di lantai 2 dengan privasi maksimal.', 'assets/img/room-front.jpg', 'Tersedia'),
             ]
             cursor.executemany("""
-                INSERT INTO kamar (nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, status)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO kamar (nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, foto_kamar, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, kamar_data)
 
         # 3.4 Ambil ID Kamar untuk menghubungkan Penghuni

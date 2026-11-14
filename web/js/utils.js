@@ -139,6 +139,32 @@ function toggleTheme() {
     return next;
 }
 
+/**
+ * Resolve room image URL (uploaded custom image or matching room preset asset)
+ * @param {object} room
+ * @returns {string}
+ */
+function getRoomPhotoUrl(room) {
+    if (room && room.foto_kamar && String(room.foto_kamar).trim() !== '') {
+        return room.foto_kamar;
+    }
+    const tipe = (room && room.tipe ? room.tipe : '').toLowerCase();
+    if (tipe === 'eksklusif') return 'assets/img/room-front.jpg';
+    if (tipe === 'vip') return 'assets/img/room-middle.jpg';
+    return 'assets/img/room-back.jpg';
+}
+
+/**
+ * Notify other open tabs (e.g. Landing Page) when room data/photos change
+ */
+function notifyRoomCatalogUpdated() {
+    try {
+        localStorage.setItem('smartkost_rooms_updated', String(Date.now()));
+    } catch (e) {
+        // ignore storage errors
+    }
+}
+
 // Inisialisasi tema saat script dimuat
 document.addEventListener('DOMContentLoaded', initTheme);
 

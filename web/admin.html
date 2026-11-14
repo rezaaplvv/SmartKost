@@ -866,8 +866,23 @@
                         <textarea id="kamar-deskripsi" class="form-control" rows="2"></textarea>
                     </div>
                     <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">Foto Kamar (Opsional)</label>
-                        <input type="file" id="kamar-foto-file" class="form-control" accept="image/*">
+                        <label class="form-label">Foto Kamar (Tampil di Denah &amp; Landing Page)</label>
+                        <div class="kamar-foto-editor">
+                            <div class="kamar-foto-preview-box">
+                                <img id="kamar-foto-preview" src="assets/img/room-back.jpg" alt="Pratinjau Foto Kamar">
+                                <span class="kamar-foto-source-pill" id="kamar-foto-source-label">Foto Bawaan</span>
+                            </div>
+                            <div class="kamar-foto-controls">
+                                <input type="file" id="kamar-foto-file" class="form-control" accept="image/*">
+                                <input type="hidden" id="kamar-foto-preset" value="">
+                                <div class="kamar-preset-row">
+                                    <span style="font-size:0.74rem;color:var(--text-muted);font-weight:600;">Atau pilih preset:</span>
+                                    <button type="button" class="preset-chip" onclick="selectKamarPreset('assets/img/room-back.jpg')">Reguler</button>
+                                    <button type="button" class="preset-chip" onclick="selectKamarPreset('assets/img/room-middle.jpg')">VIP</button>
+                                    <button type="button" class="preset-chip" onclick="selectKamarPreset('assets/img/room-front.jpg')">Eksklusif</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
