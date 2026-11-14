@@ -135,7 +135,7 @@ a:hover {
     right: 0;
     z-index: 100;
     background: transparent;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid transparent;
     transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
@@ -151,7 +151,7 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 78px;
+    height: 70px;
 }
 
 .brand {
@@ -199,21 +199,14 @@ a:hover {
     opacity: 0.92;
 }
 
-.nav-links a:hover,
-.nav-links a.active {
-    color: #ffffff;
+.nav-links a:hover {
+    color: var(--primary);
     opacity: 1;
 }
 
-.nav-links a.active::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -6px;
-    height: 2.5px;
-    border-radius: 2px;
-    background: var(--primary);
+.nav-links a.active {
+    color: #ffffff;
+    opacity: 1;
 }
 
 .nav-actions {
@@ -353,11 +346,8 @@ a:hover {
 .hero-section {
     position: relative;
     background: var(--dark-navy);
-    padding: 85px 0 110px;
+    padding: 88px 0 92px;
     overflow: hidden;
-    min-height: 580px;
-    height: calc(100vh - 40px);
-    max-height: 720px;
     display: flex;
     align-items: center;
 }
@@ -386,7 +376,7 @@ a:hover {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 25%;
+    object-position: center 35%;
     filter: brightness(0.95) contrast(1.05);
 }
 
@@ -405,9 +395,9 @@ a:hover {
     background: linear-gradient(
         95deg,
         rgba(16, 16, 32, 0.72) 0%,
-        rgba(16, 24, 40, 0.40) 45%,
-        rgba(16, 24, 40, 0.20) 70%,
-        rgba(16, 16, 32, 0.60) 100%
+        rgba(16, 24, 40, 0.42) 45%,
+        rgba(16, 24, 40, 0.22) 70%,
+        rgba(16, 16, 32, 0.62) 100%
     );
 }
 
@@ -420,7 +410,7 @@ a:hover {
     height: 100%;
     z-index: 2;
     pointer-events: none;
-    opacity: 0.78;
+    opacity: 0.85;
 }
 
 /* Bottom Sweeping Wave & Golden Yellow Diagonal Wedge */
@@ -430,7 +420,7 @@ a:hover {
     right: 0;
     bottom: -1px;
     width: 100%;
-    height: 135px;
+    height: 120px;
     z-index: 3;
     pointer-events: none;
 }
@@ -449,7 +439,6 @@ a:hover {
     grid-template-columns: 1.15fr 0.85fr;
     gap: 28px;
     align-items: center;
-    margin-bottom: 25px;
 }
 
 /* Left Content */
@@ -465,10 +454,10 @@ a:hover {
     border-radius: var(--radius-full);
     background: var(--primary);
     color: var(--dark-navy);
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     font-weight: 700;
     letter-spacing: 0.01em;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
     box-shadow: 0 4px 14px rgba(249, 192, 10, 0.35);
 }
 
@@ -479,7 +468,7 @@ a:hover {
 }
 
 .hero-title-main {
-    font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+    font-size: clamp(2.3rem, 3.6vw, 3.2rem);
     font-weight: 800;
     line-height: 1.12;
     letter-spacing: -0.025em;
@@ -495,7 +484,7 @@ a:hover {
     font-size: 1rem;
     line-height: 1.55;
     color: var(--border-color);
-    max-width: 480px;
+    max-width: 470px;
     margin-bottom: 24px;
     font-weight: 400;
     opacity: 0.92;
@@ -506,19 +495,19 @@ a:hover {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
 }
 
 .hero-chip {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 18px;
-    background: rgba(255, 255, 255, 0.08);
+    gap: 10px;
+    padding: 8px 18px;
+    background: rgba(16, 16, 32, 0.55);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 14px;
+    border-radius: var(--radius-full);
     transition: var(--transition);
 }
 
@@ -540,14 +529,14 @@ a:hover {
 }
 
 .chip-title {
-    font-size: 0.86rem;
+    font-size: 0.84rem;
     font-weight: 700;
     color: #ffffff;
     line-height: 1.2;
 }
 
 .chip-sub {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: #cbd5e1;
     line-height: 1.2;
 }
@@ -565,15 +554,16 @@ a:hover {
 .room-cards-stack {
     position: relative;
     width: 100%;
-    max-width: 480px;
-    height: 380px;
+    max-width: 470px;
+    height: 360px;
+    margin-right: 16px;
 }
 
 /* Decorative Yellow Burst Lines (Top Right) */
 .showcase-burst-yellow {
     position: absolute;
     top: -12px;
-    right: -6px;
+    right: -12px;
     width: 36px;
     height: 36px;
     z-index: 6;
@@ -584,12 +574,12 @@ a:hover {
 /* Decorative Dot Matrix (Right) */
 .showcase-dots-matrix {
     position: absolute;
-    top: 50px;
-    right: -20px;
-    width: 40px;
-    height: 56px;
-    z-index: 1;
-    color: rgba(255, 255, 255, 0.28);
+    top: 52px;
+    right: -24px;
+    width: 38px;
+    height: 54px;
+    z-index: 5;
+    color: rgba(255, 255, 255, 0.45);
     pointer-events: none;
 }
 
@@ -609,10 +599,10 @@ a:hover {
 
 /* Card 1: Back Left (Wardrobe & Plant) */
 .room-card-back {
-    left: 8px;
-    top: 36px;
-    width: 195px;
-    height: 260px;
+    left: 4px;
+    top: 34px;
+    width: 185px;
+    height: 248px;
     z-index: 1;
     transform: rotate(-10deg);
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.52);
@@ -620,10 +610,10 @@ a:hover {
 
 /* Card 2: Middle (Living & Work Desk) */
 .room-card-middle {
-    left: 115px;
-    top: 56px;
-    width: 215px;
-    height: 280px;
+    left: 108px;
+    top: 52px;
+    width: 205px;
+    height: 268px;
     z-index: 2;
     transform: rotate(-2.5deg);
     box-shadow: 0 20px 42px rgba(0, 0, 0, 0.58);
@@ -631,10 +621,10 @@ a:hover {
 
 /* Card 3: Front Dominant (Warm Cozy Bedroom with Red Bed & TV) */
 .room-card-front {
-    right: 8px;
-    top: 10px;
-    width: 255px;
-    height: 335px;
+    right: 12px;
+    top: 8px;
+    width: 242px;
+    height: 318px;
     z-index: 3;
     transform: rotate(7.5deg);
     box-shadow: 0 24px 50px rgba(0, 0, 0, 0.68);
@@ -659,20 +649,18 @@ a:hover {
 .hero-search-wrapper {
     position: relative;
     z-index: 10;
-    margin-top: -68px;
-    padding: 0 24px 20px;
-}
-    padding: 0 24px 40px;
+    margin-top: -54px;
+    padding: 0 24px 36px;
 }
 
 .hero-search-bar {
-    max-width: 920px;
+    max-width: 880px;
     margin: 0 auto;
     background: #ffffff;
     border-radius: var(--radius-full);
-    box-shadow: 0 16px 45px rgba(0, 0, 0, 0.12), 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 16px 45px rgba(16, 16, 32, 0.14), 0 2px 10px rgba(0, 0, 0, 0.06);
     border: 1px solid var(--border-color);
-    padding: 8px 12px 8px 26px;
+    padding: 7px 9px 7px 26px;
     display: flex;
     align-items: center;
     justify-content: space-between;
