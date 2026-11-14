@@ -353,9 +353,11 @@ a:hover {
 .hero-section {
     position: relative;
     background: var(--dark-navy);
-    padding: 120px 0 150px;
+    padding: 85px 0 110px;
     overflow: hidden;
-    min-height: 680px;
+    min-height: 580px;
+    height: calc(100vh - 40px);
+    max-height: 720px;
     display: flex;
     align-items: center;
 }
@@ -384,8 +386,8 @@ a:hover {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 38%;
-    filter: brightness(0.92) contrast(1.05);
+    object-position: center 25%;
+    filter: brightness(0.95) contrast(1.05);
 }
 
 .hero-bg-architectural-svg {
@@ -402,10 +404,10 @@ a:hover {
     z-index: 1;
     background: linear-gradient(
         95deg,
-        rgba(16, 16, 32, 0.75) 0%,
-        rgba(16, 24, 40, 0.45) 45%,
-        rgba(16, 24, 40, 0.25) 70%,
-        rgba(16, 16, 32, 0.65) 100%
+        rgba(16, 16, 32, 0.72) 0%,
+        rgba(16, 24, 40, 0.40) 45%,
+        rgba(16, 24, 40, 0.20) 70%,
+        rgba(16, 16, 32, 0.60) 100%
     );
 }
 
@@ -428,7 +430,7 @@ a:hover {
     right: 0;
     bottom: -1px;
     width: 100%;
-    height: 140px;
+    height: 135px;
     z-index: 3;
     pointer-events: none;
 }
@@ -444,44 +446,45 @@ a:hover {
     position: relative;
     z-index: 4;
     display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 36px;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 28px;
     align-items: center;
+    margin-bottom: 25px;
 }
 
 /* Left Content */
 .hero-content {
-    max-width: 610px;
+    max-width: 580px;
 }
 
 .hero-badge-yellow {
     display: inline-flex;
     align-items: center;
-    gap: 9px;
-    padding: 8px 20px;
+    gap: 8px;
+    padding: 7px 18px;
     border-radius: var(--radius-full);
     background: var(--primary);
     color: var(--dark-navy);
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 700;
     letter-spacing: 0.01em;
-    margin-bottom: 22px;
-    box-shadow: 0 6px 18px rgba(249, 192, 10, 0.35);
+    margin-bottom: 16px;
+    box-shadow: 0 4px 14px rgba(249, 192, 10, 0.35);
 }
 
 .hero-badge-yellow .icon {
-    width: 1.25em;
-    height: 1.25em;
+    width: 1.2em;
+    height: 1.2em;
     fill: currentColor;
 }
 
 .hero-title-main {
-    font-size: clamp(2.4rem, 4vw, 3.5rem);
+    font-size: clamp(2.2rem, 3.5vw, 3.2rem);
     font-weight: 800;
     line-height: 1.12;
     letter-spacing: -0.025em;
     color: #ffffff;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
 }
 
 .text-golden {
@@ -489,11 +492,11 @@ a:hover {
 }
 
 .hero-desc-sub {
-    font-size: 1.08rem;
-    line-height: 1.6;
+    font-size: 1rem;
+    line-height: 1.55;
     color: var(--border-color);
-    max-width: 500px;
-    margin-bottom: 30px;
+    max-width: 480px;
+    margin-bottom: 24px;
     font-weight: 400;
     opacity: 0.92;
 }
@@ -562,17 +565,17 @@ a:hover {
 .room-cards-stack {
     position: relative;
     width: 100%;
-    max-width: 510px;
-    height: 410px;
+    max-width: 480px;
+    height: 380px;
 }
 
 /* Decorative Yellow Burst Lines (Top Right) */
 .showcase-burst-yellow {
     position: absolute;
-    top: -8px;
-    right: -2px;
-    width: 38px;
-    height: 38px;
+    top: -12px;
+    right: -6px;
+    width: 36px;
+    height: 36px;
     z-index: 6;
     color: var(--primary);
     pointer-events: none;
@@ -581,10 +584,10 @@ a:hover {
 /* Decorative Dot Matrix (Right) */
 .showcase-dots-matrix {
     position: absolute;
-    top: 60px;
-    right: -18px;
-    width: 44px;
-    height: 60px;
+    top: 50px;
+    right: -20px;
+    width: 40px;
+    height: 56px;
     z-index: 1;
     color: rgba(255, 255, 255, 0.28);
     pointer-events: none;
@@ -593,8 +596,8 @@ a:hover {
 /* Shared Overlapping Card Base */
 .room-stack-card {
     position: absolute;
-    border: 6px solid #ffffff;
-    border-radius: 22px;
+    border: 5px solid #ffffff;
+    border-radius: 20px;
     overflow: hidden;
     background: #1e293b;
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
@@ -606,35 +609,35 @@ a:hover {
 
 /* Card 1: Back Left (Wardrobe & Plant) */
 .room-card-back {
-    left: 4px;
-    top: 48px;
-    width: 202px;
-    height: 275px;
+    left: 8px;
+    top: 36px;
+    width: 195px;
+    height: 260px;
     z-index: 1;
     transform: rotate(-10deg);
-    box-shadow: 0 20px 42px rgba(0, 0, 0, 0.52);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.52);
 }
 
 /* Card 2: Middle (Living & Work Desk) */
 .room-card-middle {
-    left: 120px;
-    top: 72px;
-    width: 224px;
-    height: 295px;
+    left: 115px;
+    top: 56px;
+    width: 215px;
+    height: 280px;
     z-index: 2;
     transform: rotate(-2.5deg);
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.58);
+    box-shadow: 0 20px 42px rgba(0, 0, 0, 0.58);
 }
 
 /* Card 3: Front Dominant (Warm Cozy Bedroom with Red Bed & TV) */
 .room-card-front {
-    right: 14px;
-    top: 14px;
-    width: 265px;
-    height: 350px;
+    right: 8px;
+    top: 10px;
+    width: 255px;
+    height: 335px;
     z-index: 3;
     transform: rotate(7.5deg);
-    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.68);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.68);
 }
 
 .room-card-front img,
@@ -649,7 +652,6 @@ a:hover {
     object-fit: cover;
     object-position: center;
 }
-}
 
 /* ==========================================================
    Floating Search Bar (Overlapping Bottom Wave)
@@ -657,7 +659,9 @@ a:hover {
 .hero-search-wrapper {
     position: relative;
     z-index: 10;
-    margin-top: -48px;
+    margin-top: -68px;
+    padding: 0 24px 20px;
+}
     padding: 0 24px 40px;
 }
 
