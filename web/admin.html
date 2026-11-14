@@ -152,50 +152,83 @@
                      TAB 1: DASHBOARD OVERVIEW & ANALITIK PANDAS
                      ==================================================== -->
                 <section class="admin-tab-panel active" id="tab-overview">
-                    <!-- 4 KPI Cards -->
-                    <div class="kpi-grid">
-                        <div class="kpi-card">
+                    <!-- Row 1: 3 Highlight Finance Cards -->
+                    <div class="kpi-grid-primary">
+                        <div class="kpi-card kpi-card-income">
                             <div class="kpi-top">
-                                <span class="kpi-label">Pemasukan Bulan Ini</span>
-                                <div class="kpi-icon-box">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                <span class="kpi-title-caps">Total Pemasukan</span>
+                                <div class="kpi-icon-badge gold">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path></svg>
                                 </div>
                             </div>
-                            <div class="kpi-value" id="kpi-pemasukan">Rp 0</div>
-                            <div class="kpi-sub" id="kpi-growth-text">Memuat pertumbuhan...</div>
+                            <div class="kpi-value-lg" id="kpi-pemasukan">Rp 0</div>
+                            <div class="kpi-sub-muted" id="kpi-growth-text">Omzet lunas bulan berjalan</div>
+                            <button type="button" class="kpi-detail-link" onclick="switchAdminTab('tagihan')">
+                                <span>Tunggakan: <strong id="kpi-tunggakan">Rp 0</strong></span>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </button>
                         </div>
 
-                        <div class="kpi-card kpi-success">
+                        <div class="kpi-card kpi-card-expense">
                             <div class="kpi-top">
-                                <span class="kpi-label">Laba Bersih Bulan Ini</span>
-                                <div class="kpi-icon-box success">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                                <span class="kpi-title-caps">Total Pengeluaran</span>
+                                <div class="kpi-icon-badge navy">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                                 </div>
                             </div>
-                            <div class="kpi-value" id="kpi-laba">Rp 0</div>
-                            <div class="kpi-sub">Pengeluaran: <strong id="kpi-pengeluaran">Rp 0</strong></div>
+                            <div class="kpi-value-lg" id="kpi-pengeluaran">Rp 0</div>
+                            <div class="kpi-sub-muted">Biaya operasional &amp; maintenance</div>
+                            <button type="button" class="kpi-detail-link" onclick="switchAdminTab('pengeluaran')">
+                                <span>Lihat Detail</span>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </button>
                         </div>
 
-                        <div class="kpi-card kpi-navy">
+                        <div class="kpi-card kpi-card-profit">
                             <div class="kpi-top">
-                                <span class="kpi-label">Okupansi Kamar</span>
-                                <div class="kpi-icon-box navy">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
+                                <span class="kpi-title-caps">Keuntungan Bersih</span>
+                                <div class="kpi-icon-plain">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
                                 </div>
                             </div>
-                            <div class="kpi-value" id="kpi-okupansi">0%</div>
-                            <div class="kpi-sub"><span id="kpi-kamar-terisi">0</span> terisi dari <span id="kpi-kamar-total">0</span> unit (<span id="kpi-kamar-tersedia">0</span> tersedia)</div>
+                            <div class="kpi-value-lg" id="kpi-laba">Rp 0</div>
+                            <div class="kpi-profit-status" id="kpi-cashflow-status">
+                                <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.41 14.59L6.7 12.7l1.41-1.41 2.48 2.47 5.29-5.3 1.42 1.42-6.71 6.71z"></path></svg>
+                                <span>Cashflow Positif</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: 3 Horizontal Unit & Tenant Mini Cards -->
+                    <div class="kpi-grid-secondary">
+                        <div class="kpi-mini-card" onclick="switchAdminTab('kamar')" title="Kelola kamar tersedia">
+                            <div class="kpi-mini-icon slate">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4h3a2 2 0 0 1 2 2v14"></path><path d="M2 20h3"></path><path d="M13 20h9"></path><path d="M10 12v.01"></path><path d="M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z"></path></svg>
+                            </div>
+                            <div class="kpi-mini-text">
+                                <div class="kpi-mini-value"><span id="kpi-kamar-tersedia">0</span> Unit</div>
+                                <div class="kpi-mini-label">Kamar Kosong</div>
+                            </div>
                         </div>
 
-                        <div class="kpi-card kpi-danger">
-                            <div class="kpi-top">
-                                <span class="kpi-label">Total Tunggakan Aktif</span>
-                                <div class="kpi-icon-box danger">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                </div>
+                        <div class="kpi-mini-card" onclick="switchAdminTab('kamar')" title="Lihat kamar terisi">
+                            <div class="kpi-mini-icon gold">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
                             </div>
-                            <div class="kpi-value" id="kpi-tunggakan">Rp 0</div>
-                            <div class="kpi-sub"><span id="kpi-pending-info">0 booking pending, 0 keluhan aktif</span></div>
+                            <div class="kpi-mini-text">
+                                <div class="kpi-mini-value"><span id="kpi-kamar-terisi">0</span> Unit</div>
+                                <div class="kpi-mini-label">Kamar Terisi (<span id="kpi-okupansi">0%</span>)</div>
+                            </div>
+                        </div>
+
+                        <div class="kpi-mini-card" onclick="switchAdminTab('penghuni')" title="Lihat data penghuni aktif">
+                            <div class="kpi-mini-icon navy">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <div class="kpi-mini-text">
+                                <div class="kpi-mini-value"><span id="kpi-penghuni-aktif">0</span> Orang</div>
+                                <div class="kpi-mini-label">Penghuni Aktif</div>
+                            </div>
                         </div>
                     </div>
 
@@ -1132,3 +1165,4 @@
     <script src="js/admin.js"></script>
 </body>
 </html>
+

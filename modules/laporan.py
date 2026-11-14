@@ -79,7 +79,10 @@ def get_kpi_dashboard():
     kamar_tersedia = len(df_k[df_k["status"] == "Tersedia"]) if not df_k.empty else 0
     okupansi_rate = round((kamar_terisi / total_kamar * 100), 1) if total_kamar > 0 else 0
 
-    # 4. Action Center Counts
+    # 4. Penghuni Aktif & Action Center Counts
+    res_ph = execute_query("SELECT COUNT(*) AS total FROM penghuni WHERE status = 'Aktif'", fetchone=True)
+    penghuni_aktif = res_ph["data"]["total"] if res_ph["status"] else 0
+
     res_bk = execute_query("SELECT COUNT(*) AS total FROM booking WHERE status = 'Pending'", fetchone=True)
     pending_booking = res_bk["data"]["total"] if res_bk["status"] else 0
 
@@ -97,6 +100,7 @@ def get_kpi_dashboard():
             "total_kamar": total_kamar,
             "kamar_terisi": kamar_terisi,
             "kamar_tersedia": kamar_tersedia,
+            "penghuni_aktif": penghuni_aktif,
             "okupansi_rate": okupansi_rate,
             "pending_booking": pending_booking,
             "active_keluhan": active_keluhan,

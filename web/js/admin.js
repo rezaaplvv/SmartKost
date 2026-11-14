@@ -222,21 +222,41 @@ async function loadKpiCards() {
         if (!res.status || !res.data) return;
         const d = res.data;
 
-        document.getElementById('kpi-pemasukan').textContent = formatRupiah(d.pemasukan_bulan_ini);
-        document.getElementById('kpi-laba').textContent = formatRupiah(d.laba_bersih_bulan_ini);
-        document.getElementById('kpi-pengeluaran').textContent = formatRupiah(d.pengeluaran_bulan_ini);
-        document.getElementById('kpi-okupansi').textContent = `${d.okupansi_rate}%`;
-        document.getElementById('kpi-kamar-terisi').textContent = d.kamar_terisi;
-        document.getElementById('kpi-kamar-total').textContent = d.total_kamar;
-        document.getElementById('kpi-kamar-tersedia').textContent = d.kamar_tersedia;
-        document.getElementById('kpi-tunggakan').textContent = formatRupiah(d.total_tunggakan);
+        const setText = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+        };
+
+        setText('kpi-pemasukan', formatRupiah(d.pemasukan_bulan_ini));
+        setText('kpi-laba', formatRupiah(d.laba_bersih_bulan_ini));
+        setText('kpi-pengeluaran', formatRupiah(d.pengeluaran_bulan_ini));
+        setText('kpi-okupansi', `${d.okupansi_rate}%`);
+        setText('kpi-kamar-terisi', d.kamar_terisi);
+        setText('kpi-kamar-tersedia', d.kamar_tersedia);
+        setText('kpi-penghuni-aktif', d.penghuni_aktif ?? d.kamar_terisi);
+        setText('kpi-tunggakan', formatRupiah(d.total_tunggakan));
 
         const growthEl = document.getElementById('kpi-growth-text');
-        const g = d.growth_pemasukan || 0;
-        const sign = g > 0 ? '+' : '';
-        growthEl.textContent = `${sign}${g}% dibanding bulan lalu (${d.periode_sekarang})`;
+        if (growthEl) {
+            const g = d.growth_pemasukan || 0;
+            const sign = g > 0 ? '+' : '';
+            growthEl.textContent = `Omzet bulan ${d.periode_sekarang} (${sign}${g}% vs bulan lalu)`;
+        }
 
-        document.getElementById('kpi-pending-info').textContent = `${d.pending_booking} booking pending, ${d.active_keluhan} keluhan aktif`;
+        const cashflowStatusEl = document.getElementById('kpi-cashflow-status');
+        if (cashflowStatusEl) {
+            const laba = Number(d.laba_bersih_bulan_ini) || 0;
+            cashflowStatusEl.classList.remove('negative', 'neutral');
+            if (laba > 0) {
+                cashflowStatusEl.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.41 14.59L6.7 12.7l1.41-1.41 2.48 2.47 5.29-5.3 1.42 1.42-6.71 6.71z"></path></svg><span>Cashflow Positif</span>`;
+            } else if (laba < 0) {
+                cashflowStatusEl.classList.add('negative');
+                cashflowStatusEl.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"></path></svg><span>Cashflow Defisit</span>`;
+            } else {
+                cashflowStatusEl.classList.add('neutral');
+                cashflowStatusEl.innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4 11H8v-2h8v2z"></path></svg><span>Cashflow Seimbang</span>`;
+            }
+        }
 
         // Update Sidebar Badges
         const badgeBk = document.getElementById('badge-pending-booking');
@@ -1277,3 +1297,4 @@ function setupAdminForms() {
         if (res.status) e.target.reset();
     });
 }
+
