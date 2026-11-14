@@ -183,3 +183,4 @@ def get_log_aktivitas(limit=50):
     """
     res = execute_query(query, (int(limit),), fetchall=True)
     return res
+

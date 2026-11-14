@@ -504,3 +504,4 @@ if __name__ == "__main__":
     sukses = init_database()
     if not sukses:
         sys.exit(1)
+

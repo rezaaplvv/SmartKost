@@ -241,3 +241,4 @@ def update_pengaturan_kos(nama_kos, tagline, deskripsi, alamat, no_wa, denda_per
         catat_log(None, admin_user, "admin", "Update Profil Kos", f"Memperbarui profil kos: {nama_kos}")
         return {"status": True, "pesan": "Pengaturan profil kos berhasil diperbarui."}
     return {"status": False, "pesan": res["pesan"]}
+

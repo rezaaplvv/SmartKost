@@ -131,3 +131,4 @@ def execute_query(query, params=None, fetchone=False, fetchall=False, commit=Fal
         }
     finally:
         tutup_koneksi(cursor, conn)
+

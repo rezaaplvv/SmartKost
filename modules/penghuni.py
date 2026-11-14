@@ -339,3 +339,4 @@ def checkout_penghuni(penghuni_id, tanggal_keluar=None, admin_user="admin"):
 
     catat_log(None, admin_user, "admin", "Check-Out Penghuni", f"Check-out {penghuni['nama']} pada tanggal {tanggal_keluar}")
     return {"status": True, "pesan": f"Penghuni {penghuni['nama']} berhasil check-out. Kamar sekarang kembali Tersedia."}
+

@@ -160,3 +160,4 @@ VALUES (
 INSERT INTO users (username, password, nama_lengkap, role)
 VALUES ('admin', 'admin123', 'Administrator Kost', 'admin')
 ON DUPLICATE KEY UPDATE id=id;
+

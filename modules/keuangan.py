@@ -348,3 +348,4 @@ def update_status_keluhan(keluhan_id, status_baru, tindakan="", biaya_perbaikan=
 
     catat_log(None, admin_user, "admin", "Update Tiket Keluhan", f"Keluhan #{keluhan_id} diubah ke status '{status_baru}'")
     return {"status": True, "pesan": f"Status keluhan berhasil diperbarui menjadi {status_baru}."}
+
