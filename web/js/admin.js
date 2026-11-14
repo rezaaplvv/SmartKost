@@ -23,7 +23,7 @@ let pengeluaranChart = null;
 const TAB_META = {
     overview: {
         title: 'Dashboard Analitik',
-        subtitle: 'Ringkasan operasional, arus kas, dan okupansi hunian secara real-time'
+        subtitle: 'Ringkasan operasional, analisa, dan laporan bisnis secara real-time.'
     },
     kamar: {
         title: 'Denah & Manajemen Kamar',
@@ -69,7 +69,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentAdmin = user;
 
     // Set identitas Admin di Topbar
-    const displayName = user.nama_lengkap || user.username || 'Administrator';
+    const rawName = user.nama_lengkap || user.username || 'Administrator Utama';
+    const displayName = rawName === 'Administrator' ? 'Administrator Utama' : rawName;
     const elName = document.getElementById('admin-display-name');
     const elAvatar = document.getElementById('admin-avatar-initial');
     if (elName) elName.textContent = displayName;
@@ -236,11 +237,19 @@ async function loadKpiCards() {
         setText('kpi-penghuni-aktif', d.penghuni_aktif ?? d.kamar_terisi);
         setText('kpi-tunggakan', formatRupiah(d.total_tunggakan));
 
+        // Update Donut Card B summary numbers
+        setText('donut-okupansi-pct', `${Math.round(d.okupansi_rate || 0)}%`);
+        setText('legend-kamar-kosong', d.kamar_tersedia);
+        setText('legend-kamar-terisi', d.kamar_terisi);
+
         const growthEl = document.getElementById('kpi-growth-text');
         if (growthEl) {
-            const g = d.growth_pemasukan || 0;
-            const sign = g > 0 ? '+' : '';
-            growthEl.textContent = `Omzet bulan ${d.periode_sekarang} (${sign}${g}% vs bulan lalu)`;
+            const g = Number(d.growth_pemasukan) || 0;
+            const arrowSvg = g >= 0
+                ? `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`
+                : `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`;
+            growthEl.style.color = g >= 0 ? '#16A34A' : '#DC2626';
+            growthEl.innerHTML = `${arrowSvg}<span>${Math.abs(g)}% dari bulan lalu</span>`;
         }
 
         const cashflowStatusEl = document.getElementById('kpi-cashflow-status');
@@ -278,12 +287,12 @@ async function loadOverviewCharts() {
     if (typeof Chart === 'undefined') return;
 
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const textColor = isDark ? '#cbd5e1' : '#475569';
-    const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(16,16,32,0.07)';
+    const textColor = isDark ? '#CBD5E1' : '#64748B';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(226, 232, 240, 0.7)';
     const tahun = document.getElementById('chart-cashflow-year')?.value || '2026';
 
     try {
-        // 1. Chart Cashflow 12 Bulan
+        // 1. Card A — Chart Cashflow 12 Bulan (Kuning untuk Pemasukan, Abu-abu untuk Pengeluaran)
         const resCf = await eel.get_chart_cashflow(tahun)();
         if (resCf.status && resCf.data) {
             const ctx = document.getElementById('canvas-cashflow').getContext('2d');
@@ -296,14 +305,20 @@ async function loadOverviewCharts() {
                         {
                             label: 'Pemasukan',
                             data: resCf.data.pemasukan,
-                            backgroundColor: '#F9C00A',
-                            borderRadius: 6
+                            backgroundColor: '#FFC928',
+                            hoverBackgroundColor: '#F5B800',
+                            borderRadius: 6,
+                            barPercentage: 0.68,
+                            categoryPercentage: 0.72
                         },
                         {
                             label: 'Pengeluaran',
                             data: resCf.data.pengeluaran,
-                            backgroundColor: '#102030',
-                            borderRadius: 6
+                            backgroundColor: isDark ? '#334155' : '#E2E8F0',
+                            hoverBackgroundColor: '#CBD5E1',
+                            borderRadius: 6,
+                            barPercentage: 0.68,
+                            categoryPercentage: 0.72
                         }
                     ]
                 },
@@ -311,55 +326,102 @@ async function loadOverviewCharts() {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', weight: '600' } } }
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                boxWidth: 8,
+                                color: textColor,
+                                font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctxItem) => `${ctxItem.dataset.label}: ${formatRupiah(ctxItem.raw || 0)}`
+                            }
+                        }
                     },
                     scales: {
-                        x: { ticks: { color: textColor }, grid: { display: false } },
+                        x: {
+                            ticks: { color: textColor, font: { family: 'Plus Jakarta Sans', size: 11 } },
+                            grid: { display: false },
+                            border: { display: false }
+                        },
                         y: {
+                            beginAtZero: true,
                             ticks: {
                                 color: textColor,
-                                callback: (v) => 'Rp ' + (v / 1000000).toFixed(1) + 'jt'
+                                font: { family: 'Plus Jakarta Sans', size: 11 },
+                                callback: (v) => v >= 1000000 ? 'Rp ' + (v / 1000000).toFixed(1) + 'jt' : 'Rp ' + (v / 1000).toFixed(0) + 'rb'
                             },
-                            grid: { color: gridColor }
+                            grid: { color: gridColor },
+                            border: { display: false }
                         }
                     }
                 }
             });
         }
 
-        // 2. Chart Okupansi per Tipe
+        // 2. Card B — Donut Chart Okupansi Kamar + Breakdown per Tipe
         const resOk = await eel.get_chart_okupansi_tipe()();
         if (resOk.status && resOk.data) {
+            const labels = resOk.data.labels || [];
+            const terisiArr = resOk.data.terisi || [];
+            const totalArr = resOk.data.total || [];
+
+            const totalTerisi = terisiArr.reduce((acc, n) => acc + (Number(n) || 0), 0);
+            const totalUnit = totalArr.reduce((acc, n) => acc + (Number(n) || 0), 0);
+            const totalKosong = Math.max(0, totalUnit - totalTerisi);
+            const pct = totalUnit > 0 ? Math.round((totalTerisi / totalUnit) * 100) : 0;
+
+            const pctEl = document.getElementById('donut-okupansi-pct');
+            if (pctEl) pctEl.textContent = `${pct}%`;
+            const kosongEl = document.getElementById('legend-kamar-kosong');
+            if (kosongEl) kosongEl.textContent = totalKosong;
+            const terisiEl = document.getElementById('legend-kamar-terisi');
+            if (terisiEl) terisiEl.textContent = totalTerisi;
+
+            const breakdownEl = document.getElementById('legend-tipe-breakdown');
+            if (breakdownEl && labels.length > 0) {
+                breakdownEl.innerHTML = labels.map((lbl, idx) => `
+                    <div class="donut-tipe-row">
+                        <span>Tipe ${escapeHtml(lbl)}</span>
+                        <strong>${terisiArr[idx] || 0}/${totalArr[idx] || 0} Terisi</strong>
+                    </div>
+                `).join('');
+            }
+
             const ctx2 = document.getElementById('canvas-okupansi').getContext('2d');
             if (okupansiChart) okupansiChart.destroy();
             okupansiChart = new Chart(ctx2, {
-                type: 'bar',
+                type: 'doughnut',
                 data: {
-                    labels: resOk.data.labels,
+                    labels: ['Kamar Terisi', 'Kamar Kosong'],
                     datasets: [
                         {
-                            label: 'Terisi',
-                            data: resOk.data.terisi,
-                            backgroundColor: '#F9C00A',
-                            borderRadius: 6
-                        },
-                        {
-                            label: 'Total Kapasitas',
-                            data: resOk.data.total,
-                            backgroundColor: isDark ? '#334155' : '#E8EAEF',
-                            borderRadius: 6
+                            data: totalUnit > 0 ? [totalTerisi, totalKosong] : [0, 1],
+                            backgroundColor: [
+                                '#FFC928',
+                                isDark ? '#334155' : '#FFF1C2'
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 3
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '74%',
                     plugins: {
-                        legend: { labels: { color: textColor } }
-                    },
-                    scales: {
-                        x: { ticks: { color: textColor }, grid: { display: false } },
-                        y: { beginAtZero: true, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctxItem) => `${ctxItem.label}: ${ctxItem.raw} Unit`
+                            }
+                        }
                     }
                 }
             });
@@ -376,14 +438,15 @@ async function loadOverviewCharts() {
                     labels: resEx.data.labels,
                     datasets: [{
                         data: resEx.data.series,
-                        backgroundColor: ['#F9C00A', '#101020', '#10b981', '#0ea5e9', '#64748B', '#FCD971'],
+                        backgroundColor: ['#FFC928', '#F59E0B', '#16A34A', '#0EA5E9', '#64748B', '#FDE68A'],
                         borderWidth: 2,
-                        borderColor: isDark ? '#1e293b' : '#ffffff'
+                        borderColor: isDark ? '#1E293B' : '#FFFFFF'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '66%',
                     plugins: {
                         legend: { position: 'right', labels: { color: textColor, boxWidth: 12 } }
                     }
