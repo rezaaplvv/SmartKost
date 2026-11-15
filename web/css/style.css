@@ -1590,6 +1590,116 @@ a:hover {
     }
 }
 
+/* Center Login Success Popup with Lottie */
+@keyframes successPopupIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.86) translateY(18px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes successProgressFill {
+    0% {
+        width: 0%;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes svgCheckPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    70% {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#modal-login-success.active {
+    animation: modalBackdropFadeIn 0.24s ease forwards;
+}
+
+.login-success-dialog {
+    max-width: 370px;
+    padding: 34px 30px 28px;
+    border-radius: 22px;
+    text-align: center;
+    box-shadow: 0 28px 60px rgba(10, 15, 30, 0.34);
+    border: 1px solid var(--border-color);
+}
+
+#modal-login-success.active .login-success-dialog {
+    animation: successPopupIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.login-success-lottie-box {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-success-fallback-svg {
+    width: 76px;
+    height: 76px;
+    border-radius: 9999px;
+    background: #16A34A;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 26px rgba(22, 163, 74, 0.3);
+    animation: svgCheckPop 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.login-success-title {
+    font-size: 1.32rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+}
+
+.login-success-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 22px;
+}
+
+.login-success-progress {
+    width: 100%;
+    height: 5px;
+    border-radius: 9999px;
+    background: var(--bg-surface-alt);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.login-success-progress-bar {
+    width: 0%;
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #F9C00A 0%, #16A34A 100%);
+}
+
+#modal-login-success.active .login-success-progress-bar.animate {
+    animation: successProgressFill 1.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
 .modal-dialog-lg {
     max-width: 800px;
 }

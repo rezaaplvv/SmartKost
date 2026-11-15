@@ -682,7 +682,7 @@ function setupForms() {
                 const res = await eel.login(username, password)();
                 if (res.status && res.user) {
                     setAuthSession(res.user);
-                    showToast(`Login berhasil. Mengalihkan ke ${res.user.role}...`, 'success');
+                    showLoginSuccessPopup(res.user);
 
                     setTimeout(() => {
                         if (res.user.role === 'admin') {
@@ -690,7 +690,7 @@ function setupForms() {
                         } else {
                             window.location.href = 'penghuni.html';
                         }
-                    }, 800);
+                    }, 1650);
                 } else {
                     showToast(res.pesan || 'Username atau password salah.', 'error');
                 }
@@ -739,6 +739,72 @@ function setupForms() {
             }
         });
     }
+}
+
+let loginSuccessLottieInstance = null;
+
+function renderLoginSuccessFallback(container) {
+    if (!container) return;
+    container.innerHTML = `
+        <div class="login-success-fallback-svg">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+    `;
+}
+
+/**
+ * Menampilkan Popup Center Login Berhasil dengan Animasi Lottie Success.json
+ */
+function showLoginSuccessPopup(user) {
+    document.getElementById('modal-login')?.classList.remove('active');
+
+    const popup = document.getElementById('modal-login-success');
+    const desc = document.getElementById('login-success-desc');
+    const lottieBox = document.getElementById('login-success-lottie');
+    const progressBar = document.getElementById('login-success-progress-bar');
+
+    if (!popup) return;
+
+    const roleLabel = user && user.role === 'admin' ? 'Dashboard Admin' : 'Portal Penghuni';
+    const userLabel = (user && (user.nama_lengkap || user.username)) ? `Selamat datang, ${user.nama_lengkap || user.username}. ` : '';
+    if (desc) {
+        desc.textContent = `${userLabel}Mengalihkan ke ${roleLabel}...`;
+    }
+
+    if (lottieBox) {
+        if (loginSuccessLottieInstance && typeof loginSuccessLottieInstance.destroy === 'function') {
+            loginSuccessLottieInstance.destroy();
+            loginSuccessLottieInstance = null;
+        }
+        lottieBox.innerHTML = '';
+
+        if (window.lottie && typeof window.lottie.loadAnimation === 'function') {
+            try {
+                loginSuccessLottieInstance = window.lottie.loadAnimation({
+                    container: lottieBox,
+                    renderer: 'svg',
+                    loop: false,
+                    autoplay: true,
+                    path: 'assets/img/Success.json'
+                });
+                loginSuccessLottieInstance.addEventListener('data_failed', () => {
+                    renderLoginSuccessFallback(lottieBox);
+                });
+            } catch (e) {
+                renderLoginSuccessFallback(lottieBox);
+            }
+        } else {
+            renderLoginSuccessFallback(lottieBox);
+        }
+    }
+
+    if (progressBar) {
+        progressBar.classList.remove('animate');
+        void progressBar.offsetWidth;
+        progressBar.classList.add('animate');
+    }
+
+    popup.classList.add('active');
 }
 
 /**
