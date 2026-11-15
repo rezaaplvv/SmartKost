@@ -1090,40 +1090,49 @@ async function loadPenghuniAdmin() {
 
             return `
                 <article class="penghuni-profile-card ${isAktif ? '' : 'is-alumni'}" style="animation-delay:${delayMs}ms;">
-                    <div class="penghuni-card-deco" aria-hidden="true">
-                        <svg viewBox="0 0 160 160" fill="none">
-                            <path d="M160 44C122 68 96 108 86 160H160V44Z" fill="rgba(255, 255, 255, 0.045)"/>
-                            <path d="M160 92C132 108 112 132 104 160H160V92Z" fill="rgba(255, 196, 0, 0.22)"/>
-                        </svg>
+                    <div class="penghuni-card-hero">
+                        <div class="penghuni-card-deco" aria-hidden="true">
+                            <svg viewBox="0 0 160 160" fill="none">
+                                <path d="M160 28C114 60 88 104 78 160H160V28Z" fill="rgba(255, 255, 255, 0.08)"/>
+                                <path d="M160 82C126 102 106 130 96 160H160V82Z" fill="#FFC400" fill-opacity="0.88"/>
+                            </svg>
+                        </div>
+                        <div class="penghuni-card-hero-inner">
+                            <div class="penghuni-card-top">
+                                <span class="penghuni-card-room-pill">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.172 2.293 12.293a1 1 0 0 0 .707 1.707H5v6a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-6h2a1 1 0 0 0 .707-1.707L12 3.172z"/></svg>
+                                    <span>${kamarLabel}</span>
+                                </span>
+                                <span class="penghuni-card-status-pill ${isAktif ? 'is-aktif' : 'is-alumni'}">
+                                    <span class="penghuni-card-status-dot"></span>
+                                    <span>${escapeHtml(p.status)}</span>
+                                </span>
+                            </div>
+
+                            <div class="penghuni-card-profile">
+                                <div class="penghuni-card-avatar-shell">
+                                    <svg class="penghuni-card-sparks" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+                                        <line x1="15" y1="3" x2="17" y2="8"/>
+                                        <line x1="7" y1="7" x2="11" y2="11"/>
+                                        <line x1="3" y1="15" x2="8" y2="16"/>
+                                    </svg>
+                                    <div class="penghuni-card-avatar ${avatarTone}" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat Detail ${escapeHtml(p.nama)}">${avatarInner}</div>
+                                    ${isAktif ? `
+                                        <span class="penghuni-card-avatar-verified" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                        </span>
+                                    ` : ''}
+                                </div>
+                                <div class="penghuni-card-identity">
+                                    <h4 class="penghuni-card-name" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat profil, KTP &amp; riwayat tagihan">${escapeHtml(p.nama)}</h4>
+                                    <div class="penghuni-card-username">@${escapeHtml(p.username || 'non-akun')}</div>
+                                    <div class="penghuni-card-role">${profesiKota}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="penghuni-card-content">
-                        <div class="penghuni-card-top">
-                            <span class="penghuni-card-room-pill">
-                                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.172 2.293 12.293a1 1 0 0 0 .707 1.707H5v6a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-6h2a1 1 0 0 0 .707-1.707L12 3.172z"/></svg>
-                                <span>${kamarLabel}</span>
-                            </span>
-                            <span class="penghuni-card-status-pill ${isAktif ? 'is-aktif' : 'is-alumni'}">
-                                <span class="penghuni-card-status-dot"></span>
-                                <span>${escapeHtml(p.status)}</span>
-                            </span>
-                        </div>
 
-                        <div class="penghuni-card-profile">
-                            <div class="penghuni-card-avatar-shell">
-                                <svg class="penghuni-card-sparks" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
-                                    <line x1="15" y1="3" x2="17" y2="8"/>
-                                    <line x1="7" y1="7" x2="11" y2="11"/>
-                                    <line x1="3" y1="15" x2="8" y2="16"/>
-                                </svg>
-                                <div class="penghuni-card-avatar ${avatarTone}" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat Detail ${escapeHtml(p.nama)}">${avatarInner}</div>
-                            </div>
-                            <div class="penghuni-card-identity">
-                                <h4 class="penghuni-card-name" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat profil, KTP &amp; riwayat tagihan">${escapeHtml(p.nama)}</h4>
-                                <div class="penghuni-card-username">@${escapeHtml(p.username || 'non-akun')}</div>
-                                <div class="penghuni-card-role">${profesiKota}</div>
-                            </div>
-                        </div>
-
+                    <div class="penghuni-card-sheet">
                         <div class="penghuni-card-info-grid">
                             <div class="penghuni-card-info-col">
                                 <span class="penghuni-card-info-label">
@@ -1154,8 +1163,11 @@ async function loadPenghuniAdmin() {
                                 <span>Lihat Detail</span>
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                             </button>
-                            <div class="penghuni-card-actions">
-                                ${buildPenghuniActionButtons(p, isAktif, { includeDetailEye: false, waNum })}
+                            <div class="penghuni-card-footer-right">
+                                <span class="penghuni-card-footer-sep" aria-hidden="true"></span>
+                                <div class="penghuni-card-actions">
+                                    ${buildPenghuniActionButtons(p, isAktif, { includeDetailEye: false, waNum })}
+                                </div>
                             </div>
                         </div>
                     </div>
