@@ -1237,6 +1237,13 @@ a:hover {
     color: var(--text-muted);
 }
 
+.room-price .room-price-val {
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    font-variant-numeric: tabular-nums;
+}
+
 .room-actions {
     display: flex;
     align-items: center;
@@ -2337,4 +2344,198 @@ textarea.form-control {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+/* ==========================================================
+   Landing Page Entrance & Scroll-Reveal Animations
+   ========================================================== */
+@keyframes navRevealDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-16px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes heroFadeUpCalm {
+    0% {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes heroBadgePop {
+    0% {
+        opacity: 0;
+        transform: translateY(16px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes cardStackInBack {
+    0% {
+        opacity: 0;
+        transform: translateY(38px) scale(0.9) rotate(-17deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(-10deg);
+    }
+}
+
+@keyframes cardStackInMiddle {
+    0% {
+        opacity: 0;
+        transform: translateY(42px) scale(0.9) rotate(-8deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(-2.5deg);
+    }
+}
+
+@keyframes cardStackInFront {
+    0% {
+        opacity: 0;
+        transform: translateY(46px) scale(0.9) rotate(14deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(7.5deg);
+    }
+}
+
+@keyframes heroOrnamentFade {
+    0% {
+        opacity: 0;
+        transform: scale(0.75);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#main-navbar {
+    animation: navRevealDown 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.05s backwards;
+}
+
+.hero-badge-yellow {
+    animation: heroBadgePop 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.14s backwards;
+}
+
+.hero-title-main {
+    animation: heroFadeUpCalm 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.26s backwards;
+}
+
+.hero-desc-sub {
+    animation: heroFadeUpCalm 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.38s backwards;
+}
+
+.hero-chips-row .hero-chip:nth-child(1) {
+    animation: heroFadeUpCalm 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.50s backwards;
+}
+
+.hero-chips-row .hero-chip:nth-child(2) {
+    animation: heroFadeUpCalm 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.62s backwards;
+}
+
+.hero-chips-row .hero-chip:nth-child(3) {
+    animation: heroFadeUpCalm 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.74s backwards;
+}
+
+.room-card-back {
+    animation: cardStackInBack 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.28s backwards;
+}
+
+.room-card-middle {
+    animation: cardStackInMiddle 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.44s backwards;
+}
+
+.room-card-front {
+    animation: cardStackInFront 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.60s backwards;
+}
+
+.showcase-burst-yellow {
+    animation: heroOrnamentFade 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.78s backwards;
+}
+
+.showcase-dots-matrix {
+    animation: heroOrnamentFade 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.88s backwards;
+}
+
+.hero-search-wrapper {
+    animation: heroFadeUpCalm 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.70s backwards;
+}
+
+.floating-wa-btn {
+    animation: heroBadgePop 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.95s backwards;
+}
+
+/* Scroll-Triggered Reveal (below the fold) */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+        opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-on-scroll.reveal-done {
+    will-change: auto;
+}
+
+.room-card.reveal-on-scroll {
+    transition:
+        opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.room-card.reveal-on-scroll.reveal-done {
+    transition:
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #main-navbar,
+    .hero-badge-yellow,
+    .hero-title-main,
+    .hero-desc-sub,
+    .hero-chips-row .hero-chip,
+    .room-card-back,
+    .room-card-middle,
+    .room-card-front,
+    .showcase-burst-yellow,
+    .showcase-dots-matrix,
+    .hero-search-wrapper,
+    .floating-wa-btn {
+        animation: none !important;
+    }
+
+    .reveal-on-scroll {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+}
+
 

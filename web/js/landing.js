@@ -10,10 +10,123 @@ let currentFilter = 'Semua';
 let searchQuery = '';
 let selectedFacility = 'Semua';
 let selectedRoomForBooking = null;
+let scrollRevealObserver = null;
+let lastRoomsSignature = '';
+
+function prefersReducedMotion() {
+    return typeof window !== 'undefined' &&
+        window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/**
+ * Mengambil delay CSS variable (--reveal-delay) dalam milidetik
+ */
+function getRevealDelayMs(el) {
+    const raw = el.style.getPropertyValue('--reveal-delay') || '0';
+    const parsed = parseFloat(raw);
+    return Number.isFinite(parsed) ? parsed : 0;
+}
+
+/**
+ * Animasi count-up halus untuk angka harga kamar (ease-out cubic)
+ */
+function animatePriceCountUp(el, targetValue, duration = 850, delayMs = 0) {
+    if (!el) return;
+    const target = Number(targetValue) || 0;
+
+    if (prefersReducedMotion() || target <= 0) {
+        el.textContent = formatRupiah(target);
+        return;
+    }
+
+    const startAnimation = () => {
+        const startTime = performance.now();
+        const step = (now) => {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const currentVal = Math.round(target * eased);
+            el.textContent = formatRupiah(currentVal);
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                el.textContent = formatRupiah(target);
+            }
+        };
+        requestAnimationFrame(step);
+    };
+
+    if (delayMs > 0) {
+        setTimeout(startAnimation, delayMs);
+    } else {
+        startAnimation();
+    }
+}
+
+/**
+ * Menjalankan reveal animasi sekali untuk elemen target
+ */
+function triggerRevealElement(el) {
+    if (!el || el.classList.contains('is-visible')) return;
+
+    const delayMs = getRevealDelayMs(el);
+    el.classList.add('is-visible');
+
+    const priceEl = el.querySelector('.room-price-val[data-price]');
+    if (priceEl) {
+        const priceTarget = Number(priceEl.getAttribute('data-price')) || 0;
+        animatePriceCountUp(priceEl, priceTarget, 850, Math.min(delayMs, 260));
+    }
+
+    setTimeout(() => {
+        el.classList.add('reveal-done');
+    }, delayMs + 850);
+}
+
+/**
+ * Mendaftarkan elemen .reveal-on-scroll ke IntersectionObserver
+ */
+function observeRevealElements(root = document) {
+    const targets = root.querySelectorAll('.reveal-on-scroll:not(.is-visible)');
+    if (!targets.length) return;
+
+    if (prefersReducedMotion() || !scrollRevealObserver) {
+        targets.forEach(el => triggerRevealElement(el));
+        return;
+    }
+
+    targets.forEach(el => scrollRevealObserver.observe(el));
+}
+
+/**
+ * Inisialisasi scroll-triggered animation (sekali jalan saat masuk layar)
+ */
+function setupScrollReveal() {
+    if (!('IntersectionObserver' in window) || prefersReducedMotion()) {
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => triggerRevealElement(el));
+        return;
+    }
+
+    scrollRevealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            triggerRevealElement(entry.target);
+            observer.unobserve(entry.target);
+        });
+    }, {
+        threshold: 0.12,
+        rootMargin: '0px 0px -36px 0px'
+    });
+
+    observeRevealElements(document);
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Setup navbar scroll transition
+    // Setup navbar scroll transition & scroll-triggered animations
     setupNavbarScroll();
+    setupScrollReveal();
 
     // Cek status sesi yang tersimpan
     checkExistingSession();
@@ -178,9 +291,14 @@ async function loadRoomCatalog() {
         // Ambil daftar seluruh kamar
         const resKamar = await eel.get_kamar()();
         if (resKamar.status && resKamar.data) {
-            allRooms = resKamar.data;
-            renderRoomCards();
+            const nextSignature = JSON.stringify(resKamar.data);
+            if (nextSignature !== lastRoomsSignature) {
+                lastRoomsSignature = nextSignature;
+                allRooms = resKamar.data;
+                renderRoomCards();
+            }
         } else {
+            lastRoomsSignature = '';
             renderEmptyCatalog('Belum ada data kamar terdaftar di sistem.');
         }
     } catch (err) {
@@ -228,7 +346,9 @@ function renderRoomCards() {
         return;
     }
 
-    container.innerHTML = filtered.map(room => {
+    const initialPriceZero = !prefersReducedMotion();
+
+    container.innerHTML = filtered.map((room, idx) => {
         const isTersedia = room.status === 'Tersedia';
         const statusPillClass = isTersedia ? 'room-pill-available' : 'room-pill-unavailable';
         const statusLabel = isTersedia ? 'Tersedia' : 'Tidak Tersedia';
@@ -237,13 +357,16 @@ function renderRoomCards() {
             : '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 
         const fasCount = (room.fasilitas || '').split(',').map(f => f.trim()).filter(Boolean).length;
+        const staggerDelayMs = (idx % 3) * 120;
+        const rawPrice = Number(room.harga_sewa) || 0;
+        const initialPriceText = initialPriceZero ? formatRupiah(0) : formatRupiah(rawPrice);
 
         // Gambar kamar dinamis dari database (fallback otomatis ke foto tipe kamar)
         const roomPhotoUrl = getRoomPhotoUrl(room);
         const imgHtml = `<img src="${roomPhotoUrl}" alt="Kamar ${room.nomor_kamar}">`;
 
         return `
-            <div class="room-card${isTersedia ? '' : ' room-unavailable'}">
+            <div class="room-card reveal-on-scroll${isTersedia ? '' : ' room-unavailable'}" style="--reveal-delay: ${staggerDelayMs}ms;">
                 <div class="room-img-wrapper">
                     ${imgHtml}
                     <div class="room-status-badge">
@@ -274,7 +397,7 @@ function renderRoomCards() {
                     <div class="room-footer">
                         <div class="room-price-block">
                             <span class="room-price-label">Harga Sewa</span>
-                            <div class="room-price">${formatRupiah(room.harga_sewa)} <span>/bln</span></div>
+                            <div class="room-price"><span class="room-price-val" data-price="${rawPrice}">${initialPriceText}</span> <span>/bln</span></div>
                         </div>
 
                         <div class="room-actions">
@@ -294,18 +417,21 @@ function renderRoomCards() {
             </div>
         `;
     }).join('');
+
+    requestAnimationFrame(() => observeRevealElements(container));
 }
 
 function renderEmptyCatalog(message) {
     const container = document.getElementById('room-grid-container');
     if (!container) return;
     container.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align:center; padding: 60px 20px; background:var(--bg-surface); border:1px dashed var(--border-color); border-radius:var(--radius-lg);">
+        <div class="reveal-on-scroll" style="grid-column: 1 / -1; text-align:center; padding: 60px 20px; background:var(--bg-surface); border:1px dashed var(--border-color); border-radius:var(--radius-lg);">
             <svg class="icon-xl" style="color:var(--text-muted); margin-bottom:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             <h4 style="font-size:1.1rem; color:var(--text-main); margin-bottom:6px;">Tidak Ada Kamar</h4>
             <p style="color:var(--text-muted); font-size:0.9rem;">${message}</p>
         </div>
     `;
+    requestAnimationFrame(() => observeRevealElements(container));
 }
 
 /**
