@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS pengaturan_kos (
     no_wa VARCHAR(25) DEFAULT '081234567890',
     denda_per_hari INT DEFAULT 10000,
     foto_banner LONGTEXT,
+    nama_bank VARCHAR(100) DEFAULT 'Bank BCA',
+    no_rekening VARCHAR(50) DEFAULT '8720-1928-33',
+    atas_nama_rekening VARCHAR(100) DEFAULT 'Pengelola SmartKost Residence',
+    foto_qris LONGTEXT,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 

@@ -112,8 +112,34 @@ def get_pengaturan():
     return kamar_mod.get_pengaturan_kos()
 
 @eel.expose
-def update_pengaturan(nama_kos, tagline, deskripsi, alamat, no_wa, denda_per_hari=10000, foto_banner=None, admin_user="admin"):
-    return kamar_mod.update_pengaturan_kos(nama_kos, tagline, deskripsi, alamat, no_wa, denda_per_hari, foto_banner, admin_user)
+def update_pengaturan(
+    nama_kos,
+    tagline,
+    deskripsi,
+    alamat,
+    no_wa,
+    denda_per_hari=10000,
+    foto_banner=None,
+    admin_user="admin",
+    nama_bank=None,
+    no_rekening=None,
+    atas_nama_rekening=None,
+    foto_qris=None
+):
+    return kamar_mod.update_pengaturan_kos(
+        nama_kos,
+        tagline,
+        deskripsi,
+        alamat,
+        no_wa,
+        denda_per_hari,
+        foto_banner,
+        admin_user,
+        nama_bank,
+        no_rekening,
+        atas_nama_rekening,
+        foto_qris
+    )
 
 
 # ==========================================================

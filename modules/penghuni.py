@@ -91,9 +91,20 @@ def checkin_penghuni(kamar_id, nama, no_hp, pekerjaan="", asal_kota="", tanggal_
 
     tanggal_masuk = tanggal_masuk or str(datetime.date.today())
 
-    # 1. Buat User Account jika diminta
+    # 1. Buat / Hubungkan User Account jika diminta
     user_id = None
-    if buat_user:
+    # Cek apakah sudah ada akun penghuni dengan nama lengkap yang sama & belum punya kamar aktif
+    cek_existing_user = execute_query("""
+        SELECT u.id
+        FROM users u
+        LEFT JOIN penghuni p ON p.user_id = u.id AND p.status = 'Aktif'
+        WHERE u.role = 'penghuni' AND LOWER(u.nama_lengkap) = LOWER(%s) AND p.id IS NULL
+        ORDER BY u.id DESC
+        LIMIT 1
+    """, (nama,), fetchone=True)
+    if cek_existing_user["status"] and cek_existing_user["data"]:
+        user_id = cek_existing_user["data"]["id"]
+    elif buat_user:
         raw_user = (username or nama.split()[0].lower() + kamar_data["nomor_kamar"].replace("-", "").lower()).strip()
         raw_pass = (password or "user123").strip()
 

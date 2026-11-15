@@ -1,0 +1,938 @@
+/* ==========================================================
+   SmartKost Residence - Portal Penghuni Stylesheet
+   Extends css/admin.css with Resident-Specific Components
+   ========================================================== */
+
+/* Showcase Kamar Aktif Penghuni */
+.resident-overview-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.resident-room-showcase {
+    background: var(--sk-card);
+    border: 1px solid var(--sk-border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(17, 24, 39, 0.03);
+    display: flex;
+    flex-direction: column;
+}
+
+.resident-room-hero {
+    position: relative;
+    height: 215px;
+    background: #F1F5F9;
+    overflow: hidden;
+}
+
+.resident-room-hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.resident-room-showcase:hover .resident-room-hero img {
+    transform: scale(1.03);
+}
+
+.resident-room-badges {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.resident-room-badge-dark {
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(17, 24, 39, 0.78);
+    backdrop-filter: blur(6px);
+    color: #FFFFFF;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.resident-room-badge-active {
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(220, 252, 231, 0.96);
+    color: #15803D;
+    font-size: 0.74rem;
+    font-weight: 700;
+}
+
+.resident-room-body {
+    padding: 20px 22px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+}
+
+.resident-room-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.resident-room-title {
+    font-size: 1.28rem;
+    font-weight: 800;
+    color: var(--sk-text);
+    letter-spacing: -0.02em;
+}
+
+.resident-room-sub {
+    font-size: 0.82rem;
+    color: var(--sk-text-muted);
+    margin-top: 2px;
+}
+
+.resident-room-price-box {
+    text-align: right;
+}
+
+.resident-room-price {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #D97706;
+}
+
+.resident-room-price span {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--sk-text-muted);
+}
+
+.resident-room-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--sk-bg);
+    border: 1px solid var(--sk-border);
+}
+
+.resident-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.resident-meta-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--sk-text-muted);
+}
+
+.resident-meta-value {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--sk-text);
+}
+
+.resident-facility-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.resident-facility-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: var(--sk-yellow-soft);
+    color: var(--sk-brown-dark);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.resident-facility-chip svg {
+    width: 13px;
+    height: 13px;
+    color: #D97706;
+}
+
+/* Side Stack Cards on Overview */
+.resident-side-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.resident-mini-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.resident-mini-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--sk-bg);
+    border: 1px solid var(--sk-border);
+    transition: border-color 0.2s ease, transform 0.15s ease;
+}
+
+.resident-mini-item:hover {
+    border-color: #FCD34D;
+}
+
+.resident-mini-item-left {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.resident-mini-title {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--sk-text);
+}
+
+.resident-mini-sub {
+    font-size: 0.76rem;
+    color: var(--sk-text-muted);
+}
+
+/* ==========================================================
+   INFO PEMBAYARAN & QRIS BANNER (1:1 Reference Layout)
+   ========================================================== */
+.payment-methods-banner {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 20px;
+    margin-bottom: 22px;
+    align-items: stretch;
+}
+
+/* Left Card: Transfer Bank Showcase */
+.payment-bank-showcase {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(125deg, #FFFDF7 0%, #FFF7DC 58%, #FDEEC0 100%);
+    border: 1px solid #FDE68A;
+    border-radius: 22px;
+    padding: 24px 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    box-shadow: 0 4px 20px rgba(217, 119, 6, 0.06);
+}
+
+[data-theme="dark"] .payment-bank-showcase {
+    background: linear-gradient(125deg, #231E12 0%, #1B170E 100%);
+    border-color: rgba(255, 201, 40, 0.28);
+}
+
+.payment-bank-bg-decor {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 280px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+[data-theme="dark"] .payment-bank-bg-decor {
+    opacity: 0.16;
+}
+
+.payment-bank-left {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+}
+
+.payment-bank-logo-box {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    background: #FFFFFF;
+    color: #F59E0B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 24px rgba(217, 119, 6, 0.12);
+    border: 1px solid rgba(253, 230, 138, 0.65);
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .payment-bank-logo-box {
+    background: #0F172A;
+    border-color: rgba(255, 201, 40, 0.25);
+}
+
+.payment-bank-logo-box svg {
+    width: 34px;
+    height: 34px;
+}
+
+.payment-bank-details {
+    min-width: 0;
+}
+
+.payment-bank-title {
+    font-size: 0.94rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 3px;
+}
+
+[data-theme="dark"] .payment-bank-title {
+    color: #CBD5E1;
+}
+
+.payment-bank-number-lg {
+    font-size: 1.58rem;
+    font-weight: 800;
+    color: var(--sk-text);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.payment-bank-holder-sm {
+    font-size: 0.82rem;
+    color: var(--sk-text-muted);
+}
+
+.payment-copy-pill {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 14px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    color: #1E293B;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    transition: all 0.18s ease;
+    flex-shrink: 0;
+}
+
+.payment-copy-pill:hover {
+    border-color: #FFC928;
+    background: #FFFAED;
+    transform: translateY(-1px);
+}
+
+.payment-copy-pill .icon {
+    width: 15px;
+    height: 15px;
+    color: #64748B;
+}
+
+[data-theme="dark"] .payment-copy-pill {
+    background: #1E293B;
+    border-color: #334155;
+    color: #F8FAFC;
+}
+
+/* Right Card: Pembayaran QRIS Showcase */
+.payment-qris-showcase {
+    background: var(--sk-card);
+    border: 1px solid var(--sk-border);
+    border-radius: 22px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+    box-shadow: 0 4px 18px rgba(17, 24, 39, 0.025);
+}
+
+.payment-qris-header h3 {
+    font-size: 1.04rem;
+    font-weight: 700;
+    color: var(--sk-text);
+    line-height: 1.25;
+}
+
+.payment-qris-header p {
+    font-size: 0.8rem;
+    color: var(--sk-text-muted);
+    margin-top: 3px;
+}
+
+.payment-qris-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.qris-visual-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.qris-thumb-box {
+    width: 74px;
+    height: 74px;
+    border-radius: 14px;
+    border: 1px solid var(--sk-border);
+    background: #FFFFFF;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04);
+    transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.qris-thumb-box:hover {
+    transform: scale(1.03);
+    border-color: #FFC928;
+}
+
+.qris-thumb-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.qris-phone-hint {
+    color: #CBD5E1;
+    width: 30px;
+    height: 44px;
+    flex-shrink: 0;
+}
+
+.qris-cta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #FFE066 0%, #FFC928 100%);
+    border: 1px solid #F5B800;
+    color: #111827;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(255, 201, 40, 0.3);
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+
+.qris-cta-pill:hover {
+    background: #F5B800;
+    transform: translateY(-1px);
+}
+
+.qris-cta-pill .icon {
+    width: 15px;
+    height: 15px;
+}
+
+/* Filter Pill Tabs & Refresh Bar */
+.tagihan-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.tagihan-filter-pills {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-pill-btn {
+    padding: 9px 18px;
+    border-radius: 9999px;
+    background: var(--sk-card);
+    border: 1px solid var(--sk-border);
+    color: var(--sk-sidebar-text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.filter-pill-btn:hover {
+    border-color: #FCD34D;
+    color: var(--sk-text);
+}
+
+.filter-pill-btn.active {
+    background: linear-gradient(135deg, #FFE066 0%, #FFC928 100%);
+    border-color: #F5B800;
+    color: #111827;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255, 201, 40, 0.28);
+}
+
+.tagihan-refresh-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 9999px;
+    background: var(--sk-card);
+    border: 1px solid var(--sk-border);
+    color: var(--sk-text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+    transition: all 0.2s ease;
+}
+
+.tagihan-refresh-pill:hover {
+    border-color: #FFC928;
+    background: var(--sk-cream);
+}
+
+.tagihan-refresh-pill .refresh-icon {
+    width: 15px;
+    height: 15px;
+    color: #475569;
+    flex-shrink: 0;
+    transition: transform 0.35s ease;
+}
+
+[data-theme="dark"] .tagihan-refresh-pill .refresh-icon {
+    color: #CBD5E1;
+}
+
+.tagihan-refresh-pill:hover .refresh-icon {
+    transform: rotate(90deg);
+    color: #D97706;
+}
+
+/* ==========================================================
+   MODAL BINGKAI QRIS RESMI (MODERN MINIMALIS)
+   ========================================================== */
+.qris-frame-card {
+    background: linear-gradient(180deg, #FFFAED 0%, #FFFFFF 36%, #FFFFFF 100%);
+    border: 1px solid #FDE68A;
+    border-radius: 22px;
+    padding: 20px 22px 22px;
+    box-shadow: 0 12px 32px rgba(17, 24, 39, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+[data-theme="dark"] .qris-frame-card {
+    background: linear-gradient(180deg, rgba(255, 201, 40, 0.12) 0%, #1E293B 42%, #1E293B 100%);
+    border-color: rgba(255, 201, 40, 0.28);
+}
+
+.qris-frame-top {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.qris-frame-brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.qris-frame-brand-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #FFE066 0%, #FFC928 100%);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(255, 201, 40, 0.3);
+}
+
+.qris-frame-brand-name {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--sk-text);
+    letter-spacing: -0.01em;
+}
+
+.qris-frame-badge {
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background: #FFF4D6;
+    border: 1px solid #FDE68A;
+    color: #92400E;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+}
+
+.qris-frame-stage {
+    position: relative;
+    padding: 12px;
+    background: #FFFFFF;
+    border-radius: 20px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
+    border: 1px solid #E8ECF2;
+}
+
+.qris-corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-color: #FFC928;
+    border-style: solid;
+    pointer-events: none;
+}
+
+.qris-corner.tl { top: 6px; left: 6px; border-width: 3px 0 0 3px; border-top-left-radius: 10px; }
+.qris-corner.tr { top: 6px; right: 6px; border-width: 3px 3px 0 0; border-top-right-radius: 10px; }
+.qris-corner.bl { bottom: 6px; left: 6px; border-width: 0 0 3px 3px; border-bottom-left-radius: 10px; }
+.qris-corner.br { bottom: 6px; right: 6px; border-width: 0 3px 3px 0; border-bottom-right-radius: 10px; }
+
+.qris-frame-inner {
+    width: 248px;
+    height: 248px;
+    border-radius: 14px;
+    background: #FFFFFF;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.qris-frame-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.qris-frame-recipient {
+    width: 100%;
+    text-align: center;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--sk-bg);
+    border: 1px solid var(--sk-border);
+}
+
+.qris-recipient-caption {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--sk-text-muted);
+    margin-bottom: 3px;
+}
+
+.qris-recipient-name {
+    font-size: 0.96rem;
+    font-weight: 800;
+    color: var(--sk-text);
+    margin-bottom: 4px;
+}
+
+.qris-recipient-hint {
+    font-size: 0.74rem;
+    color: var(--sk-text-muted);
+    line-height: 1.4;
+}
+
+/* Modern Invoice Table Styling */
+.invoice-table-panel {
+    padding: 8px 22px 16px;
+}
+
+.invoice-table thead th {
+    background: transparent;
+    border-bottom: 1px solid var(--sk-border);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--sk-text-muted);
+    padding: 16px 12px;
+}
+
+.invoice-table tbody td {
+    padding: 16px 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--sk-border);
+}
+
+.invoice-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.inv-cell-code {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.inv-doc-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #FFF4D6;
+    color: #F59E0B;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .inv-doc-icon {
+    background: rgba(255, 201, 40, 0.16);
+    color: #FBBF24;
+}
+
+.inv-doc-icon svg {
+    width: 17px;
+    height: 17px;
+}
+
+.inv-code-text {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--sk-text);
+    white-space: nowrap;
+}
+
+.inv-status-dot-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.inv-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.inv-status-lunas { color: #16A34A; }
+.inv-status-lunas .inv-dot { background: #16A34A; }
+
+.inv-status-waiting { color: #D97706; }
+.inv-status-waiting .inv-dot { background: #D97706; }
+
+.inv-status-unpaid { color: #DC2626; }
+.inv-status-unpaid .inv-dot { background: #DC2626; }
+
+.inv-method-sub {
+    font-size: 0.74rem;
+    color: var(--sk-text-muted);
+    margin-top: 2px;
+}
+
+.inv-btn-print {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 10px;
+    background: var(--sk-card);
+    border: 1px solid var(--sk-border);
+    color: var(--sk-text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+    transition: all 0.16s ease;
+}
+
+.inv-btn-print:hover {
+    border-color: #FFC928;
+    background: var(--sk-cream);
+}
+
+.inv-btn-print .icon {
+    width: 14px;
+    height: 14px;
+    color: var(--sk-text-muted);
+}
+
+.inv-btn-pay {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #FFE066 0%, #FFC928 100%);
+    border: 1px solid #F5B800;
+    color: #111827;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 201, 40, 0.25);
+    transition: all 0.16s ease;
+}
+
+.inv-btn-pay:hover {
+    background: #F5B800;
+    transform: translateY(-1px);
+}
+
+/* Modal Instruksi Pembayaran Dinamis (Transfer Bank vs QRIS) */
+.payment-instruction-box {
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: var(--sk-bg);
+    border: 1px solid var(--sk-border);
+    margin-bottom: 16px;
+}
+
+.payment-instruction-box.highlight-yellow {
+    background: #FFFAED;
+    border-color: #FDE68A;
+}
+
+[data-theme="dark"] .payment-instruction-box.highlight-yellow {
+    background: rgba(255, 201, 40, 0.08);
+    border-color: rgba(255, 201, 40, 0.25);
+}
+
+.qris-modal-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 12px;
+    background: #FFFFFF;
+    border-radius: 14px;
+    border: 1px solid var(--sk-border);
+}
+
+.qris-modal-display img {
+    max-width: 220px;
+    max-height: 220px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: zoom-in;
+}
+
+/* Profil & Avatar Editor */
+.profile-avatar-editor {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--sk-bg);
+    border: 1px solid var(--sk-border);
+    margin-bottom: 18px;
+}
+
+.profile-avatar-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFE066 0%, #FFC928 100%);
+    color: #111827;
+    font-size: 1.65rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 3px solid #FFFFFF;
+    box-shadow: 0 6px 16px rgba(255, 201, 40, 0.3);
+}
+
+.profile-avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Unassigned / Calon Penghuni State */
+.unassigned-hero-card {
+    background: linear-gradient(135deg, #FFFDF7 0%, #FFF3C4 100%);
+    border: 1px solid #FDE68A;
+    border-radius: 20px;
+    padding: 24px 28px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+[data-theme="dark"] .unassigned-hero-card {
+    background: linear-gradient(135deg, #1E293B 0%, rgba(255, 201, 40, 0.14) 100%);
+    border-color: rgba(255, 201, 40, 0.3);
+}
+
+@media (max-width: 1080px) {
+    .resident-overview-grid,
+    .payment-methods-banner {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .resident-room-meta-grid {
+        grid-template-columns: 1fr;
+    }
+    .unassigned-hero-card,
+    .payment-bank-showcase {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+

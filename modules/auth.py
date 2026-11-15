@@ -56,11 +56,25 @@ def login_user(username, password):
             SELECT p.id AS penghuni_id, p.kamar_id, k.nomor_kamar, p.status AS status_penghuni
             FROM penghuni p
             LEFT JOIN kamar k ON p.kamar_id = k.id
-            WHERE p.user_id = %s
+            WHERE p.user_id = %s AND p.status = 'Aktif'
             ORDER BY p.id DESC
             LIMIT 1
         """
         res_p = execute_query(q_penghuni, (user["id"],), fetchone=True)
+        if not (res_p["status"] and res_p["data"]):
+            # Fallback: kaitkan otomatis jika ada penghuni aktif dengan nama sama yang belum terhubung user_id
+            res_match = execute_query("""
+                SELECT p.id AS penghuni_id, p.kamar_id, k.nomor_kamar, p.status AS status_penghuni
+                FROM penghuni p
+                LEFT JOIN kamar k ON p.kamar_id = k.id
+                WHERE p.user_id IS NULL AND p.status = 'Aktif' AND LOWER(p.nama) = LOWER(%s)
+                ORDER BY p.id DESC
+                LIMIT 1
+            """, (user["nama_lengkap"],), fetchone=True)
+            if res_match["status"] and res_match["data"]:
+                execute_query("UPDATE penghuni SET user_id = %s WHERE id = %s", (user["id"], res_match["data"]["penghuni_id"]), commit=True)
+                res_p = res_match
+
         if res_p["status"] and res_p["data"]:
             user_payload["penghuni_id"] = res_p["data"]["penghuni_id"]
             user_payload["kamar_id"] = res_p["data"]["kamar_id"]
@@ -131,11 +145,28 @@ def ganti_password(user_id, password_lama, password_baru):
 
 
 def get_profile(user_id):
-    """Mengambil data profil lengkap seorang user."""
+    """Mengambil data profil lengkap seorang user beserta detail kamar aktifnya."""
+    # Kaitkan otomatis jika user penghuni punya data penghuni aktif bernama sama yang belum memiliki user_id
+    u_row = execute_query("SELECT id, nama_lengkap, role FROM users WHERE id = %s", (user_id,), fetchone=True)
+    if u_row["status"] and u_row["data"] and u_row["data"]["role"] == "penghuni":
+        has_active = execute_query("SELECT id FROM penghuni WHERE user_id = %s AND status = 'Aktif' LIMIT 1", (user_id,), fetchone=True)
+        if not (has_active["status"] and has_active["data"]):
+            unlinked = execute_query(
+                "SELECT id FROM penghuni WHERE user_id IS NULL AND status = 'Aktif' AND LOWER(nama) = LOWER(%s) ORDER BY id DESC LIMIT 1",
+                (u_row["data"]["nama_lengkap"],),
+                fetchone=True
+            )
+            if unlinked["status"] and unlinked["data"]:
+                execute_query("UPDATE penghuni SET user_id = %s WHERE id = %s", (user_id, unlinked["data"]["id"]), commit=True)
+
     query = """
         SELECT u.id, u.username, u.nama_lengkap, u.role, u.foto_profil, u.created_at,
-               p.id AS penghuni_id, p.kamar_id, k.nomor_kamar, k.tipe AS tipe_kamar,
-               p.no_hp, p.pekerjaan, p.asal_kota, p.tanggal_masuk, p.status AS status_penghuni
+               p.id AS penghuni_id, p.kamar_id,
+               k.nomor_kamar, k.lantai, k.tipe AS tipe_kamar, k.harga_sewa,
+               k.luas_kamar, k.fasilitas, k.deskripsi AS deskripsi_kamar, k.foto_kamar, k.status AS status_kamar,
+               p.no_hp, p.pekerjaan, p.asal_kota, p.tanggal_masuk,
+               DATE_FORMAT(p.tanggal_masuk, '%d/%m/%Y') AS tgl_masuk_format,
+               p.foto_ktp, p.status AS status_penghuni
         FROM users u
         LEFT JOIN penghuni p ON u.id = p.user_id AND p.status = 'Aktif'
         LEFT JOIN kamar k ON p.kamar_id = k.id

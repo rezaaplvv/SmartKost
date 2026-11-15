@@ -51,7 +51,7 @@ const TAB_META = {
     },
     laporan: {
         title: 'Ekspor Laporan & Log Aktivitas',
-        subtitle: 'Unduh rekap keuangan Excel/CSV via Pandas dan pantau riwayat sistem'
+        subtitle: 'Kelola dan unduh laporan serta lihat aktivitas sistem dengan mudah.'
     },
     pengaturan: {
         title: 'Pengaturan Profil Kos',
@@ -1187,15 +1187,19 @@ async function loadLogsAdmin() {
         return;
     }
 
-    tbody.innerHTML = res.data.map(l => `
-        <tr>
-            <td style="white-space:nowrap;font-size:0.8rem;color:var(--text-muted);">${escapeHtml(l.waktu || l.created_at || '-')}</td>
-            <td><strong>${escapeHtml(l.username)}</strong></td>
-            <td><span class="badge badge-neutral">${escapeHtml(l.role)}</span></td>
-            <td><strong>${escapeHtml(l.aksi)}</strong></td>
-            <td style="font-size:0.82rem;color:var(--text-muted);">${escapeHtml(l.detail || '-')}</td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = res.data.map(l => {
+        const isRoleAdmin = String(l.role || '').toLowerCase() === 'admin';
+        const roleCls = isRoleAdmin ? 'log-role-pill role-admin' : 'log-role-pill';
+        return `
+            <tr>
+                <td style="white-space:nowrap;font-size:0.82rem;color:var(--sk-text-muted);">${escapeHtml(l.waktu || l.created_at || '-')}</td>
+                <td style="font-weight:600;color:var(--sk-text);">${escapeHtml(l.username)}</td>
+                <td><span class="${roleCls}">${escapeHtml(l.role)}</span></td>
+                <td style="font-weight:600;color:var(--sk-text);">${escapeHtml(l.aksi)}</td>
+                <td style="font-size:0.84rem;color:var(--sk-text-muted);">${escapeHtml(l.detail || '-')}</td>
+            </tr>
+        `;
+    }).join('');
 }
 
 /* ==========================================================
@@ -1206,20 +1210,65 @@ async function loadKosSettings() {
         const res = await eel.get_pengaturan()();
         if (res.status && res.data) {
             const d = res.data;
-            document.querySelectorAll('.app-nama-kos').forEach(el => el.textContent = d.nama_kos || 'Kost Cemara');
+            document.querySelectorAll('.app-nama-kos').forEach(el => el.textContent = d.nama_kos || 'SmartKost Residence');
             const fNama = document.getElementById('set-nama-kos');
             if (fNama) {
-                fNama.value = d.nama_kos || 'Kost Cemara';
+                fNama.value = d.nama_kos || 'SmartKost Residence';
                 document.getElementById('set-tagline').value = d.tagline || '';
                 document.getElementById('set-no-wa').value = d.no_wa || '';
                 document.getElementById('set-denda').value = d.denda_per_hari || 10000;
                 document.getElementById('set-alamat').value = d.alamat || '';
                 document.getElementById('set-deskripsi').value = d.deskripsi || '';
+
+                const fBank = document.getElementById('set-nama-bank');
+                const fRek = document.getElementById('set-no-rekening');
+                const fAn = document.getElementById('set-atas-nama');
+                if (fBank) fBank.value = d.nama_bank || 'Bank BCA';
+                if (fRek) fRek.value = d.no_rekening || '8720-1928-33';
+                if (fAn) fAn.value = d.atas_nama_rekening || 'Pengelola SmartKost Residence';
+
+                const qrisPreview = document.getElementById('set-qris-preview');
+                const qrisEmpty = document.getElementById('set-qris-empty');
+                const btnClearQris = document.getElementById('btn-clear-qris');
+                const clearFlag = document.getElementById('set-qris-clear-flag');
+                if (clearFlag) clearFlag.value = '0';
+
+                if (d.foto_qris) {
+                    if (qrisPreview) {
+                        qrisPreview.src = d.foto_qris;
+                        qrisPreview.style.display = 'block';
+                    }
+                    if (qrisEmpty) qrisEmpty.style.display = 'none';
+                    if (btnClearQris) btnClearQris.style.display = 'inline-flex';
+                } else {
+                    if (qrisPreview) {
+                        qrisPreview.src = '';
+                        qrisPreview.style.display = 'none';
+                    }
+                    if (qrisEmpty) qrisEmpty.style.display = 'block';
+                    if (btnClearQris) btnClearQris.style.display = 'none';
+                }
             }
         }
     } catch (err) {
         console.warn('Gagal memuat pengaturan kos:', err);
     }
+}
+
+function clearQrisSetting() {
+    const qrisFile = document.getElementById('set-qris-file');
+    const qrisPreview = document.getElementById('set-qris-preview');
+    const qrisEmpty = document.getElementById('set-qris-empty');
+    const btnClearQris = document.getElementById('btn-clear-qris');
+    const clearFlag = document.getElementById('set-qris-clear-flag');
+    if (qrisFile) qrisFile.value = '';
+    if (qrisPreview) {
+        qrisPreview.src = '';
+        qrisPreview.style.display = 'none';
+    }
+    if (qrisEmpty) qrisEmpty.style.display = 'block';
+    if (btnClearQris) btnClearQris.style.display = 'none';
+    if (clearFlag) clearFlag.value = '1';
 }
 
 function setupAdminForms() {
@@ -1392,6 +1441,24 @@ function setupAdminForms() {
         }
     });
 
+    // Live preview upload QRIS kos
+    document.getElementById('set-qris-file')?.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const b64 = await fileToBase64(file);
+        const qrisPreview = document.getElementById('set-qris-preview');
+        const qrisEmpty = document.getElementById('set-qris-empty');
+        const btnClearQris = document.getElementById('btn-clear-qris');
+        const clearFlag = document.getElementById('set-qris-clear-flag');
+        if (qrisPreview && b64) {
+            qrisPreview.src = b64;
+            qrisPreview.style.display = 'block';
+        }
+        if (qrisEmpty) qrisEmpty.style.display = 'none';
+        if (btnClearQris) btnClearQris.style.display = 'inline-flex';
+        if (clearFlag) clearFlag.value = '0';
+    });
+
     // Form Pengaturan Kos
     document.getElementById('form-pengaturan-kos')?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -1401,10 +1468,42 @@ function setupAdminForms() {
         const denda = parseInt(document.getElementById('set-denda').value, 10) || 10000;
         const alamat = document.getElementById('set-alamat').value.trim();
         const deskripsi = document.getElementById('set-deskripsi').value.trim();
+        const namaBank = document.getElementById('set-nama-bank')?.value.trim() || 'Bank BCA';
+        const noRekening = document.getElementById('set-no-rekening')?.value.trim() || '8720-1928-33';
+        const atasNama = document.getElementById('set-atas-nama')?.value.trim() || 'Pengelola SmartKost Residence';
 
-        const res = await eel.update_pengaturan(nama, tagline, deskripsi, alamat, noWa, denda, null, adminUsername())();
+        const qrisFile = document.getElementById('set-qris-file')?.files[0];
+        const clearFlag = document.getElementById('set-qris-clear-flag')?.value === '1';
+        let qrisPayload = null;
+        if (qrisFile) {
+            qrisPayload = await fileToBase64(qrisFile);
+        } else if (clearFlag) {
+            qrisPayload = '__CLEAR__';
+        }
+
+        const res = await eel.update_pengaturan(
+            nama,
+            tagline,
+            deskripsi,
+            alamat,
+            noWa,
+            denda,
+            null,
+            adminUsername(),
+            namaBank,
+            noRekening,
+            atasNama,
+            qrisPayload
+        )();
         showToast(res.pesan, res.status ? 'success' : 'error');
-        if (res.status) await loadKosSettings();
+        if (res.status) {
+            const qrisFileInput = document.getElementById('set-qris-file');
+            if (qrisFileInput) qrisFileInput.value = '';
+            await loadKosSettings();
+            try {
+                localStorage.setItem('smartkost_settings_updated', String(Date.now()));
+            } catch (_) {}
+        }
     });
 
     // Form Ganti Password Admin

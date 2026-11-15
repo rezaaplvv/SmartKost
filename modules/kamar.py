@@ -205,40 +205,113 @@ def get_statistik_kamar():
     return res
 
 
+_PAYMENT_COLS_CHECKED = False
+
+
+def _ensure_pengaturan_payment_columns():
+    """Memastikan kolom rekening & QRIS tersedia pada tabel pengaturan_kos secara otomatis."""
+    global _PAYMENT_COLS_CHECKED
+    if _PAYMENT_COLS_CHECKED:
+        return
+    try:
+        cols_res = execute_query("SHOW COLUMNS FROM pengaturan_kos", fetchall=True)
+        if cols_res["status"] and cols_res["data"] is not None:
+            existing = {row.get("Field") for row in cols_res["data"]}
+            alter_defs = [
+                ("nama_bank", "VARCHAR(100) DEFAULT 'Bank BCA'"),
+                ("no_rekening", "VARCHAR(50) DEFAULT '8720-1928-33'"),
+                ("atas_nama_rekening", "VARCHAR(100) DEFAULT 'Pengelola SmartKost Residence'"),
+                ("foto_qris", "LONGTEXT")
+            ]
+            for col_name, col_type in alter_defs:
+                if col_name not in existing:
+                    execute_query(f"ALTER TABLE pengaturan_kos ADD COLUMN {col_name} {col_type}", commit=True)
+            _PAYMENT_COLS_CHECKED = True
+    except Exception:
+        pass
+
+
 def get_pengaturan_kos():
-    """Mengambil konfigurasi profil kos untuk Landing Page dan Kuitansi."""
+    """Mengambil konfigurasi profil kos, rekening bank, dan QRIS untuk Landing Page, Portal Penghuni, dan Kuitansi."""
+    _ensure_pengaturan_payment_columns()
     query = "SELECT * FROM pengaturan_kos ORDER BY id ASC LIMIT 1"
     res = execute_query(query, fetchone=True)
     if res["status"] and res["data"]:
-        if res["data"].get("updated_at"):
-            res["data"]["updated_at"] = str(res["data"]["updated_at"])
+        d = res["data"]
+        if d.get("updated_at"):
+            d["updated_at"] = str(d["updated_at"])
+        if not d.get("nama_bank"):
+            d["nama_bank"] = "Bank BCA"
+        if not d.get("no_rekening"):
+            d["no_rekening"] = "8720-1928-33"
+        if not d.get("atas_nama_rekening"):
+            d["atas_nama_rekening"] = "Pengelola SmartKost Residence"
     return res
 
 
-def update_pengaturan_kos(nama_kos, tagline, deskripsi, alamat, no_wa, denda_per_hari=10000, foto_banner=None, admin_user="admin"):
-    """Memperbarui informasi profil kos."""
+def update_pengaturan_kos(
+    nama_kos,
+    tagline,
+    deskripsi,
+    alamat,
+    no_wa,
+    denda_per_hari=10000,
+    foto_banner=None,
+    admin_user="admin",
+    nama_bank=None,
+    no_rekening=None,
+    atas_nama_rekening=None,
+    foto_qris=None
+):
+    """Memperbarui informasi profil kos beserta pengaturan pembayaran (Rekening & QRIS)."""
+    _ensure_pengaturan_payment_columns()
     nama_kos = str(nama_kos or "").strip()
     if not nama_kos:
         return {"status": False, "pesan": "Nama kos wajib diisi."}
 
-    if foto_banner:
-        query = """
-            UPDATE pengaturan_kos 
-            SET nama_kos = %s, tagline = %s, deskripsi = %s, alamat = %s, no_wa = %s, denda_per_hari = %s, foto_banner = %s
-            WHERE id = 1
-        """
-        params = (nama_kos, tagline, deskripsi, alamat, no_wa, int(denda_per_hari or 10000), foto_banner)
-    else:
-        query = """
-            UPDATE pengaturan_kos 
-            SET nama_kos = %s, tagline = %s, deskripsi = %s, alamat = %s, no_wa = %s, denda_per_hari = %s
-            WHERE id = 1
-        """
-        params = (nama_kos, tagline, deskripsi, alamat, no_wa, int(denda_per_hari or 10000))
+    set_clauses = [
+        "nama_kos = %s",
+        "tagline = %s",
+        "deskripsi = %s",
+        "alamat = %s",
+        "no_wa = %s",
+        "denda_per_hari = %s"
+    ]
+    params = [
+        nama_kos,
+        tagline,
+        deskripsi,
+        alamat,
+        no_wa,
+        int(denda_per_hari or 10000)
+    ]
 
-    res = execute_query(query, params, commit=True)
+    if foto_banner:
+        set_clauses.append("foto_banner = %s")
+        params.append(foto_banner)
+
+    if nama_bank is not None:
+        set_clauses.append("nama_bank = %s")
+        params.append(str(nama_bank).strip() or "Bank BCA")
+
+    if no_rekening is not None:
+        set_clauses.append("no_rekening = %s")
+        params.append(str(no_rekening).strip() or "8720-1928-33")
+
+    if atas_nama_rekening is not None:
+        set_clauses.append("atas_nama_rekening = %s")
+        params.append(str(atas_nama_rekening).strip() or "Pengelola SmartKost Residence")
+
+    if foto_qris == "__CLEAR__":
+        set_clauses.append("foto_qris = NULL")
+    elif foto_qris:
+        set_clauses.append("foto_qris = %s")
+        params.append(foto_qris)
+
+    query = f"UPDATE pengaturan_kos SET {', '.join(set_clauses)} WHERE id = 1"
+    res = execute_query(query, tuple(params), commit=True)
     if res["status"]:
-        catat_log(None, admin_user, "admin", "Update Profil Kos", f"Memperbarui profil kos: {nama_kos}")
-        return {"status": True, "pesan": "Pengaturan profil kos berhasil diperbarui."}
+        catat_log(None, admin_user, "admin", "Update Profil Kos", f"Memperbarui profil & pengaturan pembayaran kos: {nama_kos}")
+        return {"status": True, "pesan": "Pengaturan profil & pembayaran kos berhasil diperbarui."}
     return {"status": False, "pesan": res["pesan"]}
 

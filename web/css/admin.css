@@ -1665,34 +1665,392 @@ body.admin-body {
     color: var(--primary);
 }
 
-/* Export Cards */
+/* ==========================================================
+   EKSPOR LAPORAN & LOG AKTIVITAS (Modern SaaS 1:1 Reference)
+   ========================================================== */
+.laporan-hero-banner {
+    background: linear-gradient(100deg, #FFFAED 0%, #FFF4D6 62%, #FDE7A4 100%);
+    border: 1px solid #FDE68A;
+    border-radius: 16px;
+    padding: 18px 26px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="dark"] .laporan-hero-banner {
+    background: linear-gradient(100deg, #231E12 0%, #1E293B 100%);
+    border-color: rgba(255, 201, 40, 0.28);
+}
+
+.laporan-hero-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    z-index: 2;
+    min-width: 0;
+}
+
+.laporan-hero-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #FCE394;
+    color: #9A5B00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.14);
+}
+
+.laporan-hero-badge .icon {
+    width: 22px;
+    height: 22px;
+}
+
+.laporan-hero-text h2 {
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: var(--sk-text);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+}
+
+.laporan-hero-text p {
+    font-size: 0.84rem;
+    color: var(--sk-text-muted);
+    margin-top: 4px;
+}
+
+.laporan-hero-art {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: -10px 0;
+}
+
+.laporan-hero-img {
+    height: 118px;
+    width: auto;
+    max-width: 230px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 18px rgba(234, 179, 8, 0.28));
+    pointer-events: none;
+}
+
+/* Three Horizontal Export Cards */
 .export-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .export-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
+    background: var(--sk-card);
+    border: 1px solid var(--sk-border);
+    border-radius: 16px;
     padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 14px;
+    gap: 18px;
+    box-shadow: 0 2px 12px rgba(17, 24, 39, 0.025);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.export-card h4 {
-    font-size: 1rem;
-    font-weight: 800;
-    margin-bottom: 6px;
+.export-card:hover {
+    border-color: #FCD34D;
+    box-shadow: 0 8px 20px rgba(17, 24, 39, 0.045);
 }
 
-.export-card p {
+.export-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+}
+
+.export-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--sk-yellow-soft);
+    color: #EAB308;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.export-card-icon svg {
+    width: 21px;
+    height: 21px;
+}
+
+.export-card-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.export-card-meta h4 {
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--sk-text);
+    line-height: 1.3;
+    margin-bottom: 4px;
+}
+
+.export-card-meta p {
+    font-size: 0.78rem;
+    color: var(--sk-text-muted);
+    line-height: 1.45;
+}
+
+.export-card-arrow {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--sk-border);
+    background: var(--sk-card);
+    color: var(--sk-text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.export-card-arrow svg {
+    width: 14px;
+    height: 14px;
+}
+
+.export-card-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.export-year-select {
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid var(--sk-border);
+    background: var(--sk-card);
+    color: var(--sk-text);
     font-size: 0.84rem;
-    color: var(--text-muted);
+    font-weight: 600;
+    min-width: 82px;
+}
+
+.export-btn-yellow {
+    flex: 1;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 0 16px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #FFD95A 0%, #FFC928 100%);
+    border: 1px solid #F5B800;
+    color: #111827;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 201, 40, 0.25);
+    transition: all 0.16s ease;
+    white-space: nowrap;
+}
+
+.export-btn-yellow:hover {
+    background: #F5B800;
+    transform: translateY(-1px);
+}
+
+.export-btn-yellow .icon {
+    width: 15px;
+    height: 15px;
+}
+
+.export-btn-outline {
+    flex: 1;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border-radius: 10px;
+    background: var(--sk-card);
+    border: 1px solid var(--sk-border);
+    color: var(--sk-text);
+    font-family: inherit;
+    font-size: 0.81rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.16s ease;
+    white-space: nowrap;
+}
+
+.export-btn-outline:hover {
+    border-color: #FFC928;
+    background: var(--sk-cream);
+}
+
+/* Log Aktivitas Sistem Container */
+.logs-panel-card {
+    border-radius: 16px;
+    padding: 22px 24px 16px;
+    margin-bottom: 0;
+}
+
+.logs-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.logs-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logs-header-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: var(--sk-yellow-soft);
+    color: #D97706;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.logs-header-icon svg {
+    width: 19px;
+    height: 19px;
+}
+
+.logs-panel-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--sk-text);
+    line-height: 1.25;
+}
+
+.logs-panel-subtitle {
+    font-size: 0.78rem;
+    color: var(--sk-text-muted);
+    margin-top: 2px;
+}
+
+.logs-refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: var(--sk-card);
+    border: 1px solid var(--sk-border);
+    color: var(--sk-text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(17, 24, 39, 0.03);
+    transition: all 0.18s ease;
+}
+
+.logs-refresh-btn:hover {
+    border-color: #FFC928;
+    background: var(--sk-cream);
+}
+
+.logs-refresh-btn .icon {
+    width: 14px;
+    height: 14px;
+    color: var(--sk-text-muted);
+}
+
+.logs-table thead th {
+    background: var(--sk-bg);
+    border-top: 1px solid var(--sk-border);
+    border-bottom: 1px solid var(--sk-border);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--sk-text-muted);
+    padding: 12px 14px;
+}
+
+.logs-table tbody td {
+    padding: 14px;
+    font-size: 0.84rem;
+    border-bottom: 1px solid var(--sk-border);
+    vertical-align: middle;
+}
+
+.logs-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.log-role-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    background: var(--sk-bg);
+    color: var(--sk-sidebar-text);
+    border: 1px solid var(--sk-border);
+}
+
+.log-role-pill.role-admin {
+    background: #FFF4D6;
+    color: #92400E;
+    border-color: #FDE68A;
+}
+
+[data-theme="dark"] .log-role-pill.role-admin {
+    background: rgba(255, 201, 40, 0.18);
+    color: #FFD95A;
+    border-color: rgba(255, 201, 40, 0.35);
+}
+
+@media (max-width: 1120px) {
+    .export-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .laporan-hero-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .laporan-hero-art {
+        align-self: flex-end;
+        margin: 0;
+    }
+    .export-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ==========================================================
