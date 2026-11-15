@@ -1618,21 +1618,23 @@ body.admin-body {
 }
 
 .denah-btn-edit {
-    background: #F5F7FB;
-    border-color: #E2E8F0;
-    color: #101D38;
-}
-
-.denah-btn-edit:hover {
     background: #101D38;
     border-color: #101D38;
     color: #FFFFFF;
 }
 
+.denah-btn-edit:hover {
+    background: #091326;
+    border-color: #091326;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(16, 29, 56, 0.24);
+}
+
 [data-theme="dark"] .denah-btn-edit {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: var(--sk-border);
-    color: var(--sk-text);
+    background: #0B1325;
+    border-color: rgba(255, 255, 255, 0.16);
+    color: #FFFFFF;
 }
 
 .denah-btn-del {

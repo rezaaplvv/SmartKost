@@ -707,7 +707,6 @@ function renderDenahRooms(list) {
                 <article class="denah-room-card status-${escapeHtml(k.status)}">
                     <div class="denah-room-photo" onclick="previewKamarPhoto(${k.id})" title="Klik untuk melihat foto kamar">
                         <img src="${photoUrl}" alt="Foto Kamar ${escapeHtml(k.nomor_kamar)}">
-                        <span class="denah-photo-badge status-${escapeHtml(k.status)}">${escapeHtml(k.status)}</span>
                     </div>
                     <div class="denah-room-body">
                         <div>
