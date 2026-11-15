@@ -588,7 +588,26 @@ function openLoginModal() {
     if (modal) {
         switchAuthTab('login');
         document.getElementById('login-form').reset();
+        const pwdInput = document.getElementById('login-password');
+        if (pwdInput) pwdInput.type = 'password';
         modal.classList.add('active');
+    }
+}
+
+/**
+ * Toggle Show/Hide Password pada Form Login
+ */
+function toggleLoginPasswordVisibility() {
+    const pwdInput = document.getElementById('login-password');
+    const eyeIcon = document.getElementById('login-pwd-eye-icon');
+    if (!pwdInput) return;
+
+    const show = pwdInput.type === 'password';
+    pwdInput.type = show ? 'text' : 'password';
+    if (eyeIcon) {
+        eyeIcon.innerHTML = show
+            ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'
+            : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
     }
 }
 
@@ -729,15 +748,18 @@ function switchAuthTab(tab) {
     const boxLogin = document.getElementById('auth-box-login');
     const boxRegister = document.getElementById('auth-box-register');
     const title = document.getElementById('modal-auth-title');
+    const subtitle = document.getElementById('modal-auth-subtitle');
 
     if (tab === 'register') {
         boxLogin.style.display = 'none';
         boxRegister.style.display = 'block';
-        if (title) title.textContent = 'Registrasi Penghuni Baru';
+        if (title) title.textContent = 'Daftar Akun Baru';
+        if (subtitle) subtitle.textContent = 'Buat akun penghuni untuk akses tagihan & keluhan';
     } else {
         boxRegister.style.display = 'none';
         boxLogin.style.display = 'block';
-        if (title) title.textContent = 'Masuk ke SmartKost Pro';
+        if (title) title.textContent = 'Masuk ke Akun';
+        if (subtitle) subtitle.textContent = 'Akses akun Admin Pengelola & Penghuni Kos';
     }
 }
 
