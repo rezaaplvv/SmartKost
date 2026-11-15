@@ -52,6 +52,17 @@ CREATE TABLE IF NOT EXISTS kamar (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 3b. Tabel Galeri Multi-Foto Kamar
+CREATE TABLE IF NOT EXISTS kamar_foto (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    kamar_id INT NOT NULL,
+    foto_data LONGTEXT NOT NULL,
+    urutan INT NOT NULL DEFAULT 0,
+    is_cover TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (kamar_id) REFERENCES kamar(id) ON DELETE CASCADE
+);
+
 -- 4. Tabel Permohonan Booking Online (Dari Landing Page)
 CREATE TABLE IF NOT EXISTS booking (
     id INT PRIMARY KEY AUTO_INCREMENT,

@@ -658,25 +658,66 @@ function renderTableRooms(list) {
     }).join('');
 }
 
+const MAX_ROOM_PHOTOS = 6;
+let adminRoomPhotos = [];
+
+function renderAdminRoomGallery() {
+    const grid = document.getElementById('kamar-foto-gallery-grid');
+    const badge = document.getElementById('kamar-foto-count-badge');
+    if (badge) {
+        badge.textContent = `${adminRoomPhotos.length} / ${MAX_ROOM_PHOTOS} Foto`;
+    }
+    if (!grid) return;
+
+    if (adminRoomPhotos.length === 0) {
+        grid.innerHTML = `<div class="kamar-gallery-empty">Belum ada foto khusus. Jika kosong, sistem akan memakai foto bawaan sesuai tipe kamar.</div>`;
+        return;
+    }
+
+    grid.innerHTML = adminRoomPhotos.map((src, idx) => `
+        <div class="kamar-gallery-item${idx === 0 ? ' is-cover' : ''}">
+            <img src="${src}" alt="Foto Kamar ${idx + 1}">
+            ${idx === 0 ? '<span class="kamar-gallery-cover-badge">Cover</span>' : ''}
+            <div class="kamar-gallery-actions">
+                ${idx > 0 ? `<button type="button" class="kamar-gallery-btn" onclick="setAdminCoverPhoto(${idx})" title="Jadikan Foto Utama">Cover</button>` : ''}
+                <button type="button" class="kamar-gallery-btn btn-remove" onclick="removeAdminRoomPhoto(${idx})" title="Hapus Foto">Hapus</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function setAdminCoverPhoto(idx) {
+    if (idx <= 0 || idx >= adminRoomPhotos.length) return;
+    const [picked] = adminRoomPhotos.splice(idx, 1);
+    adminRoomPhotos.unshift(picked);
+    renderAdminRoomGallery();
+}
+
+function removeAdminRoomPhoto(idx) {
+    if (idx < 0 || idx >= adminRoomPhotos.length) return;
+    adminRoomPhotos.splice(idx, 1);
+    renderAdminRoomGallery();
+}
+
 function selectKamarPreset(imgPath) {
-    const presetInput = document.getElementById('kamar-foto-preset');
-    const previewImg = document.getElementById('kamar-foto-preview');
-    const sourceLbl = document.getElementById('kamar-foto-source-label');
-    const fileInput = document.getElementById('kamar-foto-file');
-    if (fileInput) fileInput.value = '';
-    if (presetInput) presetInput.value = imgPath;
-    if (previewImg) previewImg.src = imgPath;
-    if (sourceLbl) sourceLbl.textContent = 'Foto Preset';
+    const existingIdx = adminRoomPhotos.indexOf(imgPath);
+    if (existingIdx !== -1) {
+        setAdminCoverPhoto(existingIdx);
+        return;
+    }
+    if (adminRoomPhotos.length >= MAX_ROOM_PHOTOS) {
+        showToast(`Maksimal ${MAX_ROOM_PHOTOS} foto per kamar.`, 'warning');
+        return;
+    }
+    adminRoomPhotos.push(imgPath);
+    renderAdminRoomGallery();
 }
 
 function openKamarModal(kamarId = null) {
     const form = document.getElementById('form-kamar');
     form.reset();
     document.getElementById('kamar-edit-id').value = '';
-    document.getElementById('kamar-foto-preset').value = '';
     const statusGroup = document.getElementById('group-kamar-status');
-    const previewImg = document.getElementById('kamar-foto-preview');
-    const sourceLbl = document.getElementById('kamar-foto-source-label');
 
     if (kamarId) {
         const k = roomsCache.find(r => r.id === kamarId);
@@ -692,14 +733,19 @@ function openKamarModal(kamarId = null) {
         document.getElementById('kamar-deskripsi').value = k.deskripsi || '';
         document.getElementById('kamar-status').value = k.status;
         statusGroup.style.display = 'block';
-        if (previewImg) previewImg.src = getRoomPhotoUrl(k);
-        if (sourceLbl) sourceLbl.textContent = k.foto_kamar ? 'Foto Tersimpan' : 'Foto Bawaan';
+        if (Array.isArray(k.galeri_foto) && k.galeri_foto.length > 0) {
+            adminRoomPhotos = [...k.galeri_foto].slice(0, MAX_ROOM_PHOTOS);
+        } else if (k.foto_kamar) {
+            adminRoomPhotos = [k.foto_kamar];
+        } else {
+            adminRoomPhotos = [];
+        }
     } else {
         document.getElementById('modal-kamar-title').textContent = 'Tambah Kamar Baru';
         statusGroup.style.display = 'none';
-        if (previewImg) previewImg.src = 'assets/img/room-back.jpg';
-        if (sourceLbl) sourceLbl.textContent = 'Foto Bawaan';
+        adminRoomPhotos = [];
     }
+    renderAdminRoomGallery();
     openModal('modal-kamar');
 }
 
@@ -1272,17 +1318,28 @@ function clearQrisSetting() {
 }
 
 function setupAdminForms() {
-    // Live preview upload foto kamar
+    // Live multi-upload & kompresi foto kamar
     document.getElementById('kamar-foto-file')?.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const b64 = await fileToBase64(file);
-        const previewImg = document.getElementById('kamar-foto-preview');
-        const sourceLbl = document.getElementById('kamar-foto-source-label');
-        const presetInput = document.getElementById('kamar-foto-preset');
-        if (previewImg && b64) previewImg.src = b64;
-        if (sourceLbl) sourceLbl.textContent = 'Foto Baru';
-        if (presetInput) presetInput.value = '';
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+        const remaining = MAX_ROOM_PHOTOS - adminRoomPhotos.length;
+        if (remaining <= 0) {
+            showToast(`Maksimal ${MAX_ROOM_PHOTOS} foto per kamar. Hapus foto lama terlebih dahulu.`, 'warning');
+            e.target.value = '';
+            return;
+        }
+        const selected = files.slice(0, remaining);
+        if (files.length > remaining) {
+            showToast(`Hanya ${remaining} foto pertama yang ditambahkan (maksimal ${MAX_ROOM_PHOTOS} foto).`, 'info');
+        }
+        for (const file of selected) {
+            const compressed = await compressImageToBase64(file, 1200, 0.82);
+            if (compressed) {
+                adminRoomPhotos.push(compressed);
+            }
+        }
+        e.target.value = '';
+        renderAdminRoomGallery();
     });
 
     // Form Tambah / Edit Kamar
@@ -1297,15 +1354,17 @@ function setupAdminForms() {
         const fasilitas = document.getElementById('kamar-fasilitas').value.trim();
         const deskripsi = document.getElementById('kamar-deskripsi').value.trim();
         const status = document.getElementById('kamar-status').value;
-        const file = document.getElementById('kamar-foto-file').files[0];
-        const presetFoto = document.getElementById('kamar-foto-preset')?.value || '';
-        const fotoPayload = file ? await fileToBase64(file) : (presetFoto || (!editId ? getRoomPhotoUrl({ tipe }) : null));
+
+        const galleryPayload = adminRoomPhotos.length > 0
+            ? [...adminRoomPhotos]
+            : (!editId ? [getRoomPhotoUrl({ tipe })] : []);
+        const coverPayload = galleryPayload[0] || null;
 
         let res;
         if (editId) {
-            res = await eel.ubah_kamar(parseInt(editId, 10), nomor, lantai, tipe, harga, luas, fasilitas, deskripsi, status, fotoPayload, adminUsername())();
+            res = await eel.ubah_kamar(parseInt(editId, 10), nomor, lantai, tipe, harga, luas, fasilitas, deskripsi, status, coverPayload, adminUsername(), galleryPayload)();
         } else {
-            res = await eel.tambah_kamar(nomor, lantai, tipe, harga, luas, fasilitas, deskripsi, fotoPayload, adminUsername())();
+            res = await eel.tambah_kamar(nomor, lantai, tipe, harga, luas, fasilitas, deskripsi, coverPayload, adminUsername(), galleryPayload)();
         }
 
         showToast(res.pesan, res.status ? 'success' : 'error');

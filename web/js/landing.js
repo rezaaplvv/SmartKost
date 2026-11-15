@@ -403,8 +403,72 @@ function setupModals() {
     }
 }
 
+let detailGalleryPhotos = [];
+let detailSlideIndex = 0;
+
+function renderDetailSlide(index) {
+    if (!detailGalleryPhotos.length) return;
+    const total = detailGalleryPhotos.length;
+    detailSlideIndex = ((index % total) + total) % total;
+
+    const mainImg = document.getElementById('detail-main-photo');
+    if (mainImg) {
+        mainImg.style.opacity = '0.65';
+        mainImg.src = detailGalleryPhotos[detailSlideIndex];
+        requestAnimationFrame(() => {
+            mainImg.style.opacity = '1';
+        });
+    }
+
+    const counter = document.getElementById('detail-photo-counter');
+    if (counter) {
+        counter.textContent = `${detailSlideIndex + 1} / ${total}`;
+        counter.style.display = total > 1 ? 'inline-block' : 'none';
+    }
+
+    const thumbs = document.querySelectorAll('#detail-thumbs-strip .detail-thumb-btn');
+    thumbs.forEach((btn, idx) => {
+        const isActive = idx === detailSlideIndex;
+        btn.classList.toggle('active', isActive);
+        if (isActive) {
+            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+    });
+}
+
+function stepDetailSlide(delta) {
+    if (detailGalleryPhotos.length <= 1) return;
+    renderDetailSlide(detailSlideIndex + delta);
+}
+
+// Navigasi keyboard & touch swipe untuk slider galeri modal detail
+(function initDetailGalleryGestures() {
+    let touchStartX = 0;
+    document.addEventListener('DOMContentLoaded', () => {
+        const stage = document.getElementById('detail-slider-stage');
+        if (stage) {
+            stage.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0]?.clientX || 0;
+            }, { passive: true });
+            stage.addEventListener('touchend', (e) => {
+                const dx = (e.changedTouches[0]?.clientX || 0) - touchStartX;
+                if (Math.abs(dx) > 40) {
+                    stepDetailSlide(dx < 0 ? 1 : -1);
+                }
+            }, { passive: true });
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('modal-room-detail');
+        if (!modal || !modal.classList.contains('active')) return;
+        if (e.key === 'ArrowLeft') stepDetailSlide(-1);
+        else if (e.key === 'ArrowRight') stepDetailSlide(1);
+    });
+})();
+
 /**
- * Membuka Modal Detail Kamar
+ * Membuka Modal Detail Kamar dengan Galeri Multi-Foto & Slider
  */
 function showRoomDetailModal(roomId) {
     const room = allRooms.find(r => r.id === roomId);
@@ -413,33 +477,71 @@ function showRoomDetailModal(roomId) {
     const modal = document.getElementById('modal-room-detail');
     if (!modal) return;
 
-    const imgContainer = document.getElementById('detail-room-img-box');
-    if (imgContainer) {
-        const roomPhotoUrl = getRoomPhotoUrl(room);
-        imgContainer.innerHTML = `<img src="${roomPhotoUrl}" alt="Kamar ${room.nomor_kamar}" style="width:100%;height:100%;object-fit:cover;">`;
+    const isTersedia = room.status === 'Tersedia';
+    detailGalleryPhotos = getRoomGallery(room);
+    detailSlideIndex = 0;
+
+    // Header modal
+    const eyebrow = document.getElementById('detail-room-eyebrow');
+    if (eyebrow) eyebrow.textContent = `TIPE ${room.tipe} \u2022 LANTAI ${room.lantai}`;
+    document.getElementById('detail-room-title').textContent = `Kamar ${room.nomor_kamar}`;
+
+    // Status pill badge di atas foto (senada card katalog)
+    const statusWrap = document.getElementById('detail-room-status-wrap');
+    if (statusWrap) {
+        const pillClass = isTersedia ? 'room-pill-available' : 'room-pill-unavailable';
+        const pillText = isTersedia ? 'Tersedia' : 'Tidak Tersedia';
+        const pillIcon = isTersedia
+            ? '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+            : '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+        statusWrap.innerHTML = `<span class="room-pill-badge ${pillClass}">${pillIcon}${pillText}</span>`;
     }
 
-    document.getElementById('detail-room-title').textContent = `Kamar ${room.nomor_kamar} (Lantai ${room.lantai})`;
+    // Kontrol prev/next & thumbnail strip
+    const prevBtn = document.getElementById('detail-slider-prev');
+    const nextBtn = document.getElementById('detail-slider-next');
+    const showNav = detailGalleryPhotos.length > 1;
+    if (prevBtn) prevBtn.style.display = showNav ? 'inline-flex' : 'none';
+    if (nextBtn) nextBtn.style.display = showNav ? 'inline-flex' : 'none';
+
+    const strip = document.getElementById('detail-thumbs-strip');
+    if (strip) {
+        if (detailGalleryPhotos.length > 1) {
+            strip.style.display = 'flex';
+            strip.innerHTML = detailGalleryPhotos.map((src, idx) => `
+                <button type="button" class="detail-thumb-btn${idx === 0 ? ' active' : ''}" onclick="renderDetailSlide(${idx})" aria-label="Foto ${idx + 1}">
+                    <img src="${src}" alt="Preview ${idx + 1}">
+                </button>
+            `).join('');
+        } else {
+            strip.style.display = 'none';
+            strip.innerHTML = '';
+        }
+    }
+
+    renderDetailSlide(0);
+
+    // Info kolom kanan
     document.getElementById('detail-room-tipe').textContent = room.tipe;
-    document.getElementById('detail-room-harga').textContent = `${formatRupiah(room.harga_sewa)} / bulan`;
-    document.getElementById('detail-room-luas').textContent = room.luas_kamar || '3x4 meter';
+    document.getElementById('detail-room-harga').textContent = formatRupiah(room.harga_sewa);
+    document.getElementById('detail-room-luas').textContent = room.luas_kamar || '3 x 4 m';
     document.getElementById('detail-room-status').textContent = room.status;
-    document.getElementById('detail-room-desc').textContent = room.deskripsi || 'Kamar nyaman dan bersih dengan fasilitas lengkap.';
+    document.getElementById('detail-room-desc').textContent = room.deskripsi || 'Kamar nyaman dan bersih dengan fasilitas lengkap siap huni.';
 
     const fasContainer = document.getElementById('detail-room-fasilitas');
     if (fasContainer) {
         const list = (room.fasilitas || '').split(',').map(f => f.trim()).filter(Boolean);
         fasContainer.innerHTML = list.map(f => `
-            <div style="display:flex;align-items:center;gap:8px;font-size:0.9rem;padding:6px 0;">
-                <svg class="icon" style="color:var(--success);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="detail-facility-chip">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 ${f}
-            </div>
-        `).join('') || '<p style="color:var(--text-muted);">Tidak ada rincian fasilitas.</p>';
+            </span>
+        `).join('') || '<p style="color:var(--text-muted);font-size:0.86rem;">Tidak ada rincian fasilitas.</p>';
     }
 
     const btnBookingAction = document.getElementById('detail-room-action-btn');
     if (btnBookingAction) {
-        if (room.status === 'Tersedia') {
+        if (isTersedia) {
             btnBookingAction.style.display = 'inline-flex';
             btnBookingAction.onclick = () => {
                 modal.classList.remove('active');

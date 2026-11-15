@@ -88,12 +88,12 @@ def get_kamar_detail(kamar_id):
     return kamar_mod.get_kamar_by_id(kamar_id)
 
 @eel.expose
-def tambah_kamar(nomor_kamar, lantai, tipe, harga_sewa, luas_kamar="3x4 m", fasilitas="", deskripsi="", foto_kamar=None, admin_user="admin"):
-    return kamar_mod.tambah_kamar(nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, foto_kamar, admin_user)
+def tambah_kamar(nomor_kamar, lantai, tipe, harga_sewa, luas_kamar="3x4 m", fasilitas="", deskripsi="", foto_kamar=None, admin_user="admin", galeri_foto=None):
+    return kamar_mod.tambah_kamar(nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, foto_kamar, admin_user, galeri_foto)
 
 @eel.expose
-def ubah_kamar(kamar_id, nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, status, foto_kamar=None, admin_user="admin"):
-    return kamar_mod.ubah_kamar(kamar_id, nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, status, foto_kamar, admin_user)
+def ubah_kamar(kamar_id, nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, status, foto_kamar=None, admin_user="admin", galeri_foto=None):
+    return kamar_mod.ubah_kamar(kamar_id, nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, status, foto_kamar, admin_user, galeri_foto)
 
 @eel.expose
 def hapus_kamar(kamar_id, admin_user="admin"):

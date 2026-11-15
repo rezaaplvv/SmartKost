@@ -320,54 +320,87 @@
     </footer>
 
     <!-- ==========================================================
-         MODAL 1: DETAIL KAMAR
+         MODAL 1: DETAIL KAMAR (2-Column Modern Gallery & Info)
          ========================================================== -->
     <div class="modal-backdrop" id="modal-room-detail">
-        <div class="modal-dialog modal-dialog-lg">
-            <div class="modal-header">
-                <h3 class="modal-title" id="detail-room-title">Detail Kamar</h3>
-                <button type="button" class="modal-close-btn" data-close-modal>
+        <div class="modal-dialog modal-dialog-detail">
+            <div class="modal-header detail-modal-header">
+                <div>
+                    <span class="detail-modal-eyebrow" id="detail-room-eyebrow">TIPE REGULER &bull; LANTAI 1</span>
+                    <h3 class="modal-title" id="detail-room-title">Detail Kamar</h3>
+                </div>
+                <button type="button" class="modal-close-btn" data-close-modal aria-label="Tutup Modal">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
 
-            <div class="modal-body">
-                <div style="height:260px;border-radius:var(--radius-lg);overflow:hidden;background:#0f172a;margin-bottom:20px;" id="detail-room-img-box">
-                    <!-- Image inserted dynamically -->
-                </div>
+            <div class="modal-body detail-modal-body">
+                <div class="detail-split-layout">
+                    <!-- Kolom Kiri: Slider Foto + Thumbnail Preview -->
+                    <div class="detail-gallery-col">
+                        <div class="detail-slider-stage" id="detail-slider-stage">
+                            <img id="detail-main-photo" src="assets/img/room-back.jpg" alt="Foto Kamar">
+                            <div class="detail-status-overlay" id="detail-room-status-wrap"></div>
 
-                <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:16px;margin-bottom:20px;padding:16px;background:var(--bg-surface-alt);border-radius:var(--radius-md);">
-                    <div>
-                        <span style="font-size:0.8rem;color:var(--text-muted);display:block;">Tipe Kamar</span>
-                        <strong id="detail-room-tipe" style="font-size:1.05rem;">-</strong>
-                    </div>
-                    <div>
-                        <span style="font-size:0.8rem;color:var(--text-muted);display:block;">Tarif Sewa</span>
-                        <strong id="detail-room-harga" style="font-size:1.05rem;color:var(--primary);">-</strong>
-                    </div>
-                    <div>
-                        <span style="font-size:0.8rem;color:var(--text-muted);display:block;">Luas Kamar</span>
-                        <span id="detail-room-luas">-</span>
-                    </div>
-                    <div>
-                        <span style="font-size:0.8rem;color:var(--text-muted);display:block;">Status</span>
-                        <span id="detail-room-status" class="badge badge-success">Tersedia</span>
-                    </div>
-                </div>
+                            <button type="button" class="detail-slider-nav prev" id="detail-slider-prev" onclick="stepDetailSlide(-1)" aria-label="Foto Sebelumnya">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
+                            <button type="button" class="detail-slider-nav next" id="detail-slider-next" onclick="stepDetailSlide(1)" aria-label="Foto Berikutnya">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
 
-                <h4 style="font-size:1rem;margin-bottom:8px;font-weight:700;">Deskripsi</h4>
-                <p id="detail-room-desc" style="color:var(--text-muted);font-size:0.92rem;margin-bottom:20px;line-height:1.6;"></p>
+                            <span class="detail-photo-counter" id="detail-photo-counter">1 / 1</span>
+                        </div>
 
-                <h4 style="font-size:1rem;margin-bottom:10px;font-weight:700;">Fasilitas Termasuk</h4>
-                <div id="detail-room-fasilitas" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:6px;">
-                    <!-- Facilities inserted dynamically -->
+                        <div class="detail-thumbs-strip" id="detail-thumbs-strip">
+                            <!-- Thumbnail strip dinamis -->
+                        </div>
+                    </div>
+
+                    <!-- Kolom Kanan: Harga, Spesifikasi, Deskripsi & Fasilitas -->
+                    <div class="detail-info-col">
+                        <div class="detail-price-card">
+                            <span class="detail-price-label">Tarif Sewa Bulanan</span>
+                            <div class="detail-price-value">
+                                <strong id="detail-room-harga">Rp 0</strong>
+                                <span>/ bulan</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-spec-grid">
+                            <div class="detail-spec-box">
+                                <span class="detail-spec-label">Tipe Kamar</span>
+                                <strong class="detail-spec-val" id="detail-room-tipe">-</strong>
+                            </div>
+                            <div class="detail-spec-box">
+                                <span class="detail-spec-label">Luas Kamar</span>
+                                <strong class="detail-spec-val" id="detail-room-luas">-</strong>
+                            </div>
+                            <div class="detail-spec-box">
+                                <span class="detail-spec-label">Status Unit</span>
+                                <strong class="detail-spec-val" id="detail-room-status">-</strong>
+                            </div>
+                        </div>
+
+                        <div class="detail-section-block">
+                            <h4 class="detail-section-title">Deskripsi Kamar</h4>
+                            <p class="detail-desc-text" id="detail-room-desc"></p>
+                        </div>
+
+                        <div class="detail-section-block" style="margin-bottom:0;">
+                            <h4 class="detail-section-title">Fasilitas Termasuk</h4>
+                            <div class="detail-facilities-grid" id="detail-room-fasilitas">
+                                <!-- Facilities inserted dynamically -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-close-modal>Tutup</button>
                 <button type="button" class="btn btn-primary" id="detail-room-action-btn">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
                     Ajukan Sewa Kamar Ini
                 </button>
             </div>

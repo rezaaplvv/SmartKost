@@ -66,6 +66,50 @@ function fileToBase64(file) {
 }
 
 /**
+ * Compress & resize image file via canvas before saving to MySQL
+ * @param {File} file
+ * @param {number} maxWidth
+ * @param {number} quality
+ * @returns {Promise<string>}
+ */
+function compressImageToBase64(file, maxWidth = 1200, quality = 0.82) {
+    return new Promise((resolve) => {
+        if (!file) {
+            resolve(null);
+            return;
+        }
+        fileToBase64(file).then((rawDataUrl) => {
+            if (!rawDataUrl) {
+                resolve(null);
+                return;
+            }
+            const img = new Image();
+            img.onload = () => {
+                try {
+                    let targetW = img.width;
+                    let targetH = img.height;
+                    if (targetW > maxWidth) {
+                        targetH = Math.round((targetH * maxWidth) / targetW);
+                        targetW = maxWidth;
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = targetW;
+                    canvas.height = targetH;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, targetW, targetH);
+                    const compressed = canvas.toDataURL('image/jpeg', quality);
+                    resolve(compressed || rawDataUrl);
+                } catch (e) {
+                    resolve(rawDataUrl);
+                }
+            };
+            img.onerror = () => resolve(rawDataUrl);
+            img.src = rawDataUrl;
+        }).catch(() => resolve(null));
+    });
+}
+
+/**
  * Modern non-blocking Toast notification system
  * @param {string} message 
  * @param {'success'|'error'|'warning'|'info'} type 
@@ -145,6 +189,9 @@ function toggleTheme() {
  * @returns {string}
  */
 function getRoomPhotoUrl(room) {
+    if (room && Array.isArray(room.galeri_foto) && room.galeri_foto.length > 0 && room.galeri_foto[0]) {
+        return room.galeri_foto[0];
+    }
     if (room && room.foto_kamar && String(room.foto_kamar).trim() !== '') {
         return room.foto_kamar;
     }
@@ -152,6 +199,19 @@ function getRoomPhotoUrl(room) {
     if (tipe === 'eksklusif') return 'assets/img/room-front.jpg';
     if (tipe === 'vip') return 'assets/img/room-middle.jpg';
     return 'assets/img/room-back.jpg';
+}
+
+/**
+ * Resolve full room photo gallery array (always returns >= 1 image)
+ * @param {object} room
+ * @returns {string[]}
+ */
+function getRoomGallery(room) {
+    if (room && Array.isArray(room.galeri_foto)) {
+        const list = room.galeri_foto.map(x => String(x || '').trim()).filter(Boolean);
+        if (list.length > 0) return list;
+    }
+    return [getRoomPhotoUrl(room)];
 }
 
 /**

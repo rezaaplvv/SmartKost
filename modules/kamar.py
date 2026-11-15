@@ -5,11 +5,95 @@ Room Management, Floor Plan, and Kos Profile Settings Module
 from db import execute_query
 from modules.auth import catat_log
 
+_KAMAR_FOTO_TABLE_CHECKED = False
+
+
+def _ensure_kamar_foto_table():
+    """Memastikan tabel kamar_foto tersedia otomatis tanpa migrasi manual."""
+    global _KAMAR_FOTO_TABLE_CHECKED
+    if _KAMAR_FOTO_TABLE_CHECKED:
+        return
+    try:
+        res = execute_query(
+            """
+            CREATE TABLE IF NOT EXISTS kamar_foto (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                kamar_id INT NOT NULL,
+                foto_data LONGTEXT NOT NULL,
+                urutan INT NOT NULL DEFAULT 0,
+                is_cover TINYINT(1) NOT NULL DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (kamar_id) REFERENCES kamar(id) ON DELETE CASCADE
+            )
+            """,
+            commit=True
+        )
+        if res.get("status"):
+            _KAMAR_FOTO_TABLE_CHECKED = True
+    except Exception:
+        pass
+
+
+def _normalize_galeri_list(galeri_foto):
+    """Membersihkan daftar foto kamar (maksimal 6 foto valid)."""
+    if not isinstance(galeri_foto, list):
+        return []
+    cleaned = []
+    for item in galeri_foto:
+        if item and str(item).strip():
+            cleaned.append(str(item).strip())
+        if len(cleaned) >= 6:
+            break
+    return cleaned
+
+
+def _sync_kamar_foto_gallery(kamar_id, galeri_list):
+    """Menyimpan daftar galeri foto kamar dan menandai foto pertama sebagai cover."""
+    _ensure_kamar_foto_table()
+    execute_query("DELETE FROM kamar_foto WHERE kamar_id = %s", (kamar_id,), commit=True)
+    for idx, foto_data in enumerate(galeri_list):
+        execute_query(
+            """
+            INSERT INTO kamar_foto (kamar_id, foto_data, urutan, is_cover)
+            VALUES (%s, %s, %s, %s)
+            """,
+            (kamar_id, foto_data, idx, 1 if idx == 0 else 0),
+            commit=True
+        )
+
+
+def _attach_kamar_galeri(rooms_list):
+    """Melampirkan array galeri_foto pada setiap record kamar secara efisien."""
+    if not rooms_list:
+        return
+    _ensure_kamar_foto_table()
+    foto_res = execute_query(
+        "SELECT kamar_id, foto_data FROM kamar_foto ORDER BY is_cover DESC, urutan ASC, id ASC",
+        fetchall=True
+    )
+    galeri_map = {}
+    if foto_res.get("status") and foto_res.get("data"):
+        for row in foto_res["data"]:
+            kid = row["kamar_id"]
+            if kid not in galeri_map:
+                galeri_map[kid] = []
+            if row.get("foto_data"):
+                galeri_map[kid].append(row["foto_data"])
+
+    for room in rooms_list:
+        galeri = galeri_map.get(room["id"], [])
+        if not galeri and room.get("foto_kamar"):
+            galeri = [room["foto_kamar"]]
+        room["galeri_foto"] = galeri
+        if galeri and not room.get("foto_kamar"):
+            room["foto_kamar"] = galeri[0]
+
 
 def get_semua_kamar(filter_lantai=None, filter_status=None, filter_tipe=None, search=None):
     """
     Mengambil seluruh daftar kamar dengan filter fleksibel dan informasi penghuni aktif.
     """
+    _ensure_kamar_foto_table()
     conditions = []
     params = []
 
@@ -43,11 +127,14 @@ def get_semua_kamar(filter_lantai=None, filter_status=None, filter_tipe=None, se
         ORDER BY k.lantai ASC, k.nomor_kamar ASC
     """
     res = execute_query(query, params, fetchall=True)
+    if res.get("status") and res.get("data"):
+        _attach_kamar_galeri(res["data"])
     return res
 
 
 def get_kamar_by_id(kamar_id):
     """Mengambil detail satu kamar berdasarkan ID."""
+    _ensure_kamar_foto_table()
     query = """
         SELECT k.id, k.nomor_kamar, k.lantai, k.tipe, k.harga_sewa, k.luas_kamar,
                k.fasilitas, k.deskripsi, k.foto_kamar, k.status,
@@ -59,11 +146,14 @@ def get_kamar_by_id(kamar_id):
         WHERE k.id = %s
     """
     res = execute_query(query, (kamar_id,), fetchone=True)
+    if res.get("status") and res.get("data"):
+        _attach_kamar_galeri([res["data"]])
     return res
 
 
-def tambah_kamar(nomor_kamar, lantai, tipe, harga_sewa, luas_kamar="3x4 m", fasilitas="", deskripsi="", foto_kamar=None, admin_user="admin"):
-    """Menambahkan unit kamar baru ke sistem."""
+def tambah_kamar(nomor_kamar, lantai, tipe, harga_sewa, luas_kamar="3x4 m", fasilitas="", deskripsi="", foto_kamar=None, admin_user="admin", galeri_foto=None):
+    """Menambahkan unit kamar baru ke sistem beserta galeri fotonya."""
+    _ensure_kamar_foto_table()
     nomor_kamar = str(nomor_kamar or "").strip().upper()
     if not nomor_kamar:
         return {"status": False, "pesan": "Nomor kamar wajib diisi."}
@@ -82,19 +172,28 @@ def tambah_kamar(nomor_kamar, lantai, tipe, harga_sewa, luas_kamar="3x4 m", fasi
     if harga_sewa <= 0:
         return {"status": False, "pesan": "Harga sewa harus lebih dari 0."}
 
+    galeri_list = _normalize_galeri_list(galeri_foto)
+    if not galeri_list and foto_kamar:
+        galeri_list = [str(foto_kamar).strip()]
+    cover_foto = galeri_list[0] if galeri_list else foto_kamar
+
     query = """
         INSERT INTO kamar (nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, foto_kamar, status)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'Tersedia')
     """
-    res = execute_query(query, (nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, foto_kamar), commit=True, return_id=True)
+    res = execute_query(query, (nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, cover_foto), commit=True, return_id=True)
     if res["status"]:
+        kamar_id = res["last_id"]
+        if galeri_list:
+            _sync_kamar_foto_gallery(kamar_id, galeri_list)
         catat_log(None, admin_user, "admin", "Tambah Kamar", f"Menambahkan kamar baru: {nomor_kamar} (Lantai {lantai})")
-        return {"status": True, "pesan": f"Kamar {nomor_kamar} berhasil ditambahkan.", "id": res["last_id"]}
+        return {"status": True, "pesan": f"Kamar {nomor_kamar} berhasil ditambahkan.", "id": kamar_id}
     return {"status": False, "pesan": res["pesan"]}
 
 
-def ubah_kamar(kamar_id, nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, status, foto_kamar=None, admin_user="admin"):
-    """Mengubah data kamar dan status ketersediaannya."""
+def ubah_kamar(kamar_id, nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, status, foto_kamar=None, admin_user="admin", galeri_foto=None):
+    """Mengubah data kamar, status ketersediaan, dan galeri fotonya."""
+    _ensure_kamar_foto_table()
     nomor_kamar = str(nomor_kamar or "").strip().upper()
     if not nomor_kamar:
         return {"status": False, "pesan": "Nomor kamar wajib diisi."}
@@ -110,7 +209,19 @@ def ubah_kamar(kamar_id, nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasi
     except ValueError:
         return {"status": False, "pesan": "Lantai dan harga sewa harus berupa angka valid."}
 
-    if foto_kamar:
+    galeri_provided = isinstance(galeri_foto, list)
+    galeri_list = _normalize_galeri_list(galeri_foto) if galeri_provided else []
+
+    if galeri_provided:
+        cover_foto = galeri_list[0] if galeri_list else None
+        query = """
+            UPDATE kamar 
+            SET nomor_kamar = %s, lantai = %s, tipe = %s, harga_sewa = %s, luas_kamar = %s,
+                fasilitas = %s, deskripsi = %s, status = %s, foto_kamar = %s
+            WHERE id = %s
+        """
+        params = (nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasilitas, deskripsi, status, cover_foto, kamar_id)
+    elif foto_kamar:
         query = """
             UPDATE kamar 
             SET nomor_kamar = %s, lantai = %s, tipe = %s, harga_sewa = %s, luas_kamar = %s,
@@ -129,6 +240,10 @@ def ubah_kamar(kamar_id, nomor_kamar, lantai, tipe, harga_sewa, luas_kamar, fasi
 
     res = execute_query(query, params, commit=True)
     if res["status"]:
+        if galeri_provided:
+            _sync_kamar_foto_gallery(kamar_id, galeri_list)
+        elif foto_kamar:
+            _sync_kamar_foto_gallery(kamar_id, [str(foto_kamar).strip()])
         catat_log(None, admin_user, "admin", "Ubah Kamar", f"Mengubah informasi kamar: {nomor_kamar}")
         return {"status": True, "pesan": f"Data kamar {nomor_kamar} berhasil diperbarui."}
     return {"status": False, "pesan": res["pesan"]}

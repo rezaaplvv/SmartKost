@@ -978,22 +978,24 @@
                         <textarea id="kamar-deskripsi" class="form-control" rows="2"></textarea>
                     </div>
                     <div class="form-group" style="margin-bottom:0;">
-                        <label class="form-label">Foto Kamar (Tampil di Denah &amp; Landing Page)</label>
-                        <div class="kamar-foto-editor">
-                            <div class="kamar-foto-preview-box">
-                                <img id="kamar-foto-preview" src="assets/img/room-back.jpg" alt="Pratinjau Foto Kamar">
-                                <span class="kamar-foto-source-pill" id="kamar-foto-source-label">Foto Bawaan</span>
-                            </div>
+                        <div class="kamar-gallery-header">
+                            <label class="form-label" style="margin-bottom:0;">Galeri Foto Kamar (Maks. 6 Foto)</label>
+                            <span class="kamar-foto-count-pill" id="kamar-foto-count-badge">0 / 6 Foto</span>
+                        </div>
+                        <div class="kamar-gallery-editor">
                             <div class="kamar-foto-controls">
-                                <input type="file" id="kamar-foto-file" class="form-control" accept="image/*">
-                                <input type="hidden" id="kamar-foto-preset" value="">
+                                <input type="file" id="kamar-foto-file" class="form-control" accept="image/*" multiple>
                                 <div class="kamar-preset-row">
-                                    <span style="font-size:0.74rem;color:var(--text-muted);font-weight:600;">Atau pilih preset:</span>
-                                    <button type="button" class="preset-chip" onclick="selectKamarPreset('assets/img/room-back.jpg')">Reguler</button>
-                                    <button type="button" class="preset-chip" onclick="selectKamarPreset('assets/img/room-middle.jpg')">VIP</button>
-                                    <button type="button" class="preset-chip" onclick="selectKamarPreset('assets/img/room-front.jpg')">Eksklusif</button>
+                                    <span style="font-size:0.74rem;color:var(--text-muted);font-weight:600;">Tambah preset:</span>
+                                    <button type="button" class="preset-chip" onclick="selectKamarPreset('assets/img/room-back.jpg')">+ Reguler</button>
+                                    <button type="button" class="preset-chip" onclick="selectKamarPreset('assets/img/room-middle.jpg')">+ VIP</button>
+                                    <button type="button" class="preset-chip" onclick="selectKamarPreset('assets/img/room-front.jpg')">+ Eksklusif</button>
                                 </div>
                             </div>
+                            <div class="kamar-gallery-grid" id="kamar-foto-gallery-grid">
+                                <!-- Diisi dinamis oleh admin.js -->
+                            </div>
+                            <p style="font-size:0.74rem;color:var(--text-muted);margin:0;">Foto pertama menjadi <strong>Cover</strong> di Card Katalog &amp; Denah. Foto otomatis dikompres agar ringan.</p>
                         </div>
                     </div>
                 </div>

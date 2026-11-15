@@ -1661,6 +1661,118 @@ body.admin-body {
     background: var(--sk-yellow-soft);
 }
 
+/* Multi-Foto Galeri Kamar Editor */
+.kamar-gallery-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.kamar-foto-count-pill {
+    padding: 3px 10px;
+    border-radius: 9999px;
+    background: var(--sk-yellow-soft);
+    border: 1px solid #FDE68A;
+    color: #92400E;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.kamar-gallery-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--sk-border);
+    border-radius: 12px;
+    background: var(--sk-bg);
+}
+
+.kamar-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.kamar-gallery-item {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--sk-border);
+    background: #E2E8F0;
+}
+
+.kamar-gallery-item.is-cover {
+    border: 2px solid var(--sk-yellow);
+}
+
+.kamar-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.kamar-gallery-cover-badge {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: var(--sk-yellow);
+    color: #111827;
+    font-size: 0.65rem;
+    font-weight: 800;
+    box-shadow: 0 2px 6px rgba(17, 24, 39, 0.2);
+}
+
+.kamar-gallery-actions {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    left: 6px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.kamar-gallery-btn {
+    padding: 3px 8px;
+    border-radius: 7px;
+    border: none;
+    background: rgba(17, 24, 39, 0.78);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 0.67rem;
+    font-weight: 700;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background 0.15s ease;
+}
+
+.kamar-gallery-btn:hover {
+    background: var(--sk-yellow);
+    color: #111827;
+}
+
+.kamar-gallery-btn.btn-remove:hover {
+    background: #EF4444;
+    color: #ffffff;
+}
+
+.kamar-gallery-empty {
+    grid-column: 1 / -1;
+    padding: 18px 12px;
+    border-radius: 10px;
+    border: 1px dashed var(--sk-border);
+    background: var(--sk-card);
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
 [data-theme="dark"] .denah-room-price {
     color: var(--primary);
 }
