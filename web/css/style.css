@@ -814,33 +814,104 @@ a:hover {
     box-shadow: 0 6px 18px rgba(249, 192, 10, 0.5);
 }
 
-/* Floating WhatsApp Button */
+/* Floating CS / WhatsApp Button */
 .floating-wa-btn {
     position: fixed;
-    right: 28px;
-    bottom: 28px;
+    right: 26px;
+    bottom: 24px;
     z-index: 99;
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    background: #25D366;
-    color: #ffffff;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 28px rgba(37, 211, 102, 0.48);
+    gap: 6px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.floating-wa-label {
+    position: relative;
+    background: #ffffff;
+    color: var(--dark-navy);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    padding: 5px 11px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(249, 192, 10, 0.55);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.14);
+    white-space: nowrap;
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
 }
 
-.floating-wa-btn:hover {
-    transform: scale(1.1);
-    color: #ffffff;
-    box-shadow: 0 14px 34px rgba(37, 211, 102, 0.6);
+.floating-wa-label::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 8px;
+    height: 8px;
+    background: #ffffff;
+    border-right: 1px solid rgba(249, 192, 10, 0.55);
+    border-bottom: 1px solid rgba(249, 192, 10, 0.55);
+    transform: translateX(-50%) rotate(45deg);
 }
 
-.floating-wa-btn .icon-lg {
-    width: 1.9em;
-    height: 1.9em;
+[data-theme="dark"] .floating-wa-label {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: rgba(249, 192, 10, 0.4);
+}
+
+[data-theme="dark"] .floating-wa-label::after {
+    background: #1e293b;
+    border-right-color: rgba(249, 192, 10, 0.4);
+    border-bottom-color: rgba(249, 192, 10, 0.4);
+}
+
+.floating-wa-avatar {
+    width: 66px;
+    height: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+    filter: drop-shadow(0 10px 22px rgba(15, 23, 42, 0.22));
+}
+
+.floating-wa-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.floating-wa-btn:hover .floating-wa-avatar {
+    transform: translateY(-3px) scale(1.06);
+    filter: drop-shadow(0 14px 28px rgba(15, 23, 42, 0.28));
+}
+
+.floating-wa-btn:hover .floating-wa-label {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
+}
+
+@media (max-width: 640px) {
+    .floating-wa-btn {
+        right: 16px;
+        bottom: 16px;
+        gap: 5px;
+    }
+
+    .floating-wa-label {
+        font-size: 0.68rem;
+        padding: 4px 10px;
+    }
+
+    .floating-wa-avatar {
+        width: 58px;
+        height: 58px;
+    }
 }
 
 /* Reusable placeholder fallback inside catalog cards */
