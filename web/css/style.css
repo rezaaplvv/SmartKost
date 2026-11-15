@@ -113,7 +113,6 @@ a:hover {
     width: 1.25em;
     height: 1.25em;
     vertical-align: -0.2em;
-    fill: currentColor;
     flex-shrink: 0;
 }
 
@@ -926,19 +925,20 @@ a:hover {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    padding: 18px 24px;
+    padding: 14px 20px;
     margin-bottom: 36px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 18px;
+    justify-content: center;
+    gap: 12px;
     box-shadow: var(--shadow-sm);
 }
 
 .filter-tabs {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 8px;
 }
 
@@ -1116,6 +1116,11 @@ a:hover {
 
 .room-footer .btn {
     flex: 1;
+}
+
+.room-footer .btn .icon {
+    width: 16px;
+    height: 16px;
 }
 
 /* Modals */

@@ -242,7 +242,7 @@ function renderRoomCards() {
 
                     <div class="room-footer">
                         <button class="btn btn-secondary btn-sm" onclick="showRoomDetailModal(${room.id})">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             Detail
                         </button>
                         ${isTersedia ? `
@@ -288,18 +288,12 @@ function setupCatalogFilters() {
         });
     });
 
-    const searchInput = document.getElementById('catalog-search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            searchQuery = e.target.value;
-            const heroInput = document.getElementById('hero-search-input');
-            if (heroInput) heroInput.value = searchQuery;
-            renderRoomCards();
-        });
-    }
-
     const heroInput = document.getElementById('hero-search-input');
     if (heroInput) {
+        heroInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderRoomCards();
+        });
         heroInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -325,8 +319,6 @@ function handleHeroSearch() {
 
     if (heroInput) {
         searchQuery = heroInput.value.trim();
-        const catalogInput = document.getElementById('catalog-search-input');
-        if (catalogInput) catalogInput.value = searchQuery;
     }
 
     if (heroFacility) {
