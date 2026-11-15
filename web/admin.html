@@ -491,13 +491,40 @@
                      TAB 4: DATA PENGHUNI
                      ==================================================== -->
                 <section class="admin-tab-panel" id="tab-penghuni">
-                    <div class="admin-toolbar">
+                    <!-- Mini Summary Strip -->
+                    <div class="penghuni-summary-strip">
+                        <div class="penghuni-stat-pill active-stat">
+                            <span class="penghuni-stat-dot green"></span>
+                            <div>
+                                <strong id="penghuni-stat-aktif">0</strong>
+                                <span>Penghuni Aktif</span>
+                            </div>
+                        </div>
+                        <div class="penghuni-stat-pill">
+                            <span class="penghuni-stat-dot gray"></span>
+                            <div>
+                                <strong id="penghuni-stat-alumni">0</strong>
+                                <span>Alumni Check-Out</span>
+                            </div>
+                        </div>
+                        <div class="penghuni-stat-pill">
+                            <span class="penghuni-stat-dot gold"></span>
+                            <div>
+                                <strong id="penghuni-stat-shown">0</strong>
+                                <span>Data Ditampilkan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modern Toolbar: Segmented Tabs + Search + Check-In -->
+                    <div class="admin-toolbar penghuni-toolbar">
                         <div class="toolbar-filters">
-                            <select id="filter-penghuni-status" class="admin-select" onchange="loadPenghuniAdmin()">
-                                <option value="Aktif">Penghuni Aktif</option>
-                                <option value="Alumni">Alumni (Sudah Check-Out)</option>
-                                <option value="Semua">Semua Penghuni</option>
-                            </select>
+                            <input type="hidden" id="filter-penghuni-status" value="Aktif">
+                            <div class="penghuni-seg-tabs" id="penghuni-seg-tabs" role="tablist" aria-label="Filter Status Penghuni">
+                                <button type="button" class="penghuni-seg-btn active" data-status="Aktif" onclick="setPenghuniStatusFilter('Aktif')">Aktif</button>
+                                <button type="button" class="penghuni-seg-btn" data-status="Alumni" onclick="setPenghuniStatusFilter('Alumni')">Alumni</button>
+                                <button type="button" class="penghuni-seg-btn" data-status="Semua" onclick="setPenghuniStatusFilter('Semua')">Semua</button>
+                            </div>
                         </div>
                         <div class="toolbar-actions">
                             <div class="admin-search-input">
@@ -511,18 +538,18 @@
                         </div>
                     </div>
 
-                    <div class="panel-card">
+                    <div class="panel-card penghuni-table-card">
                         <div class="table-responsive">
-                            <table class="admin-table">
+                            <table class="admin-table penghuni-table">
                                 <thead>
                                     <tr>
-                                        <th>Nama Penghuni</th>
+                                        <th>Penghuni</th>
                                         <th>Kamar</th>
-                                        <th>Kontak / WA</th>
+                                        <th>Kontak</th>
                                         <th>Profesi &amp; Kota Asal</th>
-                                        <th>Tanggal Masuk</th>
+                                        <th>Masuk</th>
                                         <th>Status</th>
-                                        <th>Aksi</th>
+                                        <th style="text-align:right;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="penghuni-table-body"></tbody>
@@ -1348,8 +1375,33 @@
         </div>
     </div>
 
+    <!-- Slide-Over Detail Drawer: Profil Lengkap, KTP & Riwayat Tagihan Penghuni -->
+    <div class="penghuni-drawer-backdrop" id="drawer-detail-penghuni" aria-hidden="true">
+        <div class="penghuni-drawer-panel" role="dialog" aria-labelledby="drawer-penghuni-name">
+            <div class="penghuni-drawer-header">
+                <div class="penghuni-drawer-identity">
+                    <div class="penghuni-avatar lg" id="drawer-penghuni-avatar">DK</div>
+                    <div>
+                        <div class="penghuni-drawer-title-row">
+                            <h3 id="drawer-penghuni-name">Memuat...</h3>
+                            <span class="badge badge-success" id="drawer-penghuni-status">Aktif</span>
+                        </div>
+                        <span class="penghuni-drawer-user" id="drawer-penghuni-username">@username</span>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeDetailPenghuniDrawer()" aria-label="Tutup Detail Penghuni">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <div class="penghuni-drawer-body" id="drawer-penghuni-body">
+                <p style="color:var(--text-muted);font-size:0.88rem;">Memuat detail penghuni...</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal 10: Preview Gambar (KTP / Bukti Transfer / Nota / Keluhan) -->
-    <div class="modal-backdrop" id="modal-image-preview">
+    <div class="modal-backdrop" id="modal-image-preview" style="z-index:260;">
         <div class="modal-dialog">
             <div class="modal-header">
                 <h3 class="modal-title" id="preview-img-title">Pratinjau Dokumen</h3>

@@ -289,6 +289,19 @@ function setupModals() {
             if (e.target === modal) modal.classList.remove('active');
         });
     });
+
+    const penghuniDrawer = document.getElementById('drawer-detail-penghuni');
+    if (penghuniDrawer) {
+        penghuniDrawer.addEventListener('click', (e) => {
+            if (e.target === penghuniDrawer) closeDetailPenghuniDrawer();
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeDetailPenghuniDrawer();
+        }
+    });
 }
 
 function openModal(id) {
@@ -948,59 +961,322 @@ function openTolakBookingModal(id) {
 }
 
 /* ==========================================================
-   4. DATA PENGHUNI & MUTASI
+   4. DATA PENGHUNI, DETAIL DRAWER & MUTASI
    ========================================================== */
+function getNameInitials(name) {
+    const parts = String(name || 'P').trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
+function setPenghuniStatusFilter(statusVal) {
+    const hiddenInput = document.getElementById('filter-penghuni-status');
+    if (hiddenInput) hiddenInput.value = statusVal;
+
+    document.querySelectorAll('#penghuni-seg-tabs .penghuni-seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-status') === statusVal);
+    });
+
+    loadPenghuniAdmin();
+}
+
+async function copyPenghuniHp(phoneStr) {
+    const clean = String(phoneStr || '').trim();
+    if (!clean) {
+        showToast('Nomor HP tidak tersedia.', 'warning');
+        return;
+    }
+    try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(clean);
+        } else {
+            const tmp = document.createElement('textarea');
+            tmp.value = clean;
+            tmp.style.position = 'fixed';
+            tmp.style.opacity = '0';
+            document.body.appendChild(tmp);
+            tmp.select();
+            document.execCommand('copy');
+            tmp.remove();
+        }
+        showToast(`Nomor HP ${clean} berhasil disalin.`, 'success');
+    } catch (err) {
+        showToast(`Nomor HP: ${clean}`, 'info');
+    }
+}
+
 async function loadPenghuniAdmin() {
     const status = document.getElementById('filter-penghuni-status')?.value || 'Aktif';
     const search = document.getElementById('search-penghuni-admin')?.value.trim() || null;
-    const res = await eel.get_penghuni(status, search)();
+
+    const [res, resAll] = await Promise.all([
+        eel.get_penghuni(status, search)(),
+        eel.get_penghuni('Semua', null)()
+    ]);
+
     const tbody = document.getElementById('penghuni-table-body');
     if (!tbody) return;
 
-    if (!res.status || !res.data || res.data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px;">Tidak ada data penghuni ditemukan.</td></tr>`;
+    const allList = (resAll && resAll.status && Array.isArray(resAll.data)) ? resAll.data : [];
+    const totalAktif = allList.filter(x => x.status === 'Aktif').length;
+    const totalAlumni = allList.filter(x => x.status !== 'Aktif').length;
+    const shownList = (res && res.status && Array.isArray(res.data)) ? res.data : [];
+
+    const elStatAktif = document.getElementById('penghuni-stat-aktif');
+    const elStatAlumni = document.getElementById('penghuni-stat-alumni');
+    const elStatShown = document.getElementById('penghuni-stat-shown');
+    if (elStatAktif) elStatAktif.textContent = totalAktif;
+    if (elStatAlumni) elStatAlumni.textContent = totalAlumni;
+    if (elStatShown) elStatShown.textContent = shownList.length;
+
+    if (shownList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:34px 20px;">Tidak ada data penghuni ditemukan.</td></tr>`;
         return;
     }
 
-    penghuniCache = res.data;
-    tbody.innerHTML = res.data.map(p => {
-        const badgeCls = p.status === 'Aktif' ? 'badge-success' : 'badge-neutral';
+    penghuniCache = shownList;
+    const avatarTones = ['', 'tone-blue', 'tone-green', 'tone-violet'];
+
+    tbody.innerHTML = shownList.map(p => {
+        const isAktif = p.status === 'Aktif';
+        const badgeCls = isAktif ? 'badge-success' : 'badge-neutral';
+        const avatarTone = isAktif ? avatarTones[(Number(p.id) || 0) % avatarTones.length] : 'tone-alumni';
+        const initials = getNameInitials(p.nama);
+        const tipeKamar = p.tipe_kamar || p.tipe || 'Standar';
+        const lantaiTxt = p.lantai ? `Lt ${p.lantai}` : '-';
         const cleanWa = (p.no_hp || '').replace(/[^0-9]/g, '');
         const waNum = cleanWa.startsWith('0') ? '62' + cleanWa.slice(1) : cleanWa;
+        const safeHpAttr = escapeHtml(p.no_hp || '');
 
         return `
             <tr>
                 <td>
-                    <strong>${escapeHtml(p.nama)}</strong><br>
-                    <span style="font-size:0.76rem;color:var(--text-muted);">User: ${escapeHtml(p.username || '-')}</span>
+                    <div class="penghuni-person-cell">
+                        <div class="penghuni-avatar ${avatarTone}">${escapeHtml(initials)}</div>
+                        <div>
+                            <button type="button" class="penghuni-name-trigger" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat profil &amp; riwayat tagihan">${escapeHtml(p.nama)}</button>
+                            <span class="penghuni-sub-meta">@${escapeHtml(p.username || 'non-akun')}</span>
+                        </div>
+                    </div>
                 </td>
                 <td>
-                    <strong>Kamar ${escapeHtml(p.nomor_kamar)}</strong><br>
-                    <span style="font-size:0.76rem;color:var(--text-muted);">${escapeHtml(p.tipe)} • Lt ${p.lantai}</span>
+                    <div class="penghuni-kamar-cell">
+                        <span class="penghuni-kamar-badge">${p.nomor_kamar ? `Kamar ${escapeHtml(p.nomor_kamar)}` : 'Tanpa Kamar'}</span>
+                        <span class="penghuni-kamar-sub">${escapeHtml(tipeKamar)} &bull; ${escapeHtml(lantaiTxt)}</span>
+                    </div>
                 </td>
                 <td>
-                    <div>${escapeHtml(p.no_hp)}</div>
-                    ${waNum ? `<a href="https://wa.me/${waNum}" target="_blank" style="font-size:0.76rem;color:#16a34a;font-weight:600;">Chat WhatsApp</a>` : ''}
+                    <div class="penghuni-contact-cell">
+                        <span class="penghuni-phone-text">${escapeHtml(p.no_hp || '-')}</span>
+                        ${p.no_hp ? `
+                            <button type="button" class="penghuni-mini-icon-btn" onclick="copyPenghuniHp('${safeHpAttr}')" title="Salin Nomor HP">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        ` : ''}
+                        ${waNum ? `
+                            <a href="https://wa.me/${waNum}" target="_blank" class="penghuni-mini-icon-btn wa" title="Buka WhatsApp">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                            </a>
+                        ` : ''}
+                    </div>
                 </td>
                 <td>
-                    ${escapeHtml(p.pekerjaan || '-')}<br>
-                    <span style="font-size:0.76rem;color:var(--text-muted);">${escapeHtml(p.asal_kota || '-')}</span>
+                    <div class="penghuni-profesi-text">${escapeHtml(p.pekerjaan || '-')}</div>
+                    <span class="penghuni-sub-meta">${escapeHtml(p.asal_kota || '-')}</span>
                 </td>
-                <td>${escapeHtml(p.tgl_masuk_format || formatDateIndo(p.tanggal_masuk))}</td>
+                <td>
+                    <div class="penghuni-date-text">${escapeHtml(p.tgl_masuk_format || formatDateIndo(p.tanggal_masuk))}</div>
+                    ${!isAktif && p.tanggal_keluar ? `<span class="penghuni-sub-meta">Keluar: ${escapeHtml(p.tanggal_keluar)}</span>` : ''}
+                </td>
                 <td><span class="badge ${badgeCls}">${escapeHtml(p.status)}</span></td>
-                <td>
-                    <div class="table-actions">
-                        ${p.foto_ktp ? `<button type="button" class="btn btn-secondary btn-xs" onclick="openPenghuniKtp(${p.id})">KTP</button>` : ''}
-                        <button type="button" class="btn btn-secondary btn-xs" onclick="openEditPenghuniModal(${p.id})">Edit</button>
-                        ${p.status === 'Aktif' ? `
-                            <button type="button" class="btn btn-primary btn-xs" onclick="openPindahKamarModal(${p.id})">Pindah</button>
-                            <button type="button" class="btn btn-danger btn-xs" onclick="handleCheckoutPenghuni(${p.id}, '${escapeHtml(p.nama)}')">Check-Out</button>
+                <td style="text-align:right;">
+                    <div class="penghuni-actions-row">
+                        <button type="button" class="penghuni-act-btn detail" onclick="openDetailPenghuniDrawer(${p.id})" title="Detail Profil &amp; Tagihan">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                        ${p.foto_ktp ? `
+                            <button type="button" class="penghuni-act-btn" onclick="openPenghuniKtp(${p.id})" title="Lihat Foto KTP">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><line x1="15" y1="8" x2="17" y2="8"></line><line x1="15" y1="12" x2="17" y2="12"></line><path d="M7 16c.5-1.5 3.5-1.5 4 0"></path></svg>
+                            </button>
+                        ` : ''}
+                        <button type="button" class="penghuni-act-btn" onclick="openEditPenghuniModal(${p.id})" title="Edit Biodata">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        </button>
+                        ${isAktif ? `
+                            <button type="button" class="penghuni-act-btn move" onclick="openPindahKamarModal(${p.id})" title="Pindah Kamar">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line></svg>
+                            </button>
+                            <button type="button" class="penghuni-act-btn checkout" onclick="handleCheckoutPenghuni(${p.id})" title="Check-Out Penghuni">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            </button>
                         ` : ''}
                     </div>
                 </td>
             </tr>
         `;
     }).join('');
+}
+
+async function openDetailPenghuniDrawer(penghuniId) {
+    const drawer = document.getElementById('drawer-detail-penghuni');
+    const bodyEl = document.getElementById('drawer-penghuni-body');
+    const nameEl = document.getElementById('drawer-penghuni-name');
+    const userEl = document.getElementById('drawer-penghuni-username');
+    const avatarEl = document.getElementById('drawer-penghuni-avatar');
+    const statusEl = document.getElementById('drawer-penghuni-status');
+    if (!drawer || !bodyEl) return;
+
+    const cached = penghuniCache.find(x => x.id === penghuniId);
+    if (cached) {
+        if (nameEl) nameEl.textContent = cached.nama;
+        if (userEl) userEl.textContent = `@${cached.username || 'non-akun'}`;
+        if (avatarEl) avatarEl.textContent = getNameInitials(cached.nama);
+        if (statusEl) {
+            statusEl.textContent = cached.status;
+            statusEl.className = `badge ${cached.status === 'Aktif' ? 'badge-success' : 'badge-neutral'}`;
+        }
+    }
+
+    bodyEl.innerHTML = `<p style="color:var(--text-muted);font-size:0.88rem;">Memuat detail profil &amp; riwayat tagihan...</p>`;
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+
+    try {
+        const res = await eel.get_penghuni_detail(penghuniId)();
+        if (!res.status || !res.data) {
+            bodyEl.innerHTML = `<p style="color:var(--danger);font-size:0.88rem;">${escapeHtml(res.pesan || 'Gagal memuat detail penghuni.')}</p>`;
+            return;
+        }
+
+        const p = res.data;
+        const isAktif = p.status === 'Aktif';
+        const tipeKamar = p.tipe_kamar || p.tipe || 'Standar';
+        const lantaiTxt = p.lantai ? `Lantai ${p.lantai}` : '-';
+        const cleanWa = (p.no_hp || '').replace(/[^0-9]/g, '');
+        const waNum = cleanWa.startsWith('0') ? '62' + cleanWa.slice(1) : cleanWa;
+
+        if (nameEl) nameEl.textContent = p.nama;
+        if (userEl) userEl.textContent = `@${p.username || 'non-akun'}`;
+        if (avatarEl) {
+            avatarEl.textContent = getNameInitials(p.nama);
+            avatarEl.className = `penghuni-avatar lg ${isAktif ? '' : 'tone-alumni'}`;
+        }
+        if (statusEl) {
+            statusEl.textContent = p.status;
+            statusEl.className = `badge ${isAktif ? 'badge-success' : 'badge-neutral'}`;
+        }
+
+        const bills = Array.isArray(p.tagihan) ? p.tagihan : [];
+        const billsHtml = bills.length > 0
+            ? bills.slice(0, 8).map(t => {
+                let stCls = 'badge-danger';
+                if (t.status === 'Lunas') stCls = 'badge-success';
+                else if (t.status === 'Menunggu Konfirmasi') stCls = 'badge-warning';
+
+                return `
+                    <div class="drawer-bill-item">
+                        <div>
+                            <strong>${escapeHtml(t.kode_invoice)}</strong>
+                            <span>Periode ${escapeHtml(t.bulan_tahun)} &bull; Jatuh tempo ${escapeHtml(t.jatuh_tempo || '-')}</span>
+                        </div>
+                        <div class="drawer-bill-right">
+                            <strong>${formatRupiah(t.total_bayar)}</strong>
+                            <span class="badge ${stCls}" style="margin-top:3px;">${escapeHtml(t.status)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('')
+            : `<p style="color:var(--text-muted);font-size:0.84rem;">Belum ada riwayat tagihan tercatat.</p>`;
+
+        bodyEl.innerHTML = `
+            <div class="drawer-quick-actions">
+                ${p.no_hp ? `<button type="button" class="btn btn-secondary btn-xs" onclick="copyPenghuniHp('${escapeHtml(p.no_hp)}')">Salin No. HP</button>` : ''}
+                ${waNum ? `<a href="https://wa.me/${waNum}" target="_blank" class="btn btn-secondary btn-xs" style="color:#15803d;">Buka WhatsApp</a>` : ''}
+                <button type="button" class="btn btn-secondary btn-xs" onclick="closeDetailPenghuniDrawer(); openEditPenghuniModal(${p.id});">Edit Biodata</button>
+                ${isAktif ? `
+                    <button type="button" class="btn btn-primary btn-xs" onclick="closeDetailPenghuniDrawer(); openPindahKamarModal(${p.id});">Pindah Kamar</button>
+                    <button type="button" class="btn btn-danger btn-xs" onclick="handleCheckoutPenghuni(${p.id});">Check-Out</button>
+                ` : ''}
+            </div>
+
+            <div class="drawer-section-card">
+                <div class="drawer-section-title">Informasi Kamar &amp; Hunian</div>
+                <div class="drawer-info-grid">
+                    <div class="drawer-info-item">
+                        <span>Unit Kamar</span>
+                        <strong>${p.nomor_kamar ? `Kamar ${escapeHtml(p.nomor_kamar)}` : '-'}</strong>
+                    </div>
+                    <div class="drawer-info-item">
+                        <span>Tipe &amp; Lantai</span>
+                        <strong>${escapeHtml(tipeKamar)} &bull; ${escapeHtml(lantaiTxt)}</strong>
+                    </div>
+                    <div class="drawer-info-item">
+                        <span>Tarif Sewa</span>
+                        <strong>${formatRupiah(p.harga_sewa || 0)} / bln</strong>
+                    </div>
+                    <div class="drawer-info-item">
+                        <span>Tanggal Masuk</span>
+                        <strong>${escapeHtml(p.tanggal_masuk || '-')}</strong>
+                    </div>
+                    ${p.tanggal_keluar ? `
+                        <div class="drawer-info-item">
+                            <span>Tanggal Check-Out</span>
+                            <strong>${escapeHtml(p.tanggal_keluar)}</strong>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+
+            <div class="drawer-section-card">
+                <div class="drawer-section-title">Biodata &amp; Kontak</div>
+                <div class="drawer-info-grid">
+                    <div class="drawer-info-item">
+                        <span>Nomor HP / WhatsApp</span>
+                        <strong>${escapeHtml(p.no_hp || '-')}</strong>
+                    </div>
+                    <div class="drawer-info-item">
+                        <span>Profesi / Kampus</span>
+                        <strong>${escapeHtml(p.pekerjaan || '-')}</strong>
+                    </div>
+                    <div class="drawer-info-item" style="grid-column: 1 / -1;">
+                        <span>Kota Asal</span>
+                        <strong>${escapeHtml(p.asal_kota || '-')}</strong>
+                    </div>
+                </div>
+            </div>
+
+            ${p.foto_ktp ? `
+                <div class="drawer-section-card">
+                    <div class="drawer-section-title">Dokumen KTP Tersimpan</div>
+                    <img id="drawer-ktp-img" alt="KTP ${escapeHtml(p.nama)}" class="drawer-ktp-preview">
+                </div>
+            ` : ''}
+
+            <div class="drawer-section-card">
+                <div class="drawer-section-title">Riwayat Tagihan (${bills.length})</div>
+                <div class="drawer-bill-list">${billsHtml}</div>
+            </div>
+        `;
+
+        if (p.foto_ktp) {
+            const ktpImgEl = document.getElementById('drawer-ktp-img');
+            if (ktpImgEl) {
+                ktpImgEl.src = p.foto_ktp;
+                ktpImgEl.addEventListener('click', () => {
+                    openImagePreview(p.foto_ktp, `KTP Penghuni: ${p.nama}`);
+                });
+            }
+        }
+    } catch (err) {
+        bodyEl.innerHTML = `<p style="color:var(--danger);font-size:0.88rem;">Terjadi kesalahan saat mengambil detail penghuni.</p>`;
+    }
+}
+
+function closeDetailPenghuniDrawer() {
+    const drawer = document.getElementById('drawer-detail-penghuni');
+    if (!drawer || !drawer.classList.contains('open')) return;
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
 }
 
 function openPenghuniKtp(id) {
@@ -1056,10 +1332,12 @@ async function openPindahKamarModal(penghuniId) {
 }
 
 async function handleCheckoutPenghuni(id, nama) {
-    if (!confirm(`Proses check-out untuk ${nama}?\nKamar akan dikosongkan kembali menjadi Tersedia.`)) return;
+    const resolvedName = nama || penghuniCache.find(x => x.id === id)?.nama || 'penghuni ini';
+    if (!confirm(`Proses check-out untuk ${resolvedName}?\nKamar akan dikosongkan kembali menjadi Tersedia.`)) return;
     const res = await eel.checkout_penghuni(id, null, adminUsername())();
     showToast(res.pesan, res.status ? 'success' : 'error');
     if (res.status) {
+        closeDetailPenghuniDrawer();
         await loadPenghuniAdmin();
         await loadKpiCards();
         notifyRoomCatalogUpdated();
