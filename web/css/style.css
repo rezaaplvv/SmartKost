@@ -1030,7 +1030,7 @@ a:hover {
     font-size: 0.9rem;
 }
 
-/* Room Card Grid */
+/* Room Card Grid - Editorial Proptech Style */
 .room-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1039,25 +1039,31 @@ a:hover {
 
 .room-card {
     background: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: 18px;
+    border: 1px solid #EAECF0;
+    border-radius: 20px;
+    padding: 10px 10px 0 10px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(16, 16, 32, 0.04);
-    transition: var(--transition);
+    box-shadow: 0 2px 10px rgba(16, 16, 32, 0.035);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
     display: flex;
     flex-direction: column;
 }
 
+[data-theme="dark"] .room-card {
+    border-color: var(--border-color);
+}
+
 .room-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 14px 30px rgba(16, 16, 32, 0.09);
+    box-shadow: 0 16px 32px rgba(16, 16, 32, 0.085);
     border-color: rgba(249, 192, 10, 0.55);
 }
 
 .room-img-wrapper {
     position: relative;
     width: 100%;
-    height: 205px;
+    height: 198px;
+    border-radius: 14px;
     background: linear-gradient(135deg, #334155, #1e293b);
     display: flex;
     align-items: center;
@@ -1066,47 +1072,59 @@ a:hover {
     overflow: hidden;
 }
 
+.room-img-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(16, 16, 32, 0.16) 0%, rgba(16, 16, 32, 0) 42%, rgba(16, 16, 32, 0.14) 100%);
+    pointer-events: none;
+}
+
 .room-img-wrapper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.45s ease, filter 0.3s ease;
 }
 
 .room-card:hover .room-img-wrapper img {
     transform: scale(1.04);
 }
 
+.room-card.room-unavailable .room-img-wrapper img {
+    filter: grayscale(28%) brightness(0.92);
+}
+
 .room-status-badge {
     position: absolute;
-    top: 14px;
-    right: 14px;
+    top: 11px;
+    right: 11px;
     z-index: 2;
 }
 
 .room-pill-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
+    gap: 5px;
+    padding: 5px 11px;
     border-radius: var(--radius-full);
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     font-weight: 700;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.015em;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 12px rgba(16, 16, 32, 0.12);
+    box-shadow: 0 4px 12px rgba(16, 16, 32, 0.14);
 }
 
 .room-pill-badge .icon {
-    width: 13px;
-    height: 13px;
+    width: 12px;
+    height: 12px;
 }
 
 .room-pill-available {
-    background: rgba(255, 252, 242, 0.94);
+    background: rgba(255, 252, 242, 0.95);
     color: #101020;
-    border: 1px solid rgba(249, 192, 10, 0.55);
+    border: 1px solid rgba(249, 192, 10, 0.6);
 }
 
 .room-pill-available .icon {
@@ -1114,7 +1132,7 @@ a:hover {
 }
 
 .room-pill-unavailable {
-    background: rgba(16, 16, 32, 0.78);
+    background: rgba(16, 16, 32, 0.8);
     color: #F8FAFC;
     border: 1px solid rgba(255, 255, 255, 0.18);
 }
@@ -1124,26 +1142,89 @@ a:hover {
 }
 
 .room-body {
-    padding: 20px;
+    padding: 16px 10px 18px 10px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
+}
+
+.room-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
 }
 
 .room-number {
     font-size: 1.18rem;
     font-weight: 800;
     color: var(--text-main);
-    letter-spacing: -0.01em;
-    margin-bottom: 4px;
+    letter-spacing: -0.015em;
+    margin-bottom: 10px;
+}
+
+.room-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.room-meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: var(--bg-surface-alt);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.room-meta-chip .icon {
+    width: 13px;
+    height: 13px;
+    color: #94A3B8;
+}
+
+.room-footer {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-color);
+}
+
+.room-price-block {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.room-price-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 2px;
 }
 
 .room-price {
-    font-size: 1.16rem;
+    font-size: 1.08rem;
     font-weight: 800;
     color: #D98A00;
-    margin-bottom: 12px;
     text-align: left;
+    white-space: nowrap;
 }
 
 [data-theme="dark"] .room-price {
@@ -1151,65 +1232,39 @@ a:hover {
 }
 
 .room-price span {
-    font-size: 0.84rem;
+    font-size: 0.76rem;
     font-weight: 500;
     color: var(--text-muted);
 }
 
-.room-meta {
+.room-actions {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    font-size: 0.84rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    margin-bottom: 18px;
+    gap: 8px;
+    flex-shrink: 0;
 }
 
-.room-meta-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
+.room-actions .btn {
+    padding: 8px 13px;
+    border-radius: 10px;
+    font-size: 0.82rem;
 }
 
-.room-meta-item .icon {
-    width: 14px;
-    height: 14px;
-    color: #94A3B8;
-}
-
-.room-meta-sep {
-    color: var(--border-color);
-    font-size: 0.8rem;
-}
-
-.room-footer {
-    margin-top: auto;
-    display: flex;
-    gap: 10px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border-color);
-}
-
-.room-footer .btn {
-    flex: 1;
-}
-
-.room-footer .btn-detail {
-    background: var(--bg-surface);
+.room-actions .btn-detail {
+    background: var(--bg-surface-alt);
     color: var(--text-main);
     border: 1px solid var(--border-color);
+    font-weight: 600;
 }
 
-.room-footer .btn-detail:hover {
-    background: var(--bg-surface-alt);
+.room-actions .btn-detail:hover {
+    background: var(--border-color);
     border-color: #CBD5E1;
 }
 
-.room-footer .btn .icon {
-    width: 16px;
-    height: 16px;
+.room-actions .btn .icon {
+    width: 15px;
+    height: 15px;
 }
 
 /* Modals */
