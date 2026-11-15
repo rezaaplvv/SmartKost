@@ -8,6 +8,7 @@
 let currentAdmin = null;
 let currentTab = 'overview';
 let roomViewMode = 'denah';
+let penghuniViewMode = 'card';
 let roomsCache = [];
 let bookingsCache = [];
 let penghuniCache = [];
@@ -1012,92 +1013,190 @@ function renderPenghuniAvatarHtml(nama, fotoProfil) {
     return escapeHtml(getNameInitials(nama));
 }
 
+function setPenghuniViewMode(mode) {
+    penghuniViewMode = (mode === 'table') ? 'table' : 'card';
+
+    const btnCard = document.getElementById('btn-penghuni-card');
+    const btnTable = document.getElementById('btn-penghuni-table');
+    const cardsEl = document.getElementById('penghuni-cards-container');
+    const tableEl = document.getElementById('penghuni-table-container');
+
+    if (btnCard) btnCard.classList.toggle('active', penghuniViewMode === 'card');
+    if (btnTable) btnTable.classList.toggle('active', penghuniViewMode === 'table');
+    if (cardsEl) cardsEl.style.display = penghuniViewMode === 'card' ? 'grid' : 'none';
+    if (tableEl) tableEl.style.display = penghuniViewMode === 'table' ? 'block' : 'none';
+}
+
+function buildPenghuniActionButtons(p, isAktif) {
+    return `
+        ${p.foto_ktp ? `<button type="button" class="penghuni-ktp-btn" onclick="openPenghuniKtp(${p.id})" title="Lihat Foto KTP">KTP</button>` : ''}
+        <button type="button" class="penghuni-act-btn" onclick="openDetailPenghuniDrawer(${p.id})" title="Detail Profil &amp; Tagihan">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        </button>
+        <button type="button" class="penghuni-act-btn" onclick="openEditPenghuniModal(${p.id})" title="Edit Biodata">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        </button>
+        ${isAktif ? `
+            <button type="button" class="penghuni-act-btn" onclick="openPindahKamarModal(${p.id})" title="Pindah Kamar">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line></svg>
+            </button>
+            <button type="button" class="penghuni-act-btn checkout" onclick="handleCheckoutPenghuni(${p.id})" title="Check-Out Penghuni">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            </button>
+        ` : ''}
+    `;
+}
+
 async function loadPenghuniAdmin() {
     const status = document.getElementById('filter-penghuni-status')?.value || 'Aktif';
     const search = document.getElementById('search-penghuni-admin')?.value.trim() || null;
 
     const res = await eel.get_penghuni(status, search)();
+    const cardsEl = document.getElementById('penghuni-cards-container');
     const tbody = document.getElementById('penghuni-table-body');
-    if (!tbody) return;
+    if (!cardsEl && !tbody) return;
 
     const shownList = (res && res.status && Array.isArray(res.data)) ? res.data : [];
+    penghuniCache = shownList;
 
     if (shownList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:34px 20px;">Tidak ada data penghuni ditemukan.</td></tr>`;
+        if (cardsEl) {
+            cardsEl.innerHTML = `<div class="penghuni-cards-empty">Tidak ada data penghuni ditemukan.</div>`;
+        }
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:34px 20px;">Tidak ada data penghuni ditemukan.</td></tr>`;
+        }
         return;
     }
 
-    penghuniCache = shownList;
+    if (cardsEl) {
+        cardsEl.innerHTML = shownList.map((p, idx) => {
+            const isAktif = p.status === 'Aktif';
+            const badgeCls = isAktif ? 'badge-success' : 'badge-neutral';
+            const avatarTone = isAktif ? '' : 'tone-alumni';
+            const avatarInner = renderPenghuniAvatarHtml(p.nama, p.foto_profil);
+            const cleanWa = (p.no_hp || '').replace(/[^0-9]/g, '');
+            const waNum = cleanWa.startsWith('0') ? '62' + cleanWa.slice(1) : cleanWa;
+            const safeHpAttr = escapeHtml(p.no_hp || '');
+            const kamarLabel = p.nomor_kamar ? `Kamar ${escapeHtml(p.nomor_kamar)}` : 'Tanpa Kamar';
+            const profesiKota = [p.pekerjaan, p.asal_kota].filter(v => v && String(v).trim() !== '').map(v => escapeHtml(v)).join(' &bull; ') || '-';
+            const tglMasuk = escapeHtml(p.tgl_masuk_format || formatDateIndo(p.tanggal_masuk));
+            const delayMs = Math.min(idx * 45, 360);
 
-    tbody.innerHTML = shownList.map(p => {
-        const isAktif = p.status === 'Aktif';
-        const badgeCls = isAktif ? 'badge-success' : 'badge-neutral';
-        const avatarTone = isAktif ? '' : 'tone-alumni';
-        const avatarInner = renderPenghuniAvatarHtml(p.nama, p.foto_profil);
-        const cleanWa = (p.no_hp || '').replace(/[^0-9]/g, '');
-        const waNum = cleanWa.startsWith('0') ? '62' + cleanWa.slice(1) : cleanWa;
-        const safeHpAttr = escapeHtml(p.no_hp || '');
+            return `
+                <article class="penghuni-profile-card ${isAktif ? '' : 'is-alumni'}" style="animation-delay:${delayMs}ms;">
+                    <div class="penghuni-card-banner">
+                        <span class="penghuni-kamar-badge">${kamarLabel}</span>
+                        <span class="badge ${badgeCls}">${escapeHtml(p.status)}</span>
+                    </div>
+                    <div class="penghuni-card-avatar-wrap">
+                        <div class="penghuni-card-avatar ${avatarTone}" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat Detail ${escapeHtml(p.nama)}">${avatarInner}</div>
+                    </div>
+                    <div class="penghuni-card-body">
+                        <div class="penghuni-card-identity">
+                            <h4 class="penghuni-card-name" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat profil, KTP &amp; riwayat tagihan">${escapeHtml(p.nama)}</h4>
+                            <div class="penghuni-card-username">@${escapeHtml(p.username || 'non-akun')}</div>
+                            <div class="penghuni-card-role">${profesiKota}</div>
+                        </div>
 
-        return `
-            <tr>
-                <td>
-                    <div class="penghuni-person-cell">
-                        <div class="penghuni-avatar ${avatarTone}">${avatarInner}</div>
-                        <div>
-                            <button type="button" class="penghuni-name-trigger" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat profil, KTP &amp; riwayat tagihan">${escapeHtml(p.nama)}</button>
-                            <span class="penghuni-sub-meta">@${escapeHtml(p.username || 'non-akun')}</span>
+                        <div class="penghuni-card-meta-box">
+                            <div class="penghuni-card-meta-row">
+                                <span class="penghuni-card-meta-label">No. HP</span>
+                                <span class="penghuni-card-meta-val">
+                                    <span>${escapeHtml(p.no_hp || '-')}</span>
+                                    ${p.no_hp ? `
+                                        <button type="button" class="penghuni-mini-icon-btn" onclick="copyPenghuniHp('${safeHpAttr}')" title="Salin Nomor HP">
+                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                        </button>
+                                    ` : ''}
+                                    ${waNum ? `
+                                        <a href="https://wa.me/${waNum}" target="_blank" class="penghuni-mini-icon-btn wa" title="Buka WhatsApp">
+                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                                        </a>
+                                    ` : ''}
+                                </span>
+                            </div>
+                            <div class="penghuni-card-meta-row">
+                                <span class="penghuni-card-meta-label">Masuk</span>
+                                <span class="penghuni-card-meta-val">${tglMasuk}</span>
+                            </div>
+                            ${!isAktif && p.tanggal_keluar ? `
+                                <div class="penghuni-card-meta-row">
+                                    <span class="penghuni-card-meta-label">Keluar</span>
+                                    <span class="penghuni-card-meta-val">${escapeHtml(p.tanggal_keluar)}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="penghuni-card-footer">
+                            <button type="button" class="penghuni-card-detail-btn" onclick="openDetailPenghuniDrawer(${p.id})">Lihat Detail</button>
+                            <div class="penghuni-card-actions">
+                                ${buildPenghuniActionButtons(p, isAktif)}
+                            </div>
                         </div>
                     </div>
-                </td>
-                <td>
-                    <span class="penghuni-kamar-badge">${p.nomor_kamar ? `Kamar ${escapeHtml(p.nomor_kamar)}` : 'Tanpa Kamar'}</span>
-                </td>
-                <td>
-                    <div class="penghuni-contact-cell">
-                        <span class="penghuni-phone-text">${escapeHtml(p.no_hp || '-')}</span>
-                        ${p.no_hp ? `
-                            <button type="button" class="penghuni-mini-icon-btn" onclick="copyPenghuniHp('${safeHpAttr}')" title="Salin Nomor HP">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                            </button>
-                        ` : ''}
-                        ${waNum ? `
-                            <a href="https://wa.me/${waNum}" target="_blank" class="penghuni-mini-icon-btn wa" title="Buka WhatsApp">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                            </a>
-                        ` : ''}
-                    </div>
-                </td>
-                <td>
-                    <div class="penghuni-profesi-text">${escapeHtml(p.pekerjaan || '-')}</div>
-                    <span class="penghuni-sub-meta">${escapeHtml(p.asal_kota || '-')}</span>
-                </td>
-                <td>
-                    <div class="penghuni-date-text">${escapeHtml(p.tgl_masuk_format || formatDateIndo(p.tanggal_masuk))}</div>
-                    ${!isAktif && p.tanggal_keluar ? `<span class="penghuni-sub-meta">Keluar: ${escapeHtml(p.tanggal_keluar)}</span>` : ''}
-                </td>
-                <td><span class="badge ${badgeCls}">${escapeHtml(p.status)}</span></td>
-                <td style="text-align:right;">
-                    <div class="penghuni-actions-row">
-                        ${p.foto_ktp ? `<button type="button" class="penghuni-ktp-btn" onclick="openPenghuniKtp(${p.id})" title="Lihat Foto KTP">KTP</button>` : ''}
-                        <button type="button" class="penghuni-act-btn" onclick="openDetailPenghuniDrawer(${p.id})" title="Detail Profil &amp; Tagihan">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        </button>
-                        <button type="button" class="penghuni-act-btn" onclick="openEditPenghuniModal(${p.id})" title="Edit Biodata">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                        </button>
-                        ${isAktif ? `
-                            <button type="button" class="penghuni-act-btn" onclick="openPindahKamarModal(${p.id})" title="Pindah Kamar">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line></svg>
-                            </button>
-                            <button type="button" class="penghuni-act-btn checkout" onclick="handleCheckoutPenghuni(${p.id})" title="Check-Out Penghuni">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                            </button>
-                        ` : ''}
-                    </div>
-                </td>
-            </tr>
-        `;
-    }).join('');
+                </article>
+            `;
+        }).join('');
+    }
+
+    if (tbody) {
+        tbody.innerHTML = shownList.map(p => {
+            const isAktif = p.status === 'Aktif';
+            const badgeCls = isAktif ? 'badge-success' : 'badge-neutral';
+            const avatarTone = isAktif ? '' : 'tone-alumni';
+            const avatarInner = renderPenghuniAvatarHtml(p.nama, p.foto_profil);
+            const cleanWa = (p.no_hp || '').replace(/[^0-9]/g, '');
+            const waNum = cleanWa.startsWith('0') ? '62' + cleanWa.slice(1) : cleanWa;
+            const safeHpAttr = escapeHtml(p.no_hp || '');
+
+            return `
+                <tr>
+                    <td>
+                        <div class="penghuni-person-cell">
+                            <div class="penghuni-avatar ${avatarTone}">${avatarInner}</div>
+                            <div>
+                                <button type="button" class="penghuni-name-trigger" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat profil, KTP &amp; riwayat tagihan">${escapeHtml(p.nama)}</button>
+                                <span class="penghuni-sub-meta">@${escapeHtml(p.username || 'non-akun')}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="penghuni-kamar-badge">${p.nomor_kamar ? `Kamar ${escapeHtml(p.nomor_kamar)}` : 'Tanpa Kamar'}</span>
+                    </td>
+                    <td>
+                        <div class="penghuni-contact-cell">
+                            <span class="penghuni-phone-text">${escapeHtml(p.no_hp || '-')}</span>
+                            ${p.no_hp ? `
+                                <button type="button" class="penghuni-mini-icon-btn" onclick="copyPenghuniHp('${safeHpAttr}')" title="Salin Nomor HP">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                </button>
+                            ` : ''}
+                            ${waNum ? `
+                                <a href="https://wa.me/${waNum}" target="_blank" class="penghuni-mini-icon-btn wa" title="Buka WhatsApp">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                                </a>
+                            ` : ''}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="penghuni-profesi-text">${escapeHtml(p.pekerjaan || '-')}</div>
+                        <span class="penghuni-sub-meta">${escapeHtml(p.asal_kota || '-')}</span>
+                    </td>
+                    <td>
+                        <div class="penghuni-date-text">${escapeHtml(p.tgl_masuk_format || formatDateIndo(p.tanggal_masuk))}</div>
+                        ${!isAktif && p.tanggal_keluar ? `<span class="penghuni-sub-meta">Keluar: ${escapeHtml(p.tanggal_keluar)}</span>` : ''}
+                    </td>
+                    <td><span class="badge ${badgeCls}">${escapeHtml(p.status)}</span></td>
+                    <td style="text-align:right;">
+                        <div class="penghuni-actions-row">
+                            ${buildPenghuniActionButtons(p, isAktif)}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
 }
 
 async function openDetailPenghuniDrawer(penghuniId) {

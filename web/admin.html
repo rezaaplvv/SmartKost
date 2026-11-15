@@ -491,7 +491,7 @@
                      TAB 4: DATA PENGHUNI
                      ==================================================== -->
                 <section class="admin-tab-panel" id="tab-penghuni">
-                    <!-- Modern Toolbar: Segmented Tabs + Search + Check-In -->
+                    <!-- Modern Toolbar: Segmented Tabs + View Switch + Search + Check-In -->
                     <div class="admin-toolbar penghuni-toolbar">
                         <div class="toolbar-filters">
                             <input type="hidden" id="filter-penghuni-status" value="Aktif">
@@ -502,6 +502,16 @@
                             </div>
                         </div>
                         <div class="toolbar-actions">
+                            <div class="penghuni-view-switch" role="group" aria-label="Mode Tampilan Penghuni">
+                                <button type="button" class="penghuni-view-btn active" id="btn-penghuni-card" onclick="setPenghuniViewMode('card')" title="Tampilan Kartu">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+                                    <span>Kartu</span>
+                                </button>
+                                <button type="button" class="penghuni-view-btn" id="btn-penghuni-table" onclick="setPenghuniViewMode('table')" title="Tampilan Tabel">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                                    <span>Tabel</span>
+                                </button>
+                            </div>
                             <div class="admin-search-input">
                                 <svg class="icon" style="color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                                 <input type="text" id="search-penghuni-admin" placeholder="Cari nama / no HP / kamar..." oninput="loadPenghuniAdmin()">
@@ -513,7 +523,11 @@
                         </div>
                     </div>
 
-                    <div class="panel-card penghuni-table-card">
+                    <!-- Resident Profile Card Grid (Default) -->
+                    <div class="penghuni-cards-grid" id="penghuni-cards-container"></div>
+
+                    <!-- Resident Table View (Toggle) -->
+                    <div class="panel-card penghuni-table-card" id="penghuni-table-container" style="display:none;">
                         <div class="table-responsive">
                             <table class="admin-table penghuni-table">
                                 <thead>
