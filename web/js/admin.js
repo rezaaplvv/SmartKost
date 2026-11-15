@@ -1103,10 +1103,12 @@ async function loadPenghuniAdmin() {
                                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.172 2.293 12.293a1 1 0 0 0 .707 1.707H5v6a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-6h2a1 1 0 0 0 .707-1.707L12 3.172z"/></svg>
                                     <span>${kamarLabel}</span>
                                 </span>
-                                <span class="penghuni-card-status-pill ${isAktif ? 'is-aktif' : 'is-alumni'}">
-                                    <span class="penghuni-card-status-dot"></span>
-                                    <span>${escapeHtml(p.status)}</span>
-                                </span>
+                                ${!isAktif ? `
+                                    <span class="penghuni-card-status-pill is-alumni">
+                                        <span class="penghuni-card-status-dot"></span>
+                                        <span>${escapeHtml(p.status)}</span>
+                                    </span>
+                                ` : ''}
                             </div>
 
                             <div class="penghuni-card-profile">
