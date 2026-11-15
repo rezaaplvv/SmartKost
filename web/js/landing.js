@@ -196,11 +196,11 @@ function renderRoomCards() {
 
     container.innerHTML = filtered.map(room => {
         const isTersedia = room.status === 'Tersedia';
-        const statusBadgeClass = isTersedia ? 'badge-success' : (room.status === 'Terisi' ? 'badge-neutral' : 'badge-warning');
-        
-        // Split fasilitas jadi tag terpisah
-        const fasilitasArr = (room.fasilitas || '').split(',').map(f => f.trim()).filter(Boolean).slice(0, 4);
-        const fasilitasTags = fasilitasArr.map(f => `<span class="facility-tag">${f}</span>`).join('');
+        const statusPillClass = isTersedia ? 'room-pill-available' : 'room-pill-unavailable';
+        const statusLabel = isTersedia ? 'Tersedia' : 'Tidak Tersedia';
+        const statusIconSvg = isTersedia
+            ? '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+            : '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 
         // Gambar kamar dinamis dari database (fallback otomatis ke foto tipe kamar)
         const roomPhotoUrl = getRoomPhotoUrl(room);
@@ -210,48 +210,44 @@ function renderRoomCards() {
             <div class="room-card">
                 <div class="room-img-wrapper">
                     ${imgHtml}
-                    <div class="room-badges">
-                        <span class="badge badge-primary">Lantai ${room.lantai}</span>
-                        <span class="badge badge-neutral">${room.tipe}</span>
-                    </div>
                     <div class="room-status-badge">
-                        <span class="badge ${statusBadgeClass}">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="6"></circle></svg>
-                            ${room.status}
+                        <span class="room-pill-badge ${statusPillClass}">
+                            ${statusIconSvg}
+                            ${statusLabel}
                         </span>
                     </div>
                 </div>
 
                 <div class="room-body">
-                    <div class="room-header">
-                        <div>
-                            <div class="room-number">Kamar ${room.nomor_kamar}</div>
-                            <span style="font-size:0.82rem;color:var(--text-muted);">Ukuran: ${room.luas_kamar || '3x4 m'}</span>
-                        </div>
-                        <div class="room-price">
-                            ${formatRupiah(room.harga_sewa)}
-                            <br><span>/ bulan</span>
-                        </div>
+                    <h3 class="room-number">Kamar ${room.nomor_kamar}</h3>
+                    <div class="room-price">
+                        ${formatRupiah(room.harga_sewa)} <span>/ bln</span>
                     </div>
 
-                    <p class="room-desc">${room.deskripsi || 'Kamar nyaman dan bersih dengan fasilitas lengkap siap huni.'}</p>
-
-                    <div class="room-facilities">
-                        ${fasilitasTags}
+                    <div class="room-meta">
+                        <span class="room-meta-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
+                            ${room.luas_kamar || '3 x 4 m'}
+                        </span>
+                        <span class="room-meta-sep">|</span>
+                        <span class="room-meta-item">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                            ${room.tipe} &bull; Lt. ${room.lantai}
+                        </span>
                     </div>
 
                     <div class="room-footer">
-                        <button class="btn btn-secondary btn-sm" onclick="showRoomDetailModal(${room.id})">
+                        <button class="btn btn-detail btn-sm" onclick="showRoomDetailModal(${room.id})">
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                             Detail
                         </button>
                         ${isTersedia ? `
                             <button class="btn btn-primary btn-sm" onclick="openBookingModal(${room.id})">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
                                 Sewa Kamar
                             </button>
                         ` : `
-                            <button class="btn btn-secondary btn-sm" disabled style="opacity:0.6;cursor:not-allowed;">
+                            <button class="btn btn-secondary btn-sm" disabled style="opacity:0.65;cursor:not-allowed;">
                                 Tidak Tersedia
                             </button>
                         `}
