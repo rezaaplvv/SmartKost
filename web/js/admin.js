@@ -1005,29 +1005,22 @@ async function copyPenghuniHp(phoneStr) {
     }
 }
 
+function renderPenghuniAvatarHtml(nama, fotoProfil) {
+    if (fotoProfil && String(fotoProfil).trim() !== '') {
+        return `<img src="${escapeHtml(fotoProfil)}" alt="${escapeHtml(nama || 'Penghuni')}">`;
+    }
+    return escapeHtml(getNameInitials(nama));
+}
+
 async function loadPenghuniAdmin() {
     const status = document.getElementById('filter-penghuni-status')?.value || 'Aktif';
     const search = document.getElementById('search-penghuni-admin')?.value.trim() || null;
 
-    const [res, resAll] = await Promise.all([
-        eel.get_penghuni(status, search)(),
-        eel.get_penghuni('Semua', null)()
-    ]);
-
+    const res = await eel.get_penghuni(status, search)();
     const tbody = document.getElementById('penghuni-table-body');
     if (!tbody) return;
 
-    const allList = (resAll && resAll.status && Array.isArray(resAll.data)) ? resAll.data : [];
-    const totalAktif = allList.filter(x => x.status === 'Aktif').length;
-    const totalAlumni = allList.filter(x => x.status !== 'Aktif').length;
     const shownList = (res && res.status && Array.isArray(res.data)) ? res.data : [];
-
-    const elStatAktif = document.getElementById('penghuni-stat-aktif');
-    const elStatAlumni = document.getElementById('penghuni-stat-alumni');
-    const elStatShown = document.getElementById('penghuni-stat-shown');
-    if (elStatAktif) elStatAktif.textContent = totalAktif;
-    if (elStatAlumni) elStatAlumni.textContent = totalAlumni;
-    if (elStatShown) elStatShown.textContent = shownList.length;
 
     if (shownList.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:34px 20px;">Tidak ada data penghuni ditemukan.</td></tr>`;
@@ -1035,15 +1028,12 @@ async function loadPenghuniAdmin() {
     }
 
     penghuniCache = shownList;
-    const avatarTones = ['', 'tone-blue', 'tone-green', 'tone-violet'];
 
     tbody.innerHTML = shownList.map(p => {
         const isAktif = p.status === 'Aktif';
         const badgeCls = isAktif ? 'badge-success' : 'badge-neutral';
-        const avatarTone = isAktif ? avatarTones[(Number(p.id) || 0) % avatarTones.length] : 'tone-alumni';
-        const initials = getNameInitials(p.nama);
-        const tipeKamar = p.tipe_kamar || p.tipe || 'Standar';
-        const lantaiTxt = p.lantai ? `Lt ${p.lantai}` : '-';
+        const avatarTone = isAktif ? '' : 'tone-alumni';
+        const avatarInner = renderPenghuniAvatarHtml(p.nama, p.foto_profil);
         const cleanWa = (p.no_hp || '').replace(/[^0-9]/g, '');
         const waNum = cleanWa.startsWith('0') ? '62' + cleanWa.slice(1) : cleanWa;
         const safeHpAttr = escapeHtml(p.no_hp || '');
@@ -1052,18 +1042,15 @@ async function loadPenghuniAdmin() {
             <tr>
                 <td>
                     <div class="penghuni-person-cell">
-                        <div class="penghuni-avatar ${avatarTone}">${escapeHtml(initials)}</div>
+                        <div class="penghuni-avatar ${avatarTone}">${avatarInner}</div>
                         <div>
-                            <button type="button" class="penghuni-name-trigger" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat profil &amp; riwayat tagihan">${escapeHtml(p.nama)}</button>
+                            <button type="button" class="penghuni-name-trigger" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat profil, KTP &amp; riwayat tagihan">${escapeHtml(p.nama)}</button>
                             <span class="penghuni-sub-meta">@${escapeHtml(p.username || 'non-akun')}</span>
                         </div>
                     </div>
                 </td>
                 <td>
-                    <div class="penghuni-kamar-cell">
-                        <span class="penghuni-kamar-badge">${p.nomor_kamar ? `Kamar ${escapeHtml(p.nomor_kamar)}` : 'Tanpa Kamar'}</span>
-                        <span class="penghuni-kamar-sub">${escapeHtml(tipeKamar)} &bull; ${escapeHtml(lantaiTxt)}</span>
-                    </div>
+                    <span class="penghuni-kamar-badge">${p.nomor_kamar ? `Kamar ${escapeHtml(p.nomor_kamar)}` : 'Tanpa Kamar'}</span>
                 </td>
                 <td>
                     <div class="penghuni-contact-cell">
@@ -1091,19 +1078,15 @@ async function loadPenghuniAdmin() {
                 <td><span class="badge ${badgeCls}">${escapeHtml(p.status)}</span></td>
                 <td style="text-align:right;">
                     <div class="penghuni-actions-row">
-                        <button type="button" class="penghuni-act-btn detail" onclick="openDetailPenghuniDrawer(${p.id})" title="Detail Profil &amp; Tagihan">
+                        ${p.foto_ktp ? `<button type="button" class="penghuni-ktp-btn" onclick="openPenghuniKtp(${p.id})" title="Lihat Foto KTP">KTP</button>` : ''}
+                        <button type="button" class="penghuni-act-btn" onclick="openDetailPenghuniDrawer(${p.id})" title="Detail Profil &amp; Tagihan">
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                         </button>
-                        ${p.foto_ktp ? `
-                            <button type="button" class="penghuni-act-btn" onclick="openPenghuniKtp(${p.id})" title="Lihat Foto KTP">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><line x1="15" y1="8" x2="17" y2="8"></line><line x1="15" y1="12" x2="17" y2="12"></line><path d="M7 16c.5-1.5 3.5-1.5 4 0"></path></svg>
-                            </button>
-                        ` : ''}
                         <button type="button" class="penghuni-act-btn" onclick="openEditPenghuniModal(${p.id})" title="Edit Biodata">
                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                         </button>
                         ${isAktif ? `
-                            <button type="button" class="penghuni-act-btn move" onclick="openPindahKamarModal(${p.id})" title="Pindah Kamar">
+                            <button type="button" class="penghuni-act-btn" onclick="openPindahKamarModal(${p.id})" title="Pindah Kamar">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line></svg>
                             </button>
                             <button type="button" class="penghuni-act-btn checkout" onclick="handleCheckoutPenghuni(${p.id})" title="Check-Out Penghuni">
@@ -1130,7 +1113,10 @@ async function openDetailPenghuniDrawer(penghuniId) {
     if (cached) {
         if (nameEl) nameEl.textContent = cached.nama;
         if (userEl) userEl.textContent = `@${cached.username || 'non-akun'}`;
-        if (avatarEl) avatarEl.textContent = getNameInitials(cached.nama);
+        if (avatarEl) {
+            avatarEl.innerHTML = renderPenghuniAvatarHtml(cached.nama, cached.foto_profil);
+            avatarEl.className = `penghuni-avatar lg ${cached.status === 'Aktif' ? '' : 'tone-alumni'}`;
+        }
         if (statusEl) {
             statusEl.textContent = cached.status;
             statusEl.className = `badge ${cached.status === 'Aktif' ? 'badge-success' : 'badge-neutral'}`;
@@ -1158,7 +1144,7 @@ async function openDetailPenghuniDrawer(penghuniId) {
         if (nameEl) nameEl.textContent = p.nama;
         if (userEl) userEl.textContent = `@${p.username || 'non-akun'}`;
         if (avatarEl) {
-            avatarEl.textContent = getNameInitials(p.nama);
+            avatarEl.innerHTML = renderPenghuniAvatarHtml(p.nama, p.foto_profil);
             avatarEl.className = `penghuni-avatar lg ${isAktif ? '' : 'tone-alumni'}`;
         }
         if (statusEl) {

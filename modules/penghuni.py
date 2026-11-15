@@ -217,7 +217,7 @@ def get_daftar_penghuni(status="Aktif", search=None):
                DATE_FORMAT(p.tanggal_keluar, '%d/%m/%Y') AS tanggal_keluar,
                p.foto_ktp, p.status,
                k.nomor_kamar, k.tipe AS tipe_kamar, k.lantai, k.harga_sewa,
-               u.username
+               u.username, u.foto_profil
         FROM penghuni p
         LEFT JOIN kamar k ON p.kamar_id = k.id
         LEFT JOIN users u ON p.user_id = u.id
@@ -235,7 +235,7 @@ def get_detail_penghuni(penghuni_id):
                DATE_FORMAT(p.tanggal_keluar, '%d/%m/%Y') AS tanggal_keluar,
                p.foto_ktp, p.status,
                k.nomor_kamar, k.tipe AS tipe_kamar, k.lantai, k.harga_sewa, k.fasilitas,
-               u.username
+               u.username, u.foto_profil
         FROM penghuni p
         LEFT JOIN kamar k ON p.kamar_id = k.id
         LEFT JOIN users u ON p.user_id = u.id

@@ -2456,75 +2456,6 @@ body.admin-body {
 /* ==========================================================
    TAB PENGHUNI: MODERN SAAS TABLE & DETAIL SLIDE-OVER DRAWER
    ========================================================== */
-.penghuni-summary-strip {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-    margin-bottom: 16px;
-}
-
-.penghuni-stat-pill {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: 14px;
-    background: var(--sk-card);
-    border: 1px solid var(--sk-border);
-    box-shadow: 0 2px 8px rgba(17, 24, 39, 0.02);
-}
-
-.penghuni-stat-pill.active-stat {
-    background: linear-gradient(135deg, #FFFAED 0%, #FFF6DA 100%);
-    border-color: #FDE68A;
-}
-
-[data-theme="dark"] .penghuni-stat-pill.active-stat {
-    background: linear-gradient(135deg, rgba(249, 192, 10, 0.14) 0%, rgba(249, 192, 10, 0.06) 100%);
-    border-color: rgba(249, 192, 10, 0.35);
-}
-
-.penghuni-stat-pill > div {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-}
-
-.penghuni-stat-pill strong {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: var(--sk-text);
-    font-variant-numeric: tabular-nums;
-}
-
-.penghuni-stat-pill span {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--sk-text-muted);
-}
-
-.penghuni-stat-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.penghuni-stat-dot.green {
-    background: #16A34A;
-    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.14);
-}
-
-.penghuni-stat-dot.gray {
-    background: #64748B;
-    box-shadow: 0 0 0 4px rgba(100, 116, 139, 0.14);
-}
-
-.penghuni-stat-dot.gold {
-    background: var(--sk-yellow);
-    box-shadow: 0 0 0 4px rgba(255, 201, 40, 0.22);
-}
-
 .penghuni-toolbar {
     margin-bottom: 16px;
 }
@@ -2534,22 +2465,22 @@ body.admin-body {
     align-items: center;
     gap: 4px;
     padding: 4px;
-    border-radius: 12px;
+    border-radius: 11px;
     background: var(--sk-card);
     border: 1px solid var(--sk-border);
 }
 
 .penghuni-seg-btn {
-    padding: 7px 14px;
+    padding: 7px 15px;
     border: none;
-    border-radius: 9px;
+    border-radius: 8px;
     background: transparent;
     color: var(--sk-text-muted);
     font-family: inherit;
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+    transition: background-color 0.18s ease, color 0.18s ease;
 }
 
 .penghuni-seg-btn:hover {
@@ -2557,34 +2488,38 @@ body.admin-body {
 }
 
 .penghuni-seg-btn.active {
-    background: var(--sk-yellow);
-    color: #111827;
+    background: #0F172A;
+    color: #FFFFFF;
     font-weight: 700;
-    box-shadow: 0 2px 6px rgba(249, 192, 10, 0.3);
+}
+
+[data-theme="dark"] .penghuni-seg-btn.active {
+    background: var(--sk-yellow);
+    color: #0F172A;
 }
 
 .penghuni-table-card {
-    padding: 6px 18px 14px;
+    padding: 4px 16px 12px;
 }
 
 .penghuni-table th {
-    padding: 13px 12px;
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
+    padding: 11px 9px;
+    font-size: 0.71rem;
+    letter-spacing: 0.05em;
     white-space: nowrap;
 }
 
 .penghuni-table td {
-    padding: 13px 12px;
+    padding: 12px 9px;
     vertical-align: middle;
 }
 
 .penghuni-table tbody tr {
-    transition: background-color 0.16s ease;
+    transition: background-color 0.15s ease;
 }
 
 .penghuni-table tbody tr:hover {
-    background: rgba(255, 246, 214, 0.38);
+    background: rgba(15, 23, 42, 0.025);
 }
 
 [data-theme="dark"] .penghuni-table tbody tr:hover {
@@ -2594,55 +2529,50 @@ body.admin-body {
 .penghuni-person-cell {
     display: flex;
     align-items: center;
-    gap: 11px;
-    min-width: 175px;
+    gap: 10px;
+    min-width: 0;
 }
 
 .penghuni-avatar {
     width: 38px;
     height: 38px;
-    border-radius: 11px;
+    border-radius: 50%;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
     flex-shrink: 0;
-    background: #FFF6D6;
-    color: #9A5B00;
-    border: 1px solid #FDE68A;
+    background: #1E293B;
+    color: #F8FAFC;
+    border: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.penghuni-avatar.tone-blue {
-    background: #EFF6FF;
-    color: #1D4ED8;
-    border-color: #BFDBFE;
-}
-
-.penghuni-avatar.tone-green {
-    background: #ECFDF5;
-    color: #047857;
-    border-color: #A7F3D0;
-}
-
-.penghuni-avatar.tone-violet {
-    background: #F5F3FF;
-    color: #6D28D9;
-    border-color: #DDD6FE;
+.penghuni-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .penghuni-avatar.tone-alumni {
-    background: #F1F5F9;
+    background: #E2E8F0;
     color: #475569;
     border-color: #CBD5E1;
+}
+
+[data-theme="dark"] .penghuni-avatar {
+    background: #334155;
+    color: #F8FAFC;
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 .penghuni-avatar.lg {
     width: 48px;
     height: 48px;
-    border-radius: 14px;
-    font-size: 0.95rem;
+    font-size: 0.94rem;
 }
 
 .penghuni-name-trigger {
@@ -2652,7 +2582,7 @@ body.admin-body {
     padding: 0;
     text-align: left;
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 700;
     color: var(--sk-text);
     cursor: pointer;
@@ -2660,7 +2590,7 @@ body.admin-body {
 }
 
 .penghuni-name-trigger:hover {
-    color: #B45309;
+    color: #0F172A;
     text-decoration: underline;
     text-underline-offset: 3px;
 }
@@ -2671,61 +2601,42 @@ body.admin-body {
 
 .penghuni-sub-meta {
     display: block;
-    font-size: 0.74rem;
+    font-size: 0.73rem;
     color: var(--sk-text-muted);
     margin-top: 1px;
-}
-
-.penghuni-kamar-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 3px;
-    white-space: nowrap;
 }
 
 .penghuni-kamar-badge {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 3px 9px;
+    padding: 4px 10px;
     border-radius: 8px;
-    background: rgba(255, 201, 40, 0.16);
-    border: 1px solid rgba(245, 184, 0, 0.45);
-    color: #78350F;
+    background: var(--bg-surface-alt);
+    border: 1px solid var(--sk-border);
+    color: var(--sk-text);
     font-size: 0.78rem;
     font-weight: 700;
-}
-
-[data-theme="dark"] .penghuni-kamar-badge {
-    color: var(--sk-yellow);
-    background: rgba(255, 201, 40, 0.12);
-}
-
-.penghuni-kamar-sub {
-    font-size: 0.74rem;
-    color: var(--sk-text-muted);
-    padding-left: 2px;
+    white-space: nowrap;
 }
 
 .penghuni-contact-cell {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 5px;
     white-space: nowrap;
 }
 
 .penghuni-phone-text {
-    font-size: 0.84rem;
+    font-size: 0.82rem;
     font-weight: 600;
     color: var(--sk-text);
     font-variant-numeric: tabular-nums;
 }
 
 .penghuni-mini-icon-btn {
-    width: 26px;
-    height: 26px;
-    border-radius: 7px;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
     border: 1px solid var(--sk-border);
     background: var(--bg-surface-alt);
     color: var(--sk-text-muted);
@@ -2734,34 +2645,35 @@ body.admin-body {
     justify-content: center;
     cursor: pointer;
     text-decoration: none;
-    transition: border-color 0.16s ease, color 0.16s ease, background-color 0.16s ease;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
 }
 
 .penghuni-mini-icon-btn:hover {
-    border-color: var(--sk-yellow);
-    color: #9A5B00;
-    background: #FFF6D6;
+    border-color: #94A3B8;
+    color: var(--sk-text);
+    background: var(--sk-card);
 }
 
 .penghuni-mini-icon-btn.wa:hover {
     border-color: #16A34A;
     color: #15803D;
-    background: #ECFDF5;
+    background: #F0FDF4;
 }
 
 .penghuni-mini-icon-btn .icon {
-    width: 13px;
-    height: 13px;
+    width: 12px;
+    height: 12px;
 }
 
 .penghuni-profesi-text {
-    font-size: 0.84rem;
+    font-size: 0.82rem;
     font-weight: 600;
     color: var(--sk-text);
+    line-height: 1.3;
 }
 
 .penghuni-date-text {
-    font-size: 0.83rem;
+    font-size: 0.81rem;
     font-weight: 600;
     color: var(--sk-text);
     white-space: nowrap;
@@ -2772,14 +2684,35 @@ body.admin-body {
     display: inline-flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 6px;
+    gap: 4px;
     flex-wrap: nowrap;
 }
 
+.penghuni-ktp-btn {
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 7px;
+    border: 1px solid var(--sk-border);
+    background: var(--bg-surface-alt);
+    color: var(--sk-text);
+    font-family: inherit;
+    font-size: 0.71rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+}
+
+.penghuni-ktp-btn:hover {
+    border-color: #94A3B8;
+    background: var(--sk-card);
+    transform: translateY(-1px);
+}
+
 .penghuni-act-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 9px;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
     border: 1px solid var(--sk-border);
     background: var(--sk-card);
     color: var(--sk-text-muted);
@@ -2787,37 +2720,26 @@ body.admin-body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.16s ease, border-color 0.16s ease, background-color 0.16s ease, color 0.16s ease;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
 .penghuni-act-btn .icon {
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
 }
 
 .penghuni-act-btn:hover {
     transform: translateY(-1px);
     color: var(--sk-text);
-    border-color: #CBD5E1;
+    border-color: #94A3B8;
     background: var(--bg-surface-alt);
-}
-
-.penghuni-act-btn.detail:hover {
-    border-color: var(--sk-yellow);
-    background: #FFF6D6;
-    color: #92400E;
-}
-
-.penghuni-act-btn.move:hover {
-    border-color: #F59E0B;
-    background: #FEF3C7;
-    color: #B45309;
 }
 
 .penghuni-act-btn.checkout {
     color: #DC2626;
     border-color: rgba(220, 38, 38, 0.22);
-    background: rgba(220, 38, 38, 0.05);
+    background: rgba(220, 38, 38, 0.04);
 }
 
 .penghuni-act-btn.checkout:hover {
@@ -3007,9 +2929,6 @@ body.admin-body {
 }
 
 @media (max-width: 720px) {
-    .penghuni-summary-strip {
-        grid-template-columns: 1fr;
-    }
     .drawer-info-grid {
         grid-template-columns: 1fr;
     }
