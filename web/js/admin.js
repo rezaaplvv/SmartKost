@@ -19,6 +19,107 @@ let keluhanCache = [];
 let cashflowChart = null;
 let okupansiChart = null;
 let pengeluaranChart = null;
+let dashboardObserver = null;
+let countAnimSeq = 0;
+
+function adminPrefersReducedMotion() {
+    return typeof window !== 'undefined' &&
+        window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function getDashRevealDelayMs(el) {
+    const raw = el.style.getPropertyValue('--dash-delay') || '0';
+    const parsed = parseFloat(raw);
+    return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function triggerDashboardReveal(el) {
+    if (!el || el.classList.contains('is-visible')) return;
+    const delayMs = getDashRevealDelayMs(el);
+    el.classList.add('is-visible');
+    setTimeout(() => {
+        el.classList.add('dash-reveal-done');
+    }, delayMs + 760);
+}
+
+function observeDashboardReveals() {
+    const overview = document.getElementById('tab-overview');
+    if (!overview) return;
+    const targets = overview.querySelectorAll('.dash-reveal:not(.is-visible)');
+    if (!targets.length) return;
+
+    if (adminPrefersReducedMotion() || !dashboardObserver) {
+        targets.forEach(el => triggerDashboardReveal(el));
+        return;
+    }
+
+    targets.forEach(el => dashboardObserver.observe(el));
+}
+
+function setupDashboardReveal() {
+    const overview = document.getElementById('tab-overview');
+    if (!overview) return;
+
+    if (!('IntersectionObserver' in window) || adminPrefersReducedMotion()) {
+        overview.querySelectorAll('.dash-reveal').forEach(el => triggerDashboardReveal(el));
+        return;
+    }
+
+    if (!dashboardObserver) {
+        dashboardObserver = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                triggerDashboardReveal(entry.target);
+                obs.unobserve(entry.target);
+            });
+        }, {
+            threshold: 0.08,
+            rootMargin: '0px 0px -24px 0px'
+        });
+    }
+
+    observeDashboardReveals();
+}
+
+function animateAdminCountUp(idOrEl, targetValue, formatter, duration = 850, delayMs = 0) {
+    const el = typeof idOrEl === 'string' ? document.getElementById(idOrEl) : idOrEl;
+    if (!el) return;
+
+    const target = Number(targetValue) || 0;
+    const formatFn = typeof formatter === 'function' ? formatter : (v) => String(Math.round(v));
+    const token = String(++countAnimSeq);
+    el.dataset.countToken = token;
+
+    if (adminPrefersReducedMotion() || target === 0) {
+        el.textContent = formatFn(target);
+        return;
+    }
+
+    const startRun = () => {
+        if (el.dataset.countToken !== token) return;
+        const startTime = performance.now();
+        const step = (now) => {
+            if (el.dataset.countToken !== token) return;
+            const progress = Math.min((now - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const val = target * eased;
+            el.textContent = formatFn(progress >= 1 ? target : val);
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                el.textContent = formatFn(target);
+            }
+        };
+        requestAnimationFrame(step);
+    };
+
+    if (delayMs > 0) {
+        setTimeout(startRun, delayMs);
+    } else {
+        startRun();
+    }
+}
 
 const TAB_META = {
     overview: {
@@ -76,8 +177,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (elName) elName.textContent = displayName;
     if (elAvatar) elAvatar.textContent = displayName.charAt(0).toUpperCase();
 
-    // 2. Setup UI listeners & Modals
+    // 2. Setup UI listeners, Dashboard reveal & Modals
     setupSidebarNavigation();
+    setupDashboardReveal();
     setupModals();
     setupAdminForms();
 
@@ -157,7 +259,10 @@ async function switchAdminTab(tabName) {
     if (subEl) subEl.textContent = meta.subtitle;
 
     // Muat data sesuai tab
-    if (tabName === 'overview') await loadOverviewData();
+    if (tabName === 'overview') {
+        observeDashboardReveals();
+        await loadOverviewData();
+    }
     else if (tabName === 'kamar') await loadRoomsAdmin();
     else if (tabName === 'booking') await loadBookingsAdmin();
     else if (tabName === 'penghuni') await loadPenghuniAdmin();
@@ -223,24 +328,19 @@ async function loadKpiCards() {
         if (!res.status || !res.data) return;
         const d = res.data;
 
-        const setText = (id, val) => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = val;
-        };
-
-        setText('kpi-pemasukan', formatRupiah(d.pemasukan_bulan_ini));
-        setText('kpi-laba', formatRupiah(d.laba_bersih_bulan_ini));
-        setText('kpi-pengeluaran', formatRupiah(d.pengeluaran_bulan_ini));
-        setText('kpi-okupansi', `${d.okupansi_rate}%`);
-        setText('kpi-kamar-terisi', d.kamar_terisi);
-        setText('kpi-kamar-tersedia', d.kamar_tersedia);
-        setText('kpi-penghuni-aktif', d.penghuni_aktif ?? d.kamar_terisi);
-        setText('kpi-tunggakan', formatRupiah(d.total_tunggakan));
+        animateAdminCountUp('kpi-pemasukan', d.pemasukan_bulan_ini, formatRupiah, 900, 80);
+        animateAdminCountUp('kpi-laba', d.laba_bersih_bulan_ini, formatRupiah, 900, 240);
+        animateAdminCountUp('kpi-pengeluaran', d.pengeluaran_bulan_ini, formatRupiah, 900, 160);
+        animateAdminCountUp('kpi-okupansi', d.okupansi_rate, (v) => `${Math.round(v)}%`, 850, 390);
+        animateAdminCountUp('kpi-kamar-terisi', d.kamar_terisi, (v) => String(Math.round(v)), 800, 390);
+        animateAdminCountUp('kpi-kamar-tersedia', d.kamar_tersedia, (v) => String(Math.round(v)), 800, 300);
+        animateAdminCountUp('kpi-penghuni-aktif', d.penghuni_aktif ?? d.kamar_terisi, (v) => String(Math.round(v)), 800, 480);
+        animateAdminCountUp('kpi-tunggakan', d.total_tunggakan, formatRupiah, 850, 120);
 
         // Update Donut Card B summary numbers
-        setText('donut-okupansi-pct', `${Math.round(d.okupansi_rate || 0)}%`);
-        setText('legend-kamar-kosong', d.kamar_tersedia);
-        setText('legend-kamar-terisi', d.kamar_terisi);
+        animateAdminCountUp('donut-okupansi-pct', Math.round(d.okupansi_rate || 0), (v) => `${Math.round(v)}%`, 850, 180);
+        animateAdminCountUp('legend-kamar-kosong', d.kamar_tersedia, (v) => String(Math.round(v)), 800, 220);
+        animateAdminCountUp('legend-kamar-terisi', d.kamar_terisi, (v) => String(Math.round(v)), 800, 280);
 
         const growthEl = document.getElementById('kpi-growth-text');
         if (growthEl) {
@@ -325,6 +425,10 @@ async function loadOverviewCharts() {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: adminPrefersReducedMotion() ? false : {
+                        duration: 950,
+                        easing: 'easeOutQuart'
+                    },
                     plugins: {
                         legend: {
                             position: 'top',
@@ -376,17 +480,14 @@ async function loadOverviewCharts() {
             const totalKosong = Math.max(0, totalUnit - totalTerisi);
             const pct = totalUnit > 0 ? Math.round((totalTerisi / totalUnit) * 100) : 0;
 
-            const pctEl = document.getElementById('donut-okupansi-pct');
-            if (pctEl) pctEl.textContent = `${pct}%`;
-            const kosongEl = document.getElementById('legend-kamar-kosong');
-            if (kosongEl) kosongEl.textContent = totalKosong;
-            const terisiEl = document.getElementById('legend-kamar-terisi');
-            if (terisiEl) terisiEl.textContent = totalTerisi;
+            animateAdminCountUp('donut-okupansi-pct', pct, (v) => `${Math.round(v)}%`, 850, 180);
+            animateAdminCountUp('legend-kamar-kosong', totalKosong, (v) => String(Math.round(v)), 800, 220);
+            animateAdminCountUp('legend-kamar-terisi', totalTerisi, (v) => String(Math.round(v)), 800, 280);
 
             const breakdownEl = document.getElementById('legend-tipe-breakdown');
             if (breakdownEl && labels.length > 0) {
                 breakdownEl.innerHTML = labels.map((lbl, idx) => `
-                    <div class="donut-tipe-row">
+                    <div class="donut-tipe-row dash-action-item" style="--item-delay: ${idx * 90}ms;">
                         <span>Tipe ${escapeHtml(lbl)}</span>
                         <strong>${terisiArr[idx] || 0}/${totalArr[idx] || 0} Terisi</strong>
                     </div>
@@ -415,6 +516,12 @@ async function loadOverviewCharts() {
                     responsive: true,
                     maintainAspectRatio: false,
                     cutout: '74%',
+                    animation: adminPrefersReducedMotion() ? false : {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 950,
+                        easing: 'easeOutQuart'
+                    },
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -447,6 +554,12 @@ async function loadOverviewCharts() {
                     responsive: true,
                     maintainAspectRatio: false,
                     cutout: '66%',
+                    animation: adminPrefersReducedMotion() ? false : {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 950,
+                        easing: 'easeOutQuart'
+                    },
                     plugins: {
                         legend: { position: 'right', labels: { color: textColor, boxWidth: 12 } }
                     }
@@ -469,10 +582,12 @@ async function loadOverviewActionList() {
         ]);
 
         const items = [];
+        let itemIdx = 0;
         if (resBk.status && resBk.data) {
             resBk.data.slice(0, 3).forEach(b => {
+                const delayMs = (itemIdx++) * 80;
                 items.push(`
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg-surface-alt);border:1px solid var(--border-color);border-radius:10px;">
+                    <div class="dash-action-item" style="--item-delay:${delayMs}ms;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg-surface-alt);border:1px solid var(--border-color);border-radius:10px;">
                         <div>
                             <strong style="font-size:0.88rem;display:block;">Booking Baru: ${escapeHtml(b.nama_pemohon)}</strong>
                             <span style="font-size:0.78rem;color:var(--text-muted);">Kamar ${escapeHtml(b.nomor_kamar)} • Masuk ${escapeHtml(b.tanggal_mulai)} (${b.durasi_bulan} bln)</span>
@@ -484,8 +599,9 @@ async function loadOverviewActionList() {
         }
         if (resTg.status && resTg.data) {
             resTg.data.slice(0, 3).forEach(t => {
+                const delayMs = (itemIdx++) * 80;
                 items.push(`
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg-surface-alt);border:1px solid var(--border-color);border-radius:10px;">
+                    <div class="dash-action-item" style="--item-delay:${delayMs}ms;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg-surface-alt);border:1px solid var(--border-color);border-radius:10px;">
                         <div>
                             <strong style="font-size:0.88rem;display:block;">Verifikasi Bayar: ${escapeHtml(t.nama_penghuni)}</strong>
                             <span style="font-size:0.78rem;color:var(--text-muted);">${escapeHtml(t.kode_invoice)} • ${formatRupiah(t.total_bayar)}</span>

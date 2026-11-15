@@ -2343,3 +2343,114 @@ body.admin-body {
     }
 }
 
+/* ==========================================================
+   Dashboard Tab (#tab-overview) Calm Entrance & Scroll-Reveal
+   ========================================================== */
+#tab-overview .kpi-value-lg,
+#tab-overview .kpi-mini-value,
+#tab-overview .donut-center-label,
+#tab-overview .donut-legend-item strong {
+    font-variant-numeric: tabular-nums;
+}
+
+#tab-overview .dash-reveal {
+    opacity: 0;
+    transform: translateY(22px) scale(0.985);
+    transition:
+        opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1) var(--dash-delay, 0ms),
+        transform 0.72s cubic-bezier(0.22, 1, 0.36, 1) var(--dash-delay, 0ms);
+    will-change: opacity, transform;
+}
+
+#tab-overview .dash-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+#tab-overview .dash-reveal.dash-reveal-done {
+    will-change: auto;
+}
+
+#tab-overview .kpi-card.dash-reveal.dash-reveal-done {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#tab-overview .kpi-mini-card.dash-reveal.dash-reveal-done {
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* Decorative profit bars grow gently from bottom when Profit card reveals */
+#tab-overview .kpi-card-profit .profit-bars-decor span {
+    transform-origin: bottom;
+    transform: scaleY(0.15);
+    opacity: 0;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease;
+}
+
+#tab-overview .kpi-card-profit.is-visible .profit-bars-decor span {
+    transform: scaleY(1);
+    opacity: 1;
+}
+
+#tab-overview .kpi-card-profit.is-visible .profit-bars-decor span:nth-child(1) { transition-delay: 0.32s; }
+#tab-overview .kpi-card-profit.is-visible .profit-bars-decor span:nth-child(2) { transition-delay: 0.42s; }
+#tab-overview .kpi-card-profit.is-visible .profit-bars-decor span:nth-child(3) { transition-delay: 0.52s; }
+#tab-overview .kpi-card-profit.is-visible .profit-bars-decor span:nth-child(4) { transition-delay: 0.62s; }
+
+/* Quick Action 3D House Illustration glides in calmly */
+#tab-overview .quick-action-strip .quick-action-house-img {
+    opacity: 0;
+    transform: translateX(22px) scale(0.95);
+    transition:
+        opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s,
+        transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s;
+}
+
+#tab-overview .quick-action-strip.is-visible .quick-action-house-img {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+/* Dynamic Action List items & Donut breakdown rows */
+@keyframes dashItemSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#tab-overview .dash-action-item {
+    animation: dashItemSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) var(--item-delay, 0ms) backwards;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+#tab-overview .dash-action-item:hover {
+    transform: translateY(-1px);
+    border-color: var(--sk-yellow) !important;
+    box-shadow: 0 4px 12px rgba(17, 24, 39, 0.04);
+}
+
+#tab-overview .donut-tipe-row.dash-action-item {
+    animation: dashItemSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) var(--item-delay, 0ms) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #tab-overview .dash-reveal,
+    #tab-overview .kpi-card-profit .profit-bars-decor span,
+    #tab-overview .quick-action-strip .quick-action-house-img {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+
+    #tab-overview .dash-action-item,
+    #tab-overview .donut-tipe-row.dash-action-item {
+        animation: none !important;
+    }
+}
+
+
