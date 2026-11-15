@@ -45,12 +45,46 @@ function setupNavbarScroll() {
     const navbar = document.getElementById('main-navbar');
     if (!navbar) return;
 
+    const navLinks = document.querySelectorAll('#nav-links-pill a');
+    const sections = [
+        { id: 'beranda', el: document.getElementById('beranda') },
+        { id: 'katalog', el: document.getElementById('katalog') },
+        { id: 'kontak', el: document.getElementById('kontak') }
+    ].filter(s => s.el);
+
+    const setActiveLink = (hash) => {
+        navLinks.forEach(a => {
+            a.classList.toggle('active', a.getAttribute('href') === hash);
+        });
+    };
+
+    navLinks.forEach(a => {
+        a.addEventListener('click', () => {
+            setActiveLink(a.getAttribute('href'));
+        });
+    });
+
     const toggleScrolled = () => {
         if (window.scrollY > 30) {
             navbar.classList.add('scrolled');
         } else {
             navbar.classList.remove('scrolled');
         }
+
+        // Scroll-spy aktif untuk pill navigasi
+        const atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 40);
+        if (atBottom) {
+            setActiveLink('#kontak');
+            return;
+        }
+        const scrollPos = window.scrollY + 140;
+        let currentId = '#beranda';
+        for (const sec of sections) {
+            if (scrollPos >= sec.el.offsetTop) {
+                currentId = `#${sec.id}`;
+            }
+        }
+        setActiveLink(currentId);
     };
 
     toggleScrolled();
