@@ -1078,7 +1078,6 @@ async function loadPenghuniAdmin() {
     if (cardsEl) {
         cardsEl.innerHTML = shownList.map((p, idx) => {
             const isAktif = p.status === 'Aktif';
-            const badgeCls = isAktif ? 'badge-success' : 'badge-neutral';
             const avatarTone = isAktif ? '' : 'tone-alumni';
             const avatarInner = renderPenghuniAvatarHtml(p.nama, p.foto_profil);
             const cleanWa = (p.no_hp || '').replace(/[^0-9]/g, '');
@@ -1091,46 +1090,70 @@ async function loadPenghuniAdmin() {
 
             return `
                 <article class="penghuni-profile-card ${isAktif ? '' : 'is-alumni'}" style="animation-delay:${delayMs}ms;">
-                    <div class="penghuni-card-banner">
-                        <span class="penghuni-kamar-badge">${kamarLabel}</span>
-                        <span class="badge ${badgeCls}">${escapeHtml(p.status)}</span>
+                    <div class="penghuni-card-deco" aria-hidden="true">
+                        <svg viewBox="0 0 160 160" fill="none">
+                            <path d="M160 44C122 68 96 108 86 160H160V44Z" fill="rgba(255, 255, 255, 0.045)"/>
+                            <path d="M160 92C132 108 112 132 104 160H160V92Z" fill="rgba(255, 196, 0, 0.22)"/>
+                        </svg>
                     </div>
-                    <div class="penghuni-card-avatar-wrap">
-                        <div class="penghuni-card-avatar ${avatarTone}" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat Detail ${escapeHtml(p.nama)}">${avatarInner}</div>
-                    </div>
-                    <div class="penghuni-card-body">
-                        <div class="penghuni-card-identity">
-                            <h4 class="penghuni-card-name" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat profil, KTP &amp; riwayat tagihan">${escapeHtml(p.nama)}</h4>
-                            <div class="penghuni-card-username">@${escapeHtml(p.username || 'non-akun')}</div>
-                            <div class="penghuni-card-role">${profesiKota}</div>
+                    <div class="penghuni-card-content">
+                        <div class="penghuni-card-top">
+                            <span class="penghuni-card-room-pill">
+                                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.172 2.293 12.293a1 1 0 0 0 .707 1.707H5v6a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-6h2a1 1 0 0 0 .707-1.707L12 3.172z"/></svg>
+                                <span>${kamarLabel}</span>
+                            </span>
+                            <span class="penghuni-card-status-pill ${isAktif ? 'is-aktif' : 'is-alumni'}">
+                                <span class="penghuni-card-status-dot"></span>
+                                <span>${escapeHtml(p.status)}</span>
+                            </span>
                         </div>
 
-                        <div class="penghuni-card-meta-box">
-                            <div class="penghuni-card-meta-row">
-                                <span class="penghuni-card-meta-label">No. HP</span>
-                                <span class="penghuni-card-meta-val">
+                        <div class="penghuni-card-profile">
+                            <div class="penghuni-card-avatar-shell">
+                                <svg class="penghuni-card-sparks" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+                                    <line x1="15" y1="3" x2="17" y2="8"/>
+                                    <line x1="7" y1="7" x2="11" y2="11"/>
+                                    <line x1="3" y1="15" x2="8" y2="16"/>
+                                </svg>
+                                <div class="penghuni-card-avatar ${avatarTone}" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat Detail ${escapeHtml(p.nama)}">${avatarInner}</div>
+                            </div>
+                            <div class="penghuni-card-identity">
+                                <h4 class="penghuni-card-name" onclick="openDetailPenghuniDrawer(${p.id})" title="Lihat profil, KTP &amp; riwayat tagihan">${escapeHtml(p.nama)}</h4>
+                                <div class="penghuni-card-username">@${escapeHtml(p.username || 'non-akun')}</div>
+                                <div class="penghuni-card-role">${profesiKota}</div>
+                            </div>
+                        </div>
+
+                        <div class="penghuni-card-info-grid">
+                            <div class="penghuni-card-info-col">
+                                <span class="penghuni-card-info-label">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                    <span>No. HP</span>
+                                </span>
+                                <div class="penghuni-card-info-val">
                                     <span>${escapeHtml(p.no_hp || '-')}</span>
                                     ${p.no_hp ? `
-                                        <button type="button" class="penghuni-mini-icon-btn" onclick="copyPenghuniHp('${safeHpAttr}')" title="Salin Nomor HP">
+                                        <button type="button" class="penghuni-card-copy-btn" onclick="copyPenghuniHp('${safeHpAttr}')" title="Salin Nomor HP">
                                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                         </button>
                                     ` : ''}
-                                </span>
-                            </div>
-                            <div class="penghuni-card-meta-row">
-                                <span class="penghuni-card-meta-label">Masuk</span>
-                                <span class="penghuni-card-meta-val">${tglMasuk}</span>
-                            </div>
-                            ${!isAktif && p.tanggal_keluar ? `
-                                <div class="penghuni-card-meta-row">
-                                    <span class="penghuni-card-meta-label">Keluar</span>
-                                    <span class="penghuni-card-meta-val">${escapeHtml(p.tanggal_keluar)}</span>
                                 </div>
-                            ` : ''}
+                            </div>
+                            <div class="penghuni-card-info-col">
+                                <span class="penghuni-card-info-label">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    <span>Masuk</span>
+                                </span>
+                                <div class="penghuni-card-info-val">${tglMasuk}</div>
+                                ${!isAktif && p.tanggal_keluar ? `<div class="penghuni-card-info-sub">Keluar: ${escapeHtml(p.tanggal_keluar)}</div>` : ''}
+                            </div>
                         </div>
 
                         <div class="penghuni-card-footer">
-                            <button type="button" class="penghuni-card-detail-btn" onclick="openDetailPenghuniDrawer(${p.id})">Lihat Detail</button>
+                            <button type="button" class="penghuni-card-detail-btn" onclick="openDetailPenghuniDrawer(${p.id})">
+                                <span>Lihat Detail</span>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </button>
                             <div class="penghuni-card-actions">
                                 ${buildPenghuniActionButtons(p, isAktif, { includeDetailEye: false, waNum })}
                             </div>
