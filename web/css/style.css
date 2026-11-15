@@ -1308,6 +1308,39 @@ a:hover {
     transform: scale(1);
 }
 
+@keyframes modalBackdropFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes loginSlideUpIn {
+    0% {
+        opacity: 0;
+        transform: translateY(56px) scale(0.97);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+#modal-login.active {
+    animation: modalBackdropFadeIn 0.28s ease forwards;
+}
+
+#modal-login .modal-dialog {
+    opacity: 0;
+    transform: translateY(56px) scale(0.97);
+}
+
+#modal-login.active .modal-dialog {
+    animation: loginSlideUpIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 .modal-dialog-lg {
     max-width: 800px;
 }
@@ -1715,29 +1748,6 @@ textarea.form-control {
     border-radius: var(--radius-sm);
     display: none;
     object-fit: contain;
-}
-
-/* Quick Demo Account Pills */
-.demo-accounts {
-    background: var(--bg-surface-alt);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 14px;
-    margin-top: 20px;
-}
-
-.demo-accounts-title {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 8px;
-}
-
-.demo-buttons-group {
-    display: flex;
-    gap: 8px;
 }
 
 /* Toast Notifications */

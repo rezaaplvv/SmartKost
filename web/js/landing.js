@@ -586,23 +586,9 @@ function openBookingModal(roomId) {
 function openLoginModal() {
     const modal = document.getElementById('modal-login');
     if (modal) {
+        switchAuthTab('login');
         document.getElementById('login-form').reset();
         modal.classList.add('active');
-    }
-}
-
-/**
- * Quick Fill Akun Demo untuk Pengujian
- */
-function quickFillDemo(role) {
-    const uInput = document.getElementById('login-username');
-    const pInput = document.getElementById('login-password');
-    if (role === 'admin') {
-        uInput.value = 'admin';
-        pInput.value = 'admin123';
-    } else {
-        uInput.value = 'budi';
-        pInput.value = 'user123';
     }
 }
 
