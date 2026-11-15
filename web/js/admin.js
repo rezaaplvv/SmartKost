@@ -174,9 +174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const rawName = user.nama_lengkap || user.username || 'Administrator Utama';
     const displayName = rawName === 'Administrator' ? 'Administrator Utama' : rawName;
     const elName = document.getElementById('admin-display-name');
-    const elAvatar = document.getElementById('admin-avatar-initial');
     if (elName) elName.textContent = displayName;
-    if (elAvatar) elAvatar.textContent = displayName.charAt(0).toUpperCase();
 
     // 2. Setup UI listeners, Dashboard reveal & Modals
     setupSidebarNavigation();

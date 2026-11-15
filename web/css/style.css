@@ -3011,4 +3011,233 @@ textarea.form-control {
     }
 }
 
+/* ==========================================================================
+   CUSTOM SMARTKOST DROPDOWN (Replaces Default OS White/Blue <select>)
+   ========================================================================== */
+.sk-select-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
+.sk-select-wrap.is-block {
+    display: flex;
+    width: 100%;
+}
+
+.sk-select-wrap.is-hero {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
+.sk-select-native {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.sk-select-trigger {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-main, #0F172A);
+    background: var(--sk-card, var(--bg-surface, #FFFFFF));
+    border: 1px solid var(--sk-border, var(--border-color, #E2E8F0));
+    border-radius: 12px;
+    padding: 8px 12px;
+    cursor: pointer;
+    text-align: left;
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.sk-select-trigger:hover {
+    border-color: #CBD5E1;
+}
+
+.sk-select-wrap.is-open .sk-select-trigger,
+.sk-select-trigger:focus-visible {
+    border-color: #FFC400;
+    box-shadow: 0 0 0 3px rgba(255, 196, 0, 0.22);
+}
+
+.sk-select-wrap.is-sm .sk-select-trigger {
+    padding: 5px 11px;
+    font-size: 0.78rem;
+    border-radius: 9999px;
+    background: var(--sk-bg, #F8FAFC);
+}
+
+.sk-select-wrap.is-form .sk-select-trigger {
+    padding: 11px 14px;
+    font-size: 0.93rem;
+    border-radius: var(--radius-md, 12px);
+}
+
+.sk-select-wrap.is-hero .sk-select-trigger {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 2px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    box-shadow: none !important;
+}
+
+.search-field-select .sk-select-wrap + .chevron-down {
+    display: none !important;
+}
+
+.sk-select-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sk-select-arrow {
+    width: 15px;
+    height: 15px;
+    color: var(--text-muted, #64748B);
+    flex-shrink: 0;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), color 0.18s ease;
+}
+
+.sk-select-wrap.is-open .sk-select-arrow {
+    transform: rotate(180deg);
+    color: #101D38;
+}
+
+[data-theme="dark"] .sk-select-wrap.is-open .sk-select-arrow {
+    color: #FFC400;
+}
+
+/* Floating Portal Menu */
+.sk-select-menu {
+    position: fixed;
+    z-index: 9999;
+    min-width: 170px;
+    max-height: 268px;
+    overflow-y: auto;
+    background: var(--sk-card, var(--bg-surface, #FFFFFF));
+    border: 1px solid var(--sk-border, #E2E8F0);
+    border-radius: 15px;
+    padding: 6px;
+    box-shadow: 0 20px 44px rgba(16, 29, 56, 0.16), 0 4px 14px rgba(16, 29, 56, 0.08);
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sk-select-menu.open-up {
+    transform: translateY(6px) scale(0.98);
+}
+
+.sk-select-menu.is-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.sk-select-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sk-select-menu::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.28);
+    border-radius: 999px;
+}
+
+.sk-select-option {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--text-main, #101D38);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 9px 11px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.14s ease, color 0.14s ease;
+}
+
+.sk-select-option + .sk-select-option {
+    margin-top: 2px;
+}
+
+.sk-select-option:hover:not(:disabled),
+.sk-select-option.is-focused:not(:disabled) {
+    background: #FFFBEB;
+    color: #101D38;
+}
+
+[data-theme="dark"] .sk-select-option:hover:not(:disabled),
+[data-theme="dark"] .sk-select-option.is-focused:not(:disabled) {
+    background: rgba(255, 196, 0, 0.12);
+    color: #FFFFFF;
+}
+
+.sk-select-option.is-selected {
+    background: #101D38 !important;
+    color: #FFFFFF !important;
+    font-weight: 700;
+}
+
+[data-theme="dark"] .sk-select-option.is-selected {
+    background: #FFC400 !important;
+    color: #101D38 !important;
+}
+
+.sk-select-option:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.sk-select-opt-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sk-select-check {
+    width: 14px;
+    height: 14px;
+    color: #FFC400;
+    flex-shrink: 0;
+    opacity: 0;
+}
+
+.sk-select-option.is-selected .sk-select-check {
+    opacity: 1;
+}
+
+[data-theme="dark"] .sk-select-option.is-selected .sk-select-check {
+    color: #101D38;
+}
+
 

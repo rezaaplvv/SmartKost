@@ -225,6 +225,301 @@ function notifyRoomCatalogUpdated() {
     }
 }
 
+/**
+ * Custom SmartKost Select Engine
+ * Menggantikan popup <select> bawaan browser/OS pada seluruh halaman & modal
+ * tanpa mengubah logika, value binding, maupun event handler asli.
+ */
+(function () {
+    const ARROW_SVG = '<svg class="sk-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+    const CHECK_SVG = '<svg class="sk-select-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+    let activeInstance = null;
+    let portalMenu = null;
+    let globalBound = false;
+
+    function ensurePortalMenu() {
+        if (portalMenu) return portalMenu;
+        portalMenu = document.createElement('div');
+        portalMenu.className = 'sk-select-menu';
+        portalMenu.setAttribute('role', 'listbox');
+        document.body.appendChild(portalMenu);
+        return portalMenu;
+    }
+
+    function positionPortalMenu(instance) {
+        if (!portalMenu || !instance) return;
+        const rect = instance.trigger.getBoundingClientRect();
+        const viewportH = window.innerHeight || document.documentElement.clientHeight;
+        const viewportW = window.innerWidth || document.documentElement.clientWidth;
+
+        const minW = Math.max(rect.width, 165);
+        portalMenu.style.minWidth = `${minW}px`;
+        portalMenu.style.maxWidth = `${Math.min(Math.max(rect.width + 60, 260), viewportW - 24)}px`;
+
+        const estimatedH = Math.min(portalMenu.scrollHeight || 220, 268);
+        const spaceBelow = viewportH - rect.bottom - 12;
+        const spaceAbove = rect.top - 12;
+        const openUp = spaceBelow < Math.min(estimatedH, 160) && spaceAbove > spaceBelow;
+
+        let left = rect.left;
+        if (left + minW > viewportW - 12) {
+            left = Math.max(12, viewportW - minW - 12);
+        }
+
+        portalMenu.style.left = `${left}px`;
+        portalMenu.classList.toggle('open-up', openUp);
+
+        if (openUp) {
+            const bottomVal = viewportH - rect.top + 6;
+            portalMenu.style.top = 'auto';
+            portalMenu.style.bottom = `${bottomVal}px`;
+        } else {
+            portalMenu.style.bottom = 'auto';
+            portalMenu.style.top = `${rect.bottom + 6}px`;
+        }
+    }
+
+    function closeActiveMenu(restoreFocus = false) {
+        if (!activeInstance) return;
+        const prev = activeInstance;
+        activeInstance = null;
+        prev.wrap.classList.remove('is-open');
+        prev.trigger.setAttribute('aria-expanded', 'false');
+        if (portalMenu) {
+            portalMenu.classList.remove('is-open');
+        }
+        if (restoreFocus) {
+            prev.trigger.focus();
+        }
+    }
+
+    function renderMenuOptions(instance) {
+        const menu = ensurePortalMenu();
+        menu.innerHTML = '';
+
+        const options = Array.from(instance.select.options);
+        if (!options.length) {
+            const emptyEl = document.createElement('div');
+            emptyEl.className = 'sk-select-option';
+            emptyEl.style.opacity = '0.55';
+            emptyEl.style.cursor = 'default';
+            emptyEl.textContent = 'Tidak ada pilihan';
+            menu.appendChild(emptyEl);
+            return;
+        }
+
+        const currentVal = instance.select.value;
+        options.forEach((opt) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'sk-select-option';
+            btn.setAttribute('role', 'option');
+            const isSel = opt.value === currentVal && !opt.disabled;
+            btn.classList.toggle('is-selected', isSel);
+            btn.setAttribute('aria-selected', isSel ? 'true' : 'false');
+            if (opt.disabled) btn.disabled = true;
+
+            const span = document.createElement('span');
+            span.className = 'sk-select-opt-text';
+            span.textContent = opt.textContent || opt.label || '';
+            btn.appendChild(span);
+            btn.insertAdjacentHTML('beforeend', CHECK_SVG);
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (opt.disabled) return;
+                const changed = instance.select.value !== opt.value;
+                instance.select.value = opt.value;
+                instance.syncLabel();
+                closeActiveMenu(true);
+                if (changed) {
+                    instance.select.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+
+            menu.appendChild(btn);
+        });
+    }
+
+    function openMenuFor(instance) {
+        if (activeInstance === instance) {
+            closeActiveMenu(false);
+            return;
+        }
+        closeActiveMenu(false);
+        activeInstance = instance;
+        renderMenuOptions(instance);
+        positionPortalMenu(instance);
+        instance.wrap.classList.add('is-open');
+        instance.trigger.setAttribute('aria-expanded', 'true');
+        requestAnimationFrame(() => {
+            if (activeInstance === instance && portalMenu) {
+                portalMenu.classList.add('is-open');
+                const selItem = portalMenu.querySelector('.sk-select-option.is-selected');
+                if (selItem) selItem.scrollIntoView({ block: 'nearest' });
+            }
+        });
+    }
+
+    function bindGlobalEvents() {
+        if (globalBound) return;
+        globalBound = true;
+
+        document.addEventListener('click', (e) => {
+            if (!activeInstance) return;
+            if (activeInstance.wrap.contains(e.target)) return;
+            if (portalMenu && portalMenu.contains(e.target)) return;
+            closeActiveMenu(false);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (!activeInstance) return;
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                closeActiveMenu(true);
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                const items = Array.from(portalMenu.querySelectorAll('.sk-select-option:not(:disabled)'));
+                if (!items.length) return;
+                const focusedIdx = items.findIndex(el => el.classList.contains('is-focused'));
+                const selectedIdx = items.findIndex(el => el.classList.contains('is-selected'));
+                let idx = focusedIdx >= 0 ? focusedIdx : selectedIdx;
+                idx = e.key === 'ArrowDown'
+                    ? (idx + 1) % items.length
+                    : (idx - 1 + items.length) % items.length;
+                items.forEach(el => el.classList.remove('is-focused'));
+                items[idx].classList.add('is-focused');
+                items[idx].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                const focused = portalMenu.querySelector('.sk-select-option.is-focused:not(:disabled)');
+                if (focused) {
+                    e.preventDefault();
+                    focused.click();
+                }
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (activeInstance) positionPortalMenu(activeInstance);
+        });
+
+        document.addEventListener('scroll', (e) => {
+            if (!activeInstance) return;
+            if (portalMenu && portalMenu.contains(e.target)) return;
+            positionPortalMenu(activeInstance);
+        }, true);
+    }
+
+    function enhanceSelect(selectEl) {
+        if (!selectEl || selectEl.dataset.skEnhanced === '1') return;
+        selectEl.dataset.skEnhanced = '1';
+
+        const isSm = selectEl.classList.contains('admin-select-sm');
+        const isForm = selectEl.classList.contains('form-control');
+        const isHero = Boolean(selectEl.closest('.search-field-select'));
+        const isBlock = isForm || selectEl.style.width === '100%';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'sk-select-wrap';
+        if (isSm) wrap.classList.add('is-sm');
+        if (isForm) wrap.classList.add('is-form');
+        if (isHero) wrap.classList.add('is-hero');
+        if (isBlock) wrap.classList.add('is-block');
+
+        selectEl.parentNode.insertBefore(wrap, selectEl);
+        wrap.appendChild(selectEl);
+        selectEl.classList.add('sk-select-native');
+        selectEl.tabIndex = -1;
+
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'sk-select-trigger';
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+        const labelAttr = selectEl.getAttribute('aria-label');
+        if (labelAttr) trigger.setAttribute('aria-label', labelAttr);
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'sk-select-label';
+        trigger.appendChild(labelSpan);
+        trigger.insertAdjacentHTML('beforeend', ARROW_SVG);
+        wrap.appendChild(trigger);
+
+        const instance = {
+            select: selectEl,
+            wrap,
+            trigger,
+            syncLabel() {
+                const selectedOpt = selectEl.options[selectEl.selectedIndex] || selectEl.options[0];
+                labelSpan.textContent = selectedOpt ? (selectedOpt.textContent || selectedOpt.label || '-') : '-';
+                if (activeInstance === instance) {
+                    renderMenuOptions(instance);
+                    positionPortalMenu(instance);
+                }
+            }
+        };
+
+        // Patch .value setter agar assignment programatik (misal form edit) langsung sinkron UI
+        const nativeDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+        if (nativeDesc && nativeDesc.configurable) {
+            Object.defineProperty(selectEl, 'value', {
+                configurable: true,
+                get() {
+                    return nativeDesc.get.call(this);
+                },
+                set(val) {
+                    nativeDesc.set.call(this, val);
+                    instance.syncLabel();
+                }
+            });
+        }
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openMenuFor(instance);
+        });
+
+        trigger.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === ' ' || e.key === 'Enter') {
+                if (activeInstance !== instance) {
+                    e.preventDefault();
+                    openMenuFor(instance);
+                }
+            }
+        });
+
+        selectEl.addEventListener('change', () => instance.syncLabel());
+
+        const formEl = selectEl.closest('form');
+        if (formEl && !formEl.dataset.skResetBound) {
+            formEl.dataset.skResetBound = '1';
+            formEl.addEventListener('reset', () => {
+                setTimeout(() => {
+                    formEl.querySelectorAll('select[data-sk-enhanced="1"]').forEach(s => {
+                        if (typeof s._skSync === 'function') s._skSync();
+                    });
+                }, 0);
+            });
+        }
+
+        const observer = new MutationObserver(() => instance.syncLabel());
+        observer.observe(selectEl, { childList: true, subtree: true, attributes: true });
+
+        selectEl._skSync = () => instance.syncLabel();
+        instance.syncLabel();
+    }
+
+    window.initCustomSelects = function (root = document) {
+        bindGlobalEvents();
+        (root || document).querySelectorAll('select').forEach(enhanceSelect);
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        window.initCustomSelects(document);
+    });
+})();
+
 // Inisialisasi tema saat script dimuat
 document.addEventListener('DOMContentLoaded', initTheme);
 
