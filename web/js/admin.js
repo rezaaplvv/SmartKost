@@ -702,8 +702,9 @@ function renderDenahRooms(list) {
     container.innerHTML = floors.map(lt => {
         const cards = grouped[lt].map(k => {
             const photoUrl = getRoomPhotoUrl(k);
+            const isTersedia = k.status === 'Tersedia';
             return `
-                <div class="denah-room-card status-${escapeHtml(k.status)}">
+                <article class="denah-room-card status-${escapeHtml(k.status)}">
                     <div class="denah-room-photo" onclick="previewKamarPhoto(${k.id})" title="Klik untuk melihat foto kamar">
                         <img src="${photoUrl}" alt="Foto Kamar ${escapeHtml(k.nomor_kamar)}">
                         <span class="denah-photo-badge status-${escapeHtml(k.status)}">${escapeHtml(k.status)}</span>
@@ -713,21 +714,26 @@ function renderDenahRooms(list) {
                             <div class="denah-room-top">
                                 <div style="min-width:0;">
                                     <div class="denah-room-no">Kamar ${escapeHtml(k.nomor_kamar)}</div>
-                                    <div class="denah-room-meta">${escapeHtml(k.tipe)} • Lt ${lt} • ${escapeHtml(k.luas_kamar || '3x4 m')}</div>
+                                    <div class="denah-room-meta">${escapeHtml(k.tipe)} &bull; Lt ${lt} &bull; ${escapeHtml(k.luas_kamar || '3x4 m')}</div>
                                 </div>
                                 <button type="button" class="denah-more-btn" onclick="openKamarModal(${k.id})" title="Lihat detail &amp; edit kamar">
                                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>
                                 </button>
                             </div>
-                            <div class="denah-room-price">${formatRupiah(k.harga_sewa)} <span>/bln</span></div>
+                            <div class="denah-room-price">${formatRupiah(k.harga_sewa)}<span>/bln</span></div>
                         </div>
                         <div class="denah-card-actions">
+                            ${isTersedia
+                                ? `<button type="button" class="denah-btn denah-btn-checkin" onclick="openCheckinModal(${k.id})">Check-In</button>`
+                                : `<button type="button" class="denah-btn denah-btn-checkin" onclick="openKamarModal(${k.id})">Detail</button>`
+                            }
                             <button type="button" class="denah-btn denah-btn-edit" onclick="openKamarModal(${k.id})">Edit</button>
-                            ${k.status === 'Tersedia' ? `<button type="button" class="denah-btn denah-btn-checkin" onclick="openCheckinModal(${k.id})">Check-In</button>` : ''}
-                            <button type="button" class="denah-btn denah-btn-del" onclick="handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}')">Hapus</button>
+                            <button type="button" class="denah-btn denah-btn-del" onclick="handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}')" title="Hapus Kamar">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
+                            </button>
                         </div>
                     </div>
-                </div>
+                </article>
             `;
         }).join('');
 

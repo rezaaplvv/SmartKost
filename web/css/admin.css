@@ -1362,54 +1362,52 @@ body.admin-body {
 .floor-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
 }
 
 .denah-room-card {
-    background: var(--sk-card);
-    border: 1px solid var(--sk-border);
-    border-radius: 16px;
-    padding: 11px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 0;
+    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.24s ease;
     position: relative;
     overflow: hidden;
     display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    gap: 12px;
-    box-shadow: 0 2px 10px rgba(17, 24, 39, 0.025);
+    flex-direction: column;
+    box-shadow: 0 8px 24px rgba(16, 29, 56, 0.06), 0 2px 6px rgba(16, 29, 56, 0.03);
 }
 
-.denah-room-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 14px;
-    bottom: 14px;
-    width: 3.5px;
-    border-radius: 0 4px 4px 0;
-    z-index: 3;
+[data-theme="dark"] .denah-room-card {
+    background: var(--sk-card);
+    border-color: var(--sk-border);
 }
-
-.denah-room-card.status-Tersedia::before { background: #16A34A; }
-.denah-room-card.status-Terisi::before { background: #1E293B; }
-.denah-room-card.status-Perbaikan::before { background: var(--sk-yellow); }
 
 .denah-room-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 22px rgba(17, 24, 39, 0.07);
-    border-color: var(--sk-yellow);
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(16, 29, 56, 0.12), 0 4px 12px rgba(255, 196, 0, 0.12);
+    border-color: rgba(255, 196, 0, 0.65);
 }
 
 .denah-room-photo {
     position: relative;
-    width: 96px;
-    min-height: 106px;
-    border-radius: 12px;
-    background: #F1F5F9;
+    width: 100%;
+    height: 168px;
+    background: #101D38;
     overflow: hidden;
     cursor: pointer;
     flex-shrink: 0;
+}
+
+.denah-room-photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(16, 29, 56, 0.06) 0%, rgba(16, 29, 56, 0) 45%, rgba(16, 29, 56, 0.52) 100%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .denah-room-photo img {
@@ -1417,7 +1415,7 @@ body.admin-body {
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.35s ease;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .denah-room-card:hover .denah-room-photo img {
@@ -1426,74 +1424,102 @@ body.admin-body {
 
 .denah-photo-badge {
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 11px;
+    right: 11px;
     z-index: 2;
-    padding: 3px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
     border-radius: 9999px;
-    font-size: 0.65rem;
-    font-weight: 700;
+    font-size: 0.71rem;
+    font-weight: 800;
     letter-spacing: 0.01em;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.16);
+    box-shadow: 0 4px 12px rgba(16, 29, 56, 0.24);
+}
+
+.denah-photo-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    flex-shrink: 0;
 }
 
 .denah-photo-badge.status-Tersedia {
-    background: #DCFCE7;
-    color: #15803D;
+    background: #22C55E;
+    color: #FFFFFF;
 }
 
 .denah-photo-badge.status-Terisi {
-    background: rgba(15, 23, 42, 0.78);
-    color: #ffffff;
+    background: #101D38;
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .denah-photo-badge.status-Perbaikan {
-    background: #FEF3C7;
-    color: #92400E;
+    background: #F59E0B;
+    color: #FFFFFF;
 }
 
 .denah-room-body {
-    padding: 2px 0;
+    padding: 14px 16px 15px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 8px;
+    gap: 12px;
     flex: 1;
     min-width: 0;
+    background: #FFFFFF;
+}
+
+[data-theme="dark"] .denah-room-body {
+    background: var(--sk-card);
 }
 
 .denah-room-top {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 6px;
+    gap: 8px;
 }
 
 .denah-room-no {
-    font-size: 0.98rem;
-    font-weight: 700;
-    color: var(--sk-text);
+    font-size: 1.04rem;
+    font-weight: 800;
+    color: #101D38;
+    line-height: 1.25;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+[data-theme="dark"] .denah-room-no {
+    color: var(--sk-text);
 }
 
 .denah-room-meta {
-    font-size: 0.74rem;
-    color: var(--sk-text-muted);
-    margin-top: 2px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #64748B;
+    margin-top: 3px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.denah-more-btn {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    border: 1px solid var(--sk-border);
-    background: var(--sk-bg);
+[data-theme="dark"] .denah-room-meta {
     color: var(--sk-text-muted);
+}
+
+.denah-more-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #E2E8F0;
+    background: #F5F7FB;
+    color: #101D38;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1503,78 +1529,125 @@ body.admin-body {
 }
 
 .denah-more-btn:hover {
-    border-color: var(--sk-yellow);
-    color: var(--sk-text);
-    background: var(--sk-yellow-soft);
+    border-color: #FFC400;
+    color: #101D38;
+    background: #FFC400;
+}
+
+[data-theme="dark"] .denah-more-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--sk-border);
+    color: var(--sk-text-muted);
 }
 
 .denah-more-btn .icon {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
 }
 
 .denah-room-price {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #D97706;
-    margin-top: 5px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    font-size: 1.04rem;
+    font-weight: 800;
+    color: #101D38;
+    margin-top: 8px;
+    padding-left: 9px;
+    border-left: 3px solid #FFC400;
+    font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
 
 .denah-room-price span {
-    font-weight: 500;
-    font-size: 0.72rem;
-    color: var(--sk-text-muted);
+    font-weight: 600;
+    font-size: 0.74rem;
+    color: #64748B;
 }
 
 .denah-card-actions {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 5px;
+    gap: 6px;
+    padding-top: 11px;
+    border-top: 1px solid #F1F5F9;
+    margin-top: auto;
+}
+
+[data-theme="dark"] .denah-card-actions {
+    border-top-color: var(--sk-border);
 }
 
 .denah-btn {
-    padding: 5px 10px;
-    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 10px;
     font-family: inherit;
-    font-size: 0.73rem;
-    font-weight: 600;
+    font-size: 0.77rem;
+    font-weight: 700;
     cursor: pointer;
     border: 1px solid transparent;
-    transition: all 0.16s ease;
+    transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
     white-space: nowrap;
 }
 
-.denah-btn-edit {
-    background: var(--sk-bg);
-    border-color: var(--sk-border);
-    color: var(--sk-text);
-}
-
-.denah-btn-edit:hover {
-    border-color: var(--sk-yellow);
-    background: var(--sk-yellow-soft);
+.denah-btn .icon {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
 }
 
 .denah-btn-checkin {
-    background: var(--sk-yellow);
-    border-color: #F5B800;
-    color: #111827;
-    font-weight: 700;
+    flex: 1;
+    background: #FFC400;
+    border-color: #FFC400;
+    color: #101D38;
+    font-weight: 800;
+    box-shadow: 0 3px 10px rgba(255, 196, 0, 0.22);
 }
 
 .denah-btn-checkin:hover {
     background: #F5B800;
+    border-color: #F5B800;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(255, 196, 0, 0.32);
+}
+
+.denah-btn-edit {
+    background: #F5F7FB;
+    border-color: #E2E8F0;
+    color: #101D38;
+}
+
+.denah-btn-edit:hover {
+    background: #101D38;
+    border-color: #101D38;
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .denah-btn-edit {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--sk-border);
+    color: var(--sk-text);
 }
 
 .denah-btn-del {
-    background: #F87171;
-    color: #ffffff;
+    width: 34px;
+    padding: 0;
+    background: #FEF2F2;
+    border-color: #FECACA;
+    color: #EF4444;
+    flex-shrink: 0;
 }
 
 .denah-btn-del:hover {
     background: #EF4444;
+    border-color: #EF4444;
+    color: #FFFFFF;
 }
 
 .denah-table-thumb {
@@ -1774,7 +1847,11 @@ body.admin-body {
 }
 
 [data-theme="dark"] .denah-room-price {
-    color: var(--primary);
+    color: #FFC400;
+}
+
+[data-theme="dark"] .denah-room-price span {
+    color: var(--sk-text-muted);
 }
 
 /* ==========================================================
