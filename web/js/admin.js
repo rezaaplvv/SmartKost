@@ -1027,12 +1027,18 @@ function setPenghuniViewMode(mode) {
     if (tableEl) tableEl.style.display = penghuniViewMode === 'table' ? 'block' : 'none';
 }
 
-function buildPenghuniActionButtons(p, isAktif) {
+const WHATSAPP_SVG_ICON = `<svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.46 0 .1 5.36.1 11.96c0 2.11.55 4.16 1.6 5.98L0 24l6.22-1.63a11.9 11.9 0 0 0 5.84 1.49h.01c6.6 0 11.96-5.36 11.96-11.96 0-3.19-1.24-6.19-3.51-8.42zm-8.46 18.36h-.01a9.89 9.89 0 0 1-5.04-1.38l-.36-.22-3.69.97.99-3.6-.24-.37a9.88 9.88 0 0 1-1.52-5.28c0-5.46 4.44-9.9 9.91-9.9 2.64 0 5.13 1.03 7 2.9a9.84 9.84 0 0 1 2.9 7c0 5.47-4.44 9.9-9.94 9.9zm5.43-7.42c-.3-.15-1.76-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.88 1.21 3.08.15.2 2.09 3.2 5.07 4.49.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35z"/></svg>`;
+
+function buildPenghuniActionButtons(p, isAktif, options = {}) {
+    const { includeDetailEye = true, waNum = '' } = options;
     return `
         ${p.foto_ktp ? `<button type="button" class="penghuni-ktp-btn" onclick="openPenghuniKtp(${p.id})" title="Lihat Foto KTP">KTP</button>` : ''}
-        <button type="button" class="penghuni-act-btn" onclick="openDetailPenghuniDrawer(${p.id})" title="Detail Profil &amp; Tagihan">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-        </button>
+        ${waNum ? `<a href="https://wa.me/${waNum}" target="_blank" class="penghuni-act-btn wa" title="Chat WhatsApp">${WHATSAPP_SVG_ICON}</a>` : ''}
+        ${includeDetailEye ? `
+            <button type="button" class="penghuni-act-btn" onclick="openDetailPenghuniDrawer(${p.id})" title="Detail Profil &amp; Tagihan">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+        ` : ''}
         <button type="button" class="penghuni-act-btn" onclick="openEditPenghuniModal(${p.id})" title="Edit Biodata">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
         </button>
@@ -1109,11 +1115,6 @@ async function loadPenghuniAdmin() {
                                             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                         </button>
                                     ` : ''}
-                                    ${waNum ? `
-                                        <a href="https://wa.me/${waNum}" target="_blank" class="penghuni-mini-icon-btn wa" title="Buka WhatsApp">
-                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                                        </a>
-                                    ` : ''}
                                 </span>
                             </div>
                             <div class="penghuni-card-meta-row">
@@ -1131,7 +1132,7 @@ async function loadPenghuniAdmin() {
                         <div class="penghuni-card-footer">
                             <button type="button" class="penghuni-card-detail-btn" onclick="openDetailPenghuniDrawer(${p.id})">Lihat Detail</button>
                             <div class="penghuni-card-actions">
-                                ${buildPenghuniActionButtons(p, isAktif)}
+                                ${buildPenghuniActionButtons(p, isAktif, { includeDetailEye: false, waNum })}
                             </div>
                         </div>
                     </div>
@@ -1173,8 +1174,8 @@ async function loadPenghuniAdmin() {
                                 </button>
                             ` : ''}
                             ${waNum ? `
-                                <a href="https://wa.me/${waNum}" target="_blank" class="penghuni-mini-icon-btn wa" title="Buka WhatsApp">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                                <a href="https://wa.me/${waNum}" target="_blank" class="penghuni-mini-icon-btn wa" title="Chat WhatsApp">
+                                    ${WHATSAPP_SVG_ICON}
                                 </a>
                             ` : ''}
                         </div>
