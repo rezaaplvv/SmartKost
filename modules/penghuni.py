@@ -262,19 +262,36 @@ def get_detail_penghuni(penghuni_id):
     return {"status": True, "data": data}
 
 
-def ubah_penghuni(penghuni_id, nama, no_hp, pekerjaan, asal_kota, admin_user="admin"):
-    """Mengubah biodata kontak penghuni."""
+def ubah_penghuni(penghuni_id, nama, no_hp, pekerjaan, asal_kota, admin_user="admin", foto_ktp=None):
+    """Mengubah biodata kontak penghuni, termasuk memperbarui/menghapus foto KTP opsional."""
     nama = str(nama or "").strip()
     no_hp = str(no_hp or "").strip()
     if not nama or not no_hp:
         return {"status": False, "pesan": "Nama dan kontak tidak boleh kosong."}
 
-    query = """
-        UPDATE penghuni 
-        SET nama = %s, no_hp = %s, pekerjaan = %s, asal_kota = %s
-        WHERE id = %s
-    """
-    res = execute_query(query, (nama, no_hp, pekerjaan, asal_kota, penghuni_id), commit=True)
+    if foto_ktp == "__HAPUS__":
+        query = """
+            UPDATE penghuni 
+            SET nama = %s, no_hp = %s, pekerjaan = %s, asal_kota = %s, foto_ktp = NULL
+            WHERE id = %s
+        """
+        params = (nama, no_hp, pekerjaan, asal_kota, penghuni_id)
+    elif foto_ktp is not None and str(foto_ktp).strip() != "":
+        query = """
+            UPDATE penghuni 
+            SET nama = %s, no_hp = %s, pekerjaan = %s, asal_kota = %s, foto_ktp = %s
+            WHERE id = %s
+        """
+        params = (nama, no_hp, pekerjaan, asal_kota, foto_ktp, penghuni_id)
+    else:
+        query = """
+            UPDATE penghuni 
+            SET nama = %s, no_hp = %s, pekerjaan = %s, asal_kota = %s
+            WHERE id = %s
+        """
+        params = (nama, no_hp, pekerjaan, asal_kota, penghuni_id)
+
+    res = execute_query(query, params, commit=True)
     if res["status"]:
         catat_log(None, admin_user, "admin", "Ubah Data Penghuni", f"Memperbarui biodata {nama}")
         return {"status": True, "pesan": "Data penghuni berhasil diperbarui."}

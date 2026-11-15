@@ -1113,6 +1113,18 @@
                             <input type="text" id="edit-penghuni-asal" class="form-control">
                         </div>
                     </div>
+                    <div class="form-group" style="margin-bottom:0;" id="edit-penghuni-ktp-group">
+                        <label class="form-label" for="edit-penghuni-ktp-file">Foto KTP (Opsional)</label>
+                        <div class="edit-ktp-box" id="edit-ktp-preview-box" style="display:none;">
+                            <img id="edit-ktp-preview-img" alt="Preview KTP" class="edit-ktp-thumb">
+                            <div class="edit-ktp-info">
+                                <span id="edit-ktp-status-text">Foto KTP tersimpan</span>
+                                <button type="button" class="btn btn-danger btn-xs" id="btn-remove-edit-ktp">Hapus Foto KTP</button>
+                            </div>
+                        </div>
+                        <input type="file" id="edit-penghuni-ktp-file" class="form-control" accept="image/*">
+                        <span style="font-size:0.74rem;color:var(--text-muted);display:block;margin-top:4px;">Kosongkan jika tidak ingin mengubah foto KTP yang ada.</span>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-close-modal>Batal</button>

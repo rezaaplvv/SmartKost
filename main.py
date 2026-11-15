@@ -171,8 +171,8 @@ def get_penghuni_detail(penghuni_id):
     return penghuni_mod.get_detail_penghuni(penghuni_id)
 
 @eel.expose
-def ubah_penghuni(penghuni_id, nama, no_hp, pekerjaan, asal_kota, admin_user="admin"):
-    return penghuni_mod.ubah_penghuni(penghuni_id, nama, no_hp, pekerjaan, asal_kota, admin_user)
+def ubah_penghuni(penghuni_id, nama, no_hp, pekerjaan, asal_kota, admin_user="admin", foto_ktp=None):
+    return penghuni_mod.ubah_penghuni(penghuni_id, nama, no_hp, pekerjaan, asal_kota, admin_user, foto_ktp)
 
 @eel.expose
 def pindah_kamar(penghuni_id, kamar_id_baru, admin_user="admin"):
