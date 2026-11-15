@@ -12,6 +12,7 @@ let selectedFacility = 'Semua';
 let selectedRoomForBooking = null;
 let scrollRevealObserver = null;
 let lastRoomsSignature = '';
+let kosProfileData = null;
 
 function prefersReducedMotion() {
     return typeof window !== 'undefined' &&
@@ -135,10 +136,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadKosProfile();
     await loadRoomCatalog();
 
-    // Setup event listener filter dan pencarian
+    // Setup event listener filter, pencarian & CS Assistant Widget
     setupCatalogFilters();
     setupModals();
     setupForms();
+    setupCsWidget();
 
     // Auto-sinkronisasi jika Admin memperbarui kamar/foto dari tab Admin Console
     window.addEventListener('storage', (e) => {
@@ -243,14 +245,20 @@ async function loadKosProfile() {
         const res = await eel.get_pengaturan()();
         if (res.status && res.data) {
             const d = res.data;
+            kosProfileData = d;
             document.querySelectorAll('.app-nama-kos').forEach(el => el.textContent = d.nama_kos || 'Kost Cemara');
             document.querySelectorAll('.app-tagline').forEach(el => el.textContent = d.tagline || 'Hunian Terbaik untuk Mahasiswa');
             document.querySelectorAll('.app-deskripsi').forEach(el => el.textContent = d.deskripsi || '');
             document.querySelectorAll('.app-alamat').forEach(el => el.textContent = d.alamat || '');
 
+            const rawWa = (d.no_wa || '081234567890').trim();
+            const waDisplay = document.getElementById('cs-wa-number-display');
+            if (waDisplay) waDisplay.textContent = rawWa;
+
             const waLinks = document.querySelectorAll('.app-wa-link');
-            const cleanWa = (d.no_wa || '081234567890').replace(/[^0-9]/g, '');
-            const waUrl = `https://wa.me/62${cleanWa.startsWith('0') ? cleanWa.slice(1) : cleanWa}?text=Halo%20Pengelola%20Kost%20Cemara,%20saya%20tertarik%20dengan%20kamar%20kos`;
+            const cleanWa = rawWa.replace(/[^0-9]/g, '');
+            const kosLabel = encodeURIComponent(d.nama_kos || 'Kost Cemara');
+            const waUrl = `https://wa.me/62${cleanWa.startsWith('0') ? cleanWa.slice(1) : cleanWa}?text=Halo%20Pengelola%20${kosLabel},%20saya%20tertarik%20dengan%20kamar%20kos`;
             waLinks.forEach(link => link.setAttribute('href', waUrl));
 
             if (d.foto_banner) {
@@ -953,5 +961,244 @@ function switchAuthTab(tab) {
         if (title) title.textContent = 'Masuk ke Akun';
         if (subtitle) subtitle.textContent = 'Akses akun Admin Pengelola & Penghuni Kos';
     }
+}
+
+/* ==========================================================
+   CS ASSISTANT MINI CHAT POPUP CONTROLLER
+   ========================================================== */
+function escapeHtmlSafe(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function setupCsWidget() {
+    const toggleBtn = document.getElementById('cs-widget-toggle');
+    const closeBtn = document.getElementById('cs-widget-close');
+    const popup = document.getElementById('cs-chat-popup');
+    const messagesBox = document.getElementById('cs-chat-messages');
+    const chatForm = document.getElementById('cs-chat-form');
+    const chatInput = document.getElementById('cs-chat-input');
+    const copyBtn = document.getElementById('cs-copy-wa-btn');
+
+    if (!toggleBtn || !popup || !messagesBox) return;
+
+    let initializedGreeting = false;
+
+    const scrollToBottom = () => {
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    };
+
+    const appendBotMessage = (htmlContent, ctaConfig = null) => {
+        const row = document.createElement('div');
+        row.className = 'cs-msg-row bot';
+        const bubble = document.createElement('div');
+        bubble.className = 'cs-msg-bubble';
+        bubble.innerHTML = htmlContent;
+
+        if (ctaConfig && ctaConfig.label && typeof ctaConfig.onClick === 'function') {
+            const ctaWrap = document.createElement('div');
+            const ctaBtn = document.createElement('button');
+            ctaBtn.type = 'button';
+            ctaBtn.className = 'cs-msg-cta';
+            ctaBtn.textContent = ctaConfig.label;
+            ctaBtn.addEventListener('click', ctaConfig.onClick);
+            ctaWrap.appendChild(ctaBtn);
+            bubble.appendChild(ctaWrap);
+        }
+
+        row.appendChild(bubble);
+        messagesBox.appendChild(row);
+        scrollToBottom();
+    };
+
+    const appendUserMessage = (text) => {
+        const row = document.createElement('div');
+        row.className = 'cs-msg-row user';
+        const bubble = document.createElement('div');
+        bubble.className = 'cs-msg-bubble';
+        bubble.textContent = text;
+        row.appendChild(bubble);
+        messagesBox.appendChild(row);
+        scrollToBottom();
+    };
+
+    const setPopupOpen = (shouldOpen) => {
+        popup.classList.toggle('open', shouldOpen);
+        toggleBtn.classList.toggle('is-open', shouldOpen);
+        popup.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+        toggleBtn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+
+        if (shouldOpen && !initializedGreeting) {
+            initializedGreeting = true;
+            const kosName = escapeHtmlSafe(kosProfileData?.nama_kos || 'SmartKost Residence');
+            appendBotMessage(
+                `Halo! Selamat datang di <strong>${kosName}</strong>. Ada yang ingin ditanyakan soal kamar, booking, atau pembayaran?`
+            );
+        }
+
+        if (shouldOpen && chatInput) {
+            setTimeout(() => chatInput.focus(), 220);
+        }
+    };
+
+    const goToCatalogFilter = (filterName) => {
+        const targetTab = document.querySelector(`.filter-tab[data-filter="${filterName}"]`);
+        if (targetTab) {
+            targetTab.click();
+        }
+        setPopupOpen(false);
+        const katalog = document.getElementById('katalog');
+        if (katalog) katalog.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const buildCsReply = (topicOrText) => {
+        const q = (topicOrText || '').toLowerCase();
+        const kosName = escapeHtmlSafe(kosProfileData?.nama_kos || 'SmartKost Residence');
+
+        if (q === 'kamar' || /kamar|kosong|tersedia|harga|tarif|vip|reguler|eksklusif|fasilitas/.test(q)) {
+            const available = allRooms.filter(r => r.status === 'Tersedia');
+            if (available.length > 0) {
+                const prices = available.map(r => Number(r.harga_sewa) || 0).filter(p => p > 0);
+                const minPrice = prices.length ? Math.min(...prices) : 0;
+                const priceInfo = minPrice > 0 ? ` mulai dari <strong>${formatRupiah(minPrice)}/bln</strong>` : '';
+                return {
+                    html: `Saat ini tersedia <strong>${available.length} unit kamar siap huni</strong>${priceInfo}. Setiap kamar dilengkapi detail foto, luas, dan daftar fasilitas di katalog.`,
+                    cta: {
+                        label: 'Lihat Kamar Tersedia',
+                        onClick: () => goToCatalogFilter('Tersedia')
+                    }
+                };
+            }
+            return {
+                html: `Anda dapat memantau ketersediaan kamar tipe Reguler, VIP, dan Eksklusif secara langsung pada bagian <strong>Katalog Kamar</strong>.`,
+                cta: {
+                    label: 'Buka Katalog Kamar',
+                    onClick: () => goToCatalogFilter('Semua')
+                }
+            };
+        }
+
+        if (q === 'booking' || /booking|pesan|sewa|daftar|check/.test(q)) {
+            return {
+                html: `Cara booking kamar sangat mudah:<br>1. Pilih kamar berstatus <strong>Tersedia</strong> lalu klik <strong>Sewa</strong>.<br>2. Isi data diri &amp; unggah foto KTP.<br>3. Pengelola akan memverifikasi pengajuan Anda dan mengaktifkan akun penghuni.`,
+                cta: {
+                    label: 'Pilih Kamar Sekarang',
+                    onClick: () => goToCatalogFilter('Tersedia')
+                }
+            };
+        }
+
+        if (q === 'bayar' || /bayar|pembayaran|transfer|rekening|qris|denda|tagihan|lunas/.test(q)) {
+            const bank = escapeHtmlSafe(kosProfileData?.nama_bank || 'Bank BCA');
+            const norek = escapeHtmlSafe(kosProfileData?.no_rekening || '8720-1928-33');
+            const denda = formatRupiah(kosProfileData?.denda_per_hari ?? 10000);
+            return {
+                html: `Pembayaran sewa bulanan dapat dilakukan via transfer <strong>${bank} (${norek})</strong> atau QRIS melalui <strong>Portal Penghuni</strong>. Keterlambatan melewati jatuh tempo dikenakan denda <strong>${denda}/hari</strong>.`,
+                cta: {
+                    label: 'Buka Portal Login',
+                    onClick: () => {
+                        setPopupOpen(false);
+                        if (typeof openLoginModal === 'function') openLoginModal();
+                    }
+                }
+            };
+        }
+
+        if (q === 'lokasi' || /lokasi|alamat|survei|survey|kunjung|dimana|di mana/.test(q)) {
+            const alamat = escapeHtmlSafe(kosProfileData?.alamat || 'Area kampus strategis (hubungi pengelola untuk titik lokasi lengkap)');
+            return {
+                html: `Lokasi <strong>${kosName}</strong>:<br>${alamat}.<br><br>Untuk survei langsung, silakan hubungi atau salin nomor WhatsApp pengelola di bawah ini untuk atur jadwal.`
+            };
+        }
+
+        const rawWa = escapeHtmlSafe(kosProfileData?.no_wa || '0812-3456-7890');
+        return {
+            html: `Terima kasih atas pertanyaannya! Untuk informasi lebih detail mengenai hal tersebut, silakan klik topik cepat di bawah atau hubungi pengelola di <strong>${rawWa}</strong>.`
+        };
+    };
+
+    const sendUserQuery = (displayText, topicKey = null) => {
+        appendUserMessage(displayText);
+
+        // Indikator mengetik singkat sebelum balasan muncul
+        const typingRow = document.createElement('div');
+        typingRow.className = 'cs-msg-row bot';
+        typingRow.innerHTML = `<div class="cs-msg-bubble"><span class="cs-typing-dots"><span></span><span></span><span></span></span></div>`;
+        messagesBox.appendChild(typingRow);
+        scrollToBottom();
+
+        setTimeout(() => {
+            typingRow.remove();
+            const reply = buildCsReply(topicKey || displayText);
+            appendBotMessage(reply.html, reply.cta || null);
+        }, 320);
+    };
+
+    toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setPopupOpen(!popup.classList.contains('open'));
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => setPopupOpen(false));
+    }
+
+    document.querySelectorAll('#cs-quick-prompts .cs-quick-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const topic = chip.getAttribute('data-cs-topic') || '';
+            sendUserQuery(chip.textContent.trim(), topic);
+        });
+    });
+
+    if (chatForm && chatInput) {
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
+            chatInput.value = '';
+            sendUserQuery(text);
+        });
+    }
+
+    if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+            const rawWa = (kosProfileData?.no_wa || '081234567890').trim();
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(rawWa);
+                } else {
+                    const tmp = document.createElement('textarea');
+                    tmp.value = rawWa;
+                    tmp.style.position = 'fixed';
+                    tmp.style.opacity = '0';
+                    document.body.appendChild(tmp);
+                    tmp.select();
+                    document.execCommand('copy');
+                    tmp.remove();
+                }
+                showToast(`Nomor WhatsApp (${rawWa}) berhasil disalin.`, 'success');
+            } catch (err) {
+                showToast(`Nomor WhatsApp pengelola: ${rawWa}`, 'info');
+            }
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!popup.classList.contains('open')) return;
+        if (!e.target.closest('#cs-chat-popup') && !e.target.closest('#cs-widget-toggle')) {
+            setPopupOpen(false);
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && popup.classList.contains('open')) {
+            setPopupOpen(false);
+        }
+    });
 }
 

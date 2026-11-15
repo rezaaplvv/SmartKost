@@ -239,14 +239,69 @@
     </div>
 
     <!-- ==========================================================
-         FLOATING CS / WHATSAPP BUTTON (Bottom Right)
+         FLOATING CS ASSISTANT WIDGET & POPUP (Bottom Right)
          ========================================================== -->
-    <a href="#" target="_blank" class="floating-wa-btn app-wa-link" title="Konsultasi WhatsApp">
+    <div class="cs-chat-popup" id="cs-chat-popup" aria-hidden="true">
+        <div class="cs-chat-header">
+            <div class="cs-chat-header-info">
+                <div class="cs-header-avatar">
+                    <img src="assets/img/cs.png" alt="CS SmartKost">
+                </div>
+                <div>
+                    <div class="cs-header-title">Asisten <span class="app-nama-kos">SmartKost</span></div>
+                    <div class="cs-header-status">
+                        <span class="cs-status-dot"></span>
+                        <span>Online &bull; Bantuan Cepat</span>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="cs-close-btn" id="cs-widget-close" aria-label="Tutup Bantuan CS">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+
+        <div class="cs-chat-messages" id="cs-chat-messages">
+            <!-- Diisi dinamis oleh landing.js -->
+        </div>
+
+        <div class="cs-quick-prompts" id="cs-quick-prompts">
+            <button type="button" class="cs-quick-chip" data-cs-topic="kamar">Kamar tersedia &amp; harga</button>
+            <button type="button" class="cs-quick-chip" data-cs-topic="booking">Cara booking</button>
+            <button type="button" class="cs-quick-chip" data-cs-topic="bayar">Pembayaran &amp; denda</button>
+            <button type="button" class="cs-quick-chip" data-cs-topic="lokasi">Alamat &amp; survei</button>
+        </div>
+
+        <form class="cs-chat-input-row" id="cs-chat-form">
+            <input type="text" id="cs-chat-input" placeholder="Tanyakan seputar kamar atau sewa..." autocomplete="off">
+            <button type="submit" class="cs-send-btn" aria-label="Kirim Pesan">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </form>
+
+        <div class="cs-contact-footer">
+            <div class="cs-wa-number-meta">
+                <span>WhatsApp Pengelola</span>
+                <strong id="cs-wa-number-display">0812-3456-7890</strong>
+            </div>
+            <div class="cs-contact-actions">
+                <button type="button" class="cs-footer-btn cs-copy-btn" id="cs-copy-wa-btn" title="Salin Nomor WhatsApp">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>Salin</span>
+                </button>
+                <a href="#" target="_blank" class="cs-footer-btn cs-wa-ext-btn app-wa-link" title="Buka WhatsApp">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    <span>Buka WA</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="floating-wa-btn" id="cs-widget-toggle" title="Pusat Bantuan SmartKost" aria-label="Buka Pusat Bantuan CS" aria-expanded="false">
         <span class="floating-wa-label">Butuh Bantuan?</span>
         <span class="floating-wa-avatar">
             <img src="assets/img/cs.png" alt="CS SmartKost - Butuh Bantuan?">
         </span>
-    </a>
+    </button>
 
     <!-- ==========================================================
          3. KATALOG KAMAR DINAMIS (DARI MYSQL VIA EEL)
