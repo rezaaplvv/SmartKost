@@ -1099,16 +1099,16 @@ async function loadPenghuniAdmin() {
                         </div>
                         <div class="penghuni-card-hero-inner">
                             <div class="penghuni-card-top">
-                                <span class="penghuni-card-room-pill">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.172 2.293 12.293a1 1 0 0 0 .707 1.707H5v6a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-6h2a1 1 0 0 0 .707-1.707L12 3.172z"/></svg>
-                                    <span>${kamarLabel}</span>
-                                </span>
                                 ${!isAktif ? `
                                     <span class="penghuni-card-status-pill is-alumni">
                                         <span class="penghuni-card-status-dot"></span>
                                         <span>${escapeHtml(p.status)}</span>
                                     </span>
                                 ` : ''}
+                                <span class="penghuni-card-room-pill">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.172 2.293 12.293a1 1 0 0 0 .707 1.707H5v6a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-6h2a1 1 0 0 0 .707-1.707L12 3.172z"/></svg>
+                                    <span>${kamarLabel}</span>
+                                </span>
                             </div>
 
                             <div class="penghuni-card-profile">
@@ -1313,70 +1313,107 @@ async function openDetailPenghuniDrawer(penghuniId) {
 
         bodyEl.innerHTML = `
             <div class="drawer-quick-actions">
-                ${p.no_hp ? `<button type="button" class="btn btn-secondary btn-xs" onclick="copyPenghuniHp('${escapeHtml(p.no_hp)}')">Salin No. HP</button>` : ''}
-                ${waNum ? `<a href="https://wa.me/${waNum}" target="_blank" class="btn btn-secondary btn-xs" style="color:#15803d;">Buka WhatsApp</a>` : ''}
-                <button type="button" class="btn btn-secondary btn-xs" onclick="closeDetailPenghuniDrawer(); openEditPenghuniModal(${p.id});">Edit Biodata</button>
+                <div class="drawer-quick-group">
+                    ${waNum ? `
+                        <a href="https://wa.me/${waNum}" target="_blank" class="drawer-pill-btn wa">
+                            ${WHATSAPP_SVG_ICON}
+                            <span>WhatsApp</span>
+                        </a>
+                    ` : ''}
+                    ${p.no_hp ? `
+                        <button type="button" class="drawer-pill-btn" onclick="copyPenghuniHp('${escapeHtml(p.no_hp)}')">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span>Salin No. HP</span>
+                        </button>
+                    ` : ''}
+                    <button type="button" class="drawer-pill-btn" onclick="closeDetailPenghuniDrawer(); openEditPenghuniModal(${p.id});">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        <span>Edit Biodata</span>
+                    </button>
+                </div>
                 ${isAktif ? `
-                    <button type="button" class="btn btn-primary btn-xs" onclick="closeDetailPenghuniDrawer(); openPindahKamarModal(${p.id});">Pindah Kamar</button>
-                    <button type="button" class="btn btn-danger btn-xs" onclick="handleCheckoutPenghuni(${p.id});">Check-Out</button>
+                    <div class="drawer-quick-group">
+                        <button type="button" class="drawer-pill-btn primary" onclick="closeDetailPenghuniDrawer(); openPindahKamarModal(${p.id});">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line></svg>
+                            <span>Pindah Kamar</span>
+                        </button>
+                        <button type="button" class="drawer-pill-btn danger" onclick="handleCheckoutPenghuni(${p.id});">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            <span>Check-Out</span>
+                        </button>
+                    </div>
                 ` : ''}
             </div>
 
-            <div class="drawer-section-card">
-                <div class="drawer-section-title">Informasi Kamar &amp; Hunian</div>
-                <div class="drawer-info-grid">
-                    <div class="drawer-info-item">
-                        <span>Unit Kamar</span>
-                        <strong>${p.nomor_kamar ? `Kamar ${escapeHtml(p.nomor_kamar)}` : '-'}</strong>
+            <div class="drawer-two-col">
+                <div class="drawer-section-card">
+                    <div class="drawer-section-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span>Informasi Kamar &amp; Hunian</span>
                     </div>
-                    <div class="drawer-info-item">
-                        <span>Tipe &amp; Lantai</span>
-                        <strong>${escapeHtml(tipeKamar)} &bull; ${escapeHtml(lantaiTxt)}</strong>
-                    </div>
-                    <div class="drawer-info-item">
-                        <span>Tarif Sewa</span>
-                        <strong>${formatRupiah(p.harga_sewa || 0)} / bln</strong>
-                    </div>
-                    <div class="drawer-info-item">
-                        <span>Tanggal Masuk</span>
-                        <strong>${escapeHtml(p.tanggal_masuk || '-')}</strong>
-                    </div>
-                    ${p.tanggal_keluar ? `
+                    <div class="drawer-info-grid">
                         <div class="drawer-info-item">
-                            <span>Tanggal Check-Out</span>
-                            <strong>${escapeHtml(p.tanggal_keluar)}</strong>
+                            <span>Unit Kamar</span>
+                            <strong>${p.nomor_kamar ? `Kamar ${escapeHtml(p.nomor_kamar)}` : '-'}</strong>
                         </div>
-                    ` : ''}
+                        <div class="drawer-info-item">
+                            <span>Tipe &amp; Lantai</span>
+                            <strong>${escapeHtml(tipeKamar)} &bull; ${escapeHtml(lantaiTxt)}</strong>
+                        </div>
+                        <div class="drawer-info-item">
+                            <span>Tarif Sewa</span>
+                            <strong>${formatRupiah(p.harga_sewa || 0)} / bln</strong>
+                        </div>
+                        <div class="drawer-info-item">
+                            <span>Tanggal Masuk</span>
+                            <strong>${escapeHtml(p.tanggal_masuk || '-')}</strong>
+                        </div>
+                        ${p.tanggal_keluar ? `
+                            <div class="drawer-info-item" style="grid-column: 1 / -1;">
+                                <span>Tanggal Check-Out</span>
+                                <strong>${escapeHtml(p.tanggal_keluar)}</strong>
+                            </div>
+                        ` : ''}
+                    </div>
                 </div>
-            </div>
 
-            <div class="drawer-section-card">
-                <div class="drawer-section-title">Biodata &amp; Kontak</div>
-                <div class="drawer-info-grid">
-                    <div class="drawer-info-item">
-                        <span>Nomor HP / WhatsApp</span>
-                        <strong>${escapeHtml(p.no_hp || '-')}</strong>
+                <div class="drawer-section-card">
+                    <div class="drawer-section-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span>Biodata &amp; Kontak</span>
                     </div>
-                    <div class="drawer-info-item">
-                        <span>Profesi / Kampus</span>
-                        <strong>${escapeHtml(p.pekerjaan || '-')}</strong>
-                    </div>
-                    <div class="drawer-info-item" style="grid-column: 1 / -1;">
-                        <span>Kota Asal</span>
-                        <strong>${escapeHtml(p.asal_kota || '-')}</strong>
+                    <div class="drawer-info-grid">
+                        <div class="drawer-info-item">
+                            <span>Nomor HP / WhatsApp</span>
+                            <strong>${escapeHtml(p.no_hp || '-')}</strong>
+                        </div>
+                        <div class="drawer-info-item">
+                            <span>Kota Asal</span>
+                            <strong>${escapeHtml(p.asal_kota || '-')}</strong>
+                        </div>
+                        <div class="drawer-info-item" style="grid-column: 1 / -1;">
+                            <span>Profesi / Kampus</span>
+                            <strong>${escapeHtml(p.pekerjaan || '-')}</strong>
+                        </div>
                     </div>
                 </div>
             </div>
 
             ${p.foto_ktp ? `
                 <div class="drawer-section-card">
-                    <div class="drawer-section-title">Dokumen KTP Tersimpan</div>
+                    <div class="drawer-section-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><line x1="15" y1="8" x2="17" y2="8"></line><line x1="15" y1="12" x2="17" y2="12"></line><path d="M7 16c0-1.5 1-2 2-2s2 .5 2 2"></path></svg>
+                        <span>Dokumen KTP Tersimpan (Klik untuk Perbesar)</span>
+                    </div>
                     <img id="drawer-ktp-img" alt="KTP ${escapeHtml(p.nama)}" class="drawer-ktp-preview">
                 </div>
             ` : ''}
 
             <div class="drawer-section-card">
-                <div class="drawer-section-title">Riwayat Tagihan (${bills.length})</div>
+                <div class="drawer-section-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                    <span>Riwayat Tagihan (${bills.length})</span>
+                </div>
                 <div class="drawer-bill-list">${billsHtml}</div>
             </div>
         `;
