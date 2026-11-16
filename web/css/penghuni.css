@@ -1200,6 +1200,14 @@
                 border-color 0.22s ease;
 }
 
+.tenant-kpi-card.tkc-unpaid {
+    background: linear-gradient(160deg, #FFFFFF 0%, #FFFDF5 100%);
+}
+
+.tenant-kpi-card.tkc-paid {
+    background: linear-gradient(160deg, #FFFFFF 0%, #F5F8FD 100%);
+}
+
 .tenant-kpi-card.tkc-room {
     background: linear-gradient(160deg, #FFFFFF 0%, #FFFDF8 100%);
 }
@@ -1264,6 +1272,75 @@
 
 [data-theme="dark"] .tkc-wave-deco {
     opacity: 0.45;
+}
+
+/* Subtle Wallet Watermark (Card 1) */
+.tkc-watermark {
+    position: absolute;
+    right: 22px;
+    bottom: 24px;
+    width: 58px;
+    height: 58px;
+    color: #101D38;
+    opacity: 0.065;
+    pointer-events: none;
+    z-index: 0;
+    transform: rotate(-8deg);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.tkc-watermark svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.tenant-kpi-card.tkc-unpaid:hover .tkc-watermark {
+    transform: rotate(-4deg) scale(1.05);
+    opacity: 0.095;
+}
+
+[data-theme="dark"] .tkc-watermark {
+    color: #FFC400;
+    opacity: 0.1;
+}
+
+/* Ascending Mini Bars (Card 2) */
+.tkc-mini-bars {
+    position: absolute;
+    right: 22px;
+    bottom: 18px;
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    height: 44px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.tkc-mini-bars span {
+    width: 7px;
+    border-radius: 999px;
+    background: rgba(25, 43, 77, 0.12);
+    transition: transform 0.24s ease, background-color 0.24s ease;
+}
+
+.tkc-mini-bars span:nth-child(1) { height: 16px; }
+.tkc-mini-bars span:nth-child(2) { height: 24px; background: rgba(25, 43, 77, 0.16); }
+.tkc-mini-bars span:nth-child(3) { height: 32px; background: rgba(25, 43, 77, 0.22); }
+.tkc-mini-bars span:nth-child(4) { height: 42px; background: rgba(22, 163, 74, 0.28); }
+
+.tenant-kpi-card.tkc-paid:hover .tkc-mini-bars span {
+    transform: scaleY(1.08);
+    transform-origin: bottom;
+}
+
+[data-theme="dark"] .tkc-mini-bars span {
+    background: rgba(148, 163, 184, 0.2);
+}
+
+[data-theme="dark"] .tkc-mini-bars span:nth-child(4) {
+    background: rgba(74, 222, 128, 0.35);
 }
 
 .tkc-body {
