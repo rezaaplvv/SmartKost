@@ -267,31 +267,51 @@
                         </div>
                     </div>
 
-                    <!-- Section 7: Quick Action — Aksi Cepat Operasional -->
+                    <!-- Section 7: Quick Action — Aksi Cepat Operasional (Clean White + Soft Navy & Gold) -->
                     <div class="quick-action-strip dash-reveal" style="--dash-delay: 220ms;">
+                        <div class="qa-deco-topleft" aria-hidden="true">
+                            <svg viewBox="0 0 130 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 0H116C76 20 38 48 0 92V0Z" fill="#FFD95A" fill-opacity="0.45"/>
+                                <path d="M0 0H94C60 16 28 42 0 78V0Z" fill="#FFC400"/>
+                                <path d="M0 0H68C42 14 18 34 0 56V0Z" fill="#101D38"/>
+                            </svg>
+                        </div>
+                        <div class="qa-deco-wave" aria-hidden="true">
+                            <svg viewBox="0 0 240 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M60 130C115 68 175 40 240 10V130H60Z" fill="#FFF3CC"/>
+                                <path d="M115 130C154 84 198 62 240 42V130H115Z" fill="#FFC400" fill-opacity="0.32"/>
+                                <path d="M168 130C192 102 216 86 240 72V130H168Z" fill="#101D38" fill-opacity="0.14"/>
+                            </svg>
+                        </div>
+
                         <div class="quick-action-left">
-                            <div class="quick-action-bolt-badge">
-                                <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                            </div>
-                            <div class="quick-action-body">
-                                <h3>Aksi Cepat Operasional</h3>
-                                <p>Terbitkan tagihan bulanan otomatis, terima penghuni baru, atau ekspor laporan keuangan Excel.</p>
-                                <div class="quick-action-btns">
-                                    <button type="button" class="qa-btn qa-btn-primary" onclick="handleGenerateTagihan()">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                                        <span>Generate Tagihan Bulanan</span>
-                                    </button>
-                                    <button type="button" class="qa-btn qa-btn-light" onclick="openCheckinModal()">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-                                        <span>Check-In Penghuni</span>
-                                    </button>
-                                    <button type="button" class="qa-btn qa-btn-light" onclick="handleExportKeuanganExcel()">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                                        <span>Ekspor Excel</span>
-                                    </button>
+                            <div class="qa-header-row">
+                                <div class="quick-action-bolt-badge" aria-hidden="true">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                </div>
+                                <span class="qa-divider" aria-hidden="true"></span>
+                                <div class="quick-action-body">
+                                    <h3>Aksi Cepat Operasional</h3>
+                                    <p>Terbitkan tagihan bulanan otomatis, terima penghuni baru, atau ekspor laporan keuangan Excel.</p>
                                 </div>
                             </div>
+
+                            <div class="quick-action-btns">
+                                <button type="button" class="qa-btn qa-btn-primary" onclick="handleGenerateTagihan()">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                    <span>Generate Tagihan Bulanan</span>
+                                </button>
+                                <button type="button" class="qa-btn qa-btn-light" onclick="openCheckinModal()">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                                    <span>Check-In Penghuni</span>
+                                </button>
+                                <button type="button" class="qa-btn qa-btn-light" onclick="handleExportKeuanganExcel()">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    <span>Ekspor Excel</span>
+                                </button>
+                            </div>
                         </div>
+
                         <div class="quick-action-art">
                             <img src="assets/img/rumahkuning.png" alt="Ilustrasi Rumah SmartKost Residence" class="quick-action-house-img">
                         </div>
@@ -306,7 +326,7 @@
                                     <div class="panel-mini-icon">
                                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                                     </div>
-                                    <h3 class="panel-title">Arus Kas Tahunan (Pemasukan vs Pengeluaran)</h3>
+                                    <h3 class="panel-title">Arus Kas Tahunan</h3>
                                 </div>
                                 <div class="panel-header-actions">
                                     <select id="chart-cashflow-year" class="admin-select admin-select-sm" onchange="loadOverviewCharts()">
