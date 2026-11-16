@@ -945,6 +945,16 @@
                             </div>
                         </div>
                         <div class="toolbar-actions">
+                            <div class="penghuni-view-switch" role="group" aria-label="Mode Tampilan Pengumuman">
+                                <button type="button" class="penghuni-view-btn active" id="btn-ann-manage" onclick="setPengumumanViewMode('manage')" title="Kelola Pengumuman">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+                                    <span>Kelola</span>
+                                </button>
+                                <button type="button" class="penghuni-view-btn" id="btn-ann-preview" onclick="setPengumumanViewMode('preview')" title="Pratinjau Tampilan Penghuni">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    <span>Pratinjau Penghuni</span>
+                                </button>
+                            </div>
                             <div class="admin-search-input">
                                 <svg class="icon" style="color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                                 <input type="text" id="search-pengumuman-admin" placeholder="Cari judul atau isi pengumuman..." oninput="renderPengumumanAdmin()">
@@ -958,6 +968,24 @@
 
                     <div class="pengumuman-admin-grid" id="pengumuman-admin-list">
                         <div class="panel-card" style="text-align:center;color:var(--text-muted);padding:32px;">Memuat papan pengumuman...</div>
+                    </div>
+
+                    <!-- Mode Pratinjau Tampilan Penghuni -->
+                    <div class="ann-preview-stage" id="pengumuman-preview-panel" style="display:none;">
+                        <div class="ann-preview-stage-bar">
+                            <div class="ann-preview-stage-info">
+                                <span class="ann-preview-dot" aria-hidden="true"></span>
+                                <div>
+                                    <strong>Simulasi Tampilan di Beranda Penghuni</strong>
+                                    <span>Banner otomatis memakai tema Dark Navy untuk status <em>Penting</em> / <em>Disematkan</em>, Hangat untuk <em>Maintenance</em>, dan Putih Bersih untuk <em>Info Umum</em>.</span>
+                                </div>
+                            </div>
+                            <button type="button" class="logs-refresh-btn" onclick="setPengumumanViewMode('manage')">
+                                <span>Kembali ke Kelola</span>
+                            </button>
+                        </div>
+
+                        <div class="ann-preview-canvas" id="pengumuman-preview-render"></div>
                     </div>
                 </section>
 

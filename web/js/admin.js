@@ -16,6 +16,8 @@ let tagihanCache = [];
 let pengeluaranCache = [];
 let keluhanCache = [];
 let pengumumanCache = [];
+let pengumumanViewMode = 'manage';
+let pengumumanPreviewIdx = 0;
 
 // Chart.js instances
 let cashflowChart = null;
@@ -2255,6 +2257,109 @@ function getPengumumanKatClass(kategori) {
     return 'kat-info';
 }
 
+function getPengumumanPreviewVariant(item) {
+    if (!item) return 'is-info';
+    if (item.kategori === 'Penting' || item.is_pinned) return 'is-navy-highlight';
+    if (item.kategori === 'Maintenance') return 'is-maintenance';
+    return 'is-info';
+}
+
+function setPengumumanViewMode(mode) {
+    pengumumanViewMode = mode === 'preview' ? 'preview' : 'manage';
+    const isPreview = pengumumanViewMode === 'preview';
+
+    const listEl = document.getElementById('pengumuman-admin-list');
+    const previewEl = document.getElementById('pengumuman-preview-panel');
+    const btnManage = document.getElementById('btn-ann-manage');
+    const btnPreview = document.getElementById('btn-ann-preview');
+
+    if (btnManage) btnManage.classList.toggle('active', !isPreview);
+    if (btnPreview) btnPreview.classList.toggle('active', isPreview);
+    if (listEl) listEl.style.display = isPreview ? 'none' : 'grid';
+    if (previewEl) previewEl.style.display = isPreview ? 'block' : 'none';
+
+    if (isPreview) {
+        renderPengumumanPreview();
+    } else {
+        renderPengumumanAdmin();
+    }
+}
+
+function previewPengumumanAt(id) {
+    const idx = (pengumumanCache || []).findIndex(x => x.id === id);
+    pengumumanPreviewIdx = idx >= 0 ? idx : 0;
+    setPengumumanViewMode('preview');
+}
+
+function stepAdminAnnPreview(delta) {
+    if (!pengumumanCache || pengumumanCache.length <= 1) return;
+    const len = pengumumanCache.length;
+    pengumumanPreviewIdx = (pengumumanPreviewIdx + delta + len) % len;
+    renderPengumumanPreview();
+}
+
+function renderPengumumanPreview() {
+    const canvas = document.getElementById('pengumuman-preview-render');
+    if (!canvas) return;
+
+    if (!pengumumanCache || pengumumanCache.length === 0) {
+        canvas.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:26px;">Belum ada pengumuman aktif. Saat kosong, strip pengumuman di Beranda Penghuni otomatis disembunyikan agar layar tetap bersih.</div>`;
+        return;
+    }
+
+    if (pengumumanPreviewIdx >= pengumumanCache.length || pengumumanPreviewIdx < 0) {
+        pengumumanPreviewIdx = 0;
+    }
+
+    const item = pengumumanCache[pengumumanPreviewIdx];
+    const katCls = getPengumumanKatClass(item.kategori);
+    const variantCls = getPengumumanPreviewVariant(item);
+    const total = pengumumanCache.length;
+
+    canvas.innerHTML = `
+        <div class="ann-preview-mini-hdr">
+            <span>Beranda Penghuni &bull; Posisi di Bawah Welcome Card</span>
+            <span>Item #${pengumumanPreviewIdx + 1} dari ${total}</span>
+        </div>
+        <div class="user-announcement-strip ${variantCls}">
+            <div class="tkc-corner-arc user-ann-arc" aria-hidden="true"></div>
+            <svg class="user-ann-wave" viewBox="0 0 180 100" fill="none" aria-hidden="true">
+                <path d="M50 100C92 52 135 28 180 10V100H50Z" fill="currentColor" fill-opacity="0.06" />
+                <path d="M100 100C128 68 154 48 180 36V100H100Z" fill="#FFC400" fill-opacity="0.18" />
+            </svg>
+            <div class="user-ann-icon" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
+            </div>
+            <div class="user-ann-content">
+                <div class="user-ann-meta-row">
+                    <span class="user-ann-cat-pill ${katCls}">${escapeHtml(item.kategori || 'Info Umum')}</span>
+                    ${item.is_pinned ? `<span class="user-ann-pin-tag">Disematkan</span>` : ''}
+                    <span class="user-ann-date">${escapeHtml(item.waktu_buat || '-')}</span>
+                </div>
+                <h4 class="user-ann-title">${escapeHtml(item.judul)}</h4>
+                <p class="user-ann-body">${escapeHtml(item.isi)}</p>
+            </div>
+            <div class="user-ann-actions">
+                ${total > 1 ? `
+                    <div class="user-ann-carousel-nav">
+                        <button type="button" class="user-ann-nav-btn" onclick="stepAdminAnnPreview(-1)" aria-label="Geser Kiri">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <span class="user-ann-counter">${pengumumanPreviewIdx + 1} / ${total}</span>
+                        <button type="button" class="user-ann-nav-btn" onclick="stepAdminAnnPreview(1)" aria-label="Geser Kanan">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                ` : ''}
+                <span class="user-ann-more-btn" aria-hidden="true">
+                    <span>Semua (${total})</span>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </span>
+            </div>
+        </div>
+    `;
+}
+
 function renderPengumumanAdmin() {
     const container = document.getElementById('pengumuman-admin-list');
     if (!container) return;
@@ -2274,11 +2379,14 @@ function renderPengumumanAdmin() {
         return;
     }
 
+    const featuredId = pengumumanCache[0]?.id;
+
     container.innerHTML = filtered.map(item => {
         const isPinned = Boolean(item.is_pinned);
+        const isFeatured = item.id === featuredId;
         const katCls = getPengumumanKatClass(item.kategori);
         return `
-            <article class="ann-admin-card ${isPinned ? 'is-pinned' : ''}">
+            <article class="ann-admin-card ${isPinned ? 'is-pinned' : ''} ${isFeatured ? 'is-featured-live' : ''}">
                 <div class="ann-card-top">
                     <div class="ann-badges-row">
                         <span class="ann-cat-pill ${katCls}">${escapeHtml(item.kategori)}</span>
@@ -2288,6 +2396,7 @@ function renderPengumumanAdmin() {
                                 <span>Disematkan</span>
                             </span>
                         ` : ''}
+                        ${isFeatured ? `<span class="ann-featured-pill">Tampil Utama di Penghuni</span>` : ''}
                     </div>
                     <span class="ann-meta-date">${escapeHtml(item.waktu_buat || '-')}</span>
                 </div>
@@ -2296,6 +2405,7 @@ function renderPengumumanAdmin() {
                 <div class="ann-card-footer">
                     <span class="ann-author-meta">Oleh ${escapeHtml(item.dibuat_oleh || 'admin')}</span>
                     <div class="ann-card-actions">
+                        <button type="button" class="ann-action-btn is-preview-btn" onclick="previewPengumumanAt(${item.id})">Lihat Tampilan</button>
                         <button type="button" class="ann-action-btn ${isPinned ? 'is-pin-active' : ''}" onclick="handleTogglePinPengumuman(${item.id})">${isPinned ? 'Lepas Pin' : 'Sematkan'}</button>
                         <button type="button" class="ann-action-btn" onclick="openPengumumanModal(${item.id})">Edit</button>
                         <button type="button" class="ann-action-btn is-danger" onclick="handleHapusPengumuman(${item.id})">Hapus</button>
@@ -2328,7 +2438,11 @@ async function loadPengumumanAdmin() {
             : 'Belum ada terbitan terbaru';
     }
 
-    renderPengumumanAdmin();
+    if (pengumumanViewMode === 'preview') {
+        renderPengumumanPreview();
+    } else {
+        renderPengumumanAdmin();
+    }
 }
 
 function openPengumumanModal(id = null) {

@@ -382,8 +382,13 @@
                             </div>
                         </div>
 
-                        <!-- Row 2b: Strip Pengumuman Resmi Pengelola (Auto-hidden bila kosong) -->
-                        <div class="user-announcement-strip" id="user-pengumuman-strip" style="display:none;">
+                        <!-- Row 2b: Spotlight Pengumuman Pengelola (Opsi 1: Elegant Gradient + Carousel) -->
+                        <div class="user-announcement-strip is-info" id="user-pengumuman-strip" style="display:none;">
+                            <div class="tkc-corner-arc user-ann-arc" aria-hidden="true"></div>
+                            <svg class="user-ann-wave" viewBox="0 0 180 100" fill="none" aria-hidden="true">
+                                <path d="M50 100C92 52 135 28 180 10V100H50Z" fill="currentColor" fill-opacity="0.06" />
+                                <path d="M100 100C128 68 154 48 180 36V100H100Z" fill="#FFC400" fill-opacity="0.18" />
+                            </svg>
                             <div class="user-ann-icon" aria-hidden="true">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
                             </div>
@@ -396,10 +401,21 @@
                                 <h4 class="user-ann-title" id="user-ann-top-title">-</h4>
                                 <p class="user-ann-body" id="user-ann-top-isi">-</p>
                             </div>
-                            <button type="button" class="user-ann-more-btn" id="user-ann-more-btn" onclick="openAllPengumumanModal()">
-                                <span id="user-ann-more-label">Semua Pengumuman</span>
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                            </button>
+                            <div class="user-ann-actions">
+                                <div class="user-ann-carousel-nav" id="user-ann-carousel-nav" style="display:none;">
+                                    <button type="button" class="user-ann-nav-btn" onclick="stepUserPengumuman(-1)" aria-label="Pengumuman Sebelumnya">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                    </button>
+                                    <span class="user-ann-counter" id="user-ann-counter">1 / 1</span>
+                                    <button type="button" class="user-ann-nav-btn" onclick="stepUserPengumuman(1)" aria-label="Pengumuman Berikutnya">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                    </button>
+                                </div>
+                                <button type="button" class="user-ann-more-btn" id="user-ann-more-btn" onclick="openAllPengumumanModal()">
+                                    <span id="user-ann-more-label">Semua (1)</span>
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Row 3: 2-Column Detail Kamar & Ringkasan Aktivitas -->

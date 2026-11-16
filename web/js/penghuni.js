@@ -24,6 +24,7 @@ let userTagihanCache = [];
 let userKeluhanCache = [];
 let availableRoomsCache = [];
 let userPengumumanCache = [];
+let userPengumumanIdx = 0;
 
 const USER_TAB_META = {
     overview: {
@@ -1544,27 +1545,38 @@ function getUserAnnKatClass(kategori) {
     return 'kat-info';
 }
 
-async function loadUserPengumuman() {
-    const stripEl = document.getElementById('user-pengumuman-strip');
-    try {
-        const res = await eel.get_pengumuman('Semua', 30)();
-        userPengumumanCache = (res && res.status && Array.isArray(res.data)) ? res.data : [];
-    } catch (err) {
-        console.warn('Gagal memuat pengumuman kos:', err);
-        userPengumumanCache = [];
-    }
+function getUserAnnVariantClass(item) {
+    if (!item) return 'is-info';
+    if (item.kategori === 'Penting' || item.is_pinned) return 'is-navy-highlight';
+    if (item.kategori === 'Maintenance') return 'is-maintenance';
+    return 'is-info';
+}
 
+function stepUserPengumuman(delta) {
+    if (!userPengumumanCache || userPengumumanCache.length <= 1) return;
+    const len = userPengumumanCache.length;
+    userPengumumanIdx = (userPengumumanIdx + delta + len) % len;
+    renderUserPengumumanSpotlight();
+}
+
+function renderUserPengumumanSpotlight() {
+    const stripEl = document.getElementById('user-pengumuman-strip');
     if (!stripEl) return;
 
-    if (!userPengumumanCache.length) {
+    if (!userPengumumanCache || !userPengumumanCache.length) {
         stripEl.style.display = 'none';
         return;
     }
 
-    const top = userPengumumanCache[0];
-    const katCls = getUserAnnKatClass(top.kategori);
+    if (userPengumumanIdx >= userPengumumanCache.length || userPengumumanIdx < 0) {
+        userPengumumanIdx = 0;
+    }
 
-    stripEl.className = `user-announcement-strip ${katCls}`;
+    const item = userPengumumanCache[userPengumumanIdx];
+    const katCls = getUserAnnKatClass(item.kategori);
+    const variantCls = getUserAnnVariantClass(item);
+
+    stripEl.className = `user-announcement-strip ${variantCls}`;
     stripEl.style.display = 'flex';
 
     const elKat = document.getElementById('user-ann-top-kat');
@@ -1573,16 +1585,37 @@ async function loadUserPengumuman() {
     const elTitle = document.getElementById('user-ann-top-title');
     const elIsi = document.getElementById('user-ann-top-isi');
     const elMoreLabel = document.getElementById('user-ann-more-label');
+    const elNav = document.getElementById('user-ann-carousel-nav');
+    const elCounter = document.getElementById('user-ann-counter');
 
     if (elKat) {
         elKat.className = `user-ann-cat-pill ${katCls}`;
-        elKat.textContent = top.kategori || 'Info Umum';
+        elKat.textContent = item.kategori || 'Info Umum';
     }
-    if (elPin) elPin.style.display = top.is_pinned ? 'inline-flex' : 'none';
-    if (elDate) elDate.textContent = top.waktu_buat || '-';
-    if (elTitle) elTitle.textContent = top.judul || '-';
-    if (elIsi) elIsi.textContent = top.isi || '-';
-    if (elMoreLabel) elMoreLabel.textContent = `Semua Pengumuman (${userPengumumanCache.length})`;
+    if (elPin) elPin.style.display = item.is_pinned ? 'inline-flex' : 'none';
+    if (elDate) elDate.textContent = item.waktu_buat || '-';
+    if (elTitle) elTitle.textContent = item.judul || '-';
+    if (elIsi) elIsi.textContent = item.isi || '-';
+    if (elMoreLabel) elMoreLabel.textContent = `Semua (${userPengumumanCache.length})`;
+
+    if (elNav) {
+        elNav.style.display = userPengumumanCache.length > 1 ? 'inline-flex' : 'none';
+    }
+    if (elCounter) {
+        elCounter.textContent = `${userPengumumanIdx + 1} / ${userPengumumanCache.length}`;
+    }
+}
+
+async function loadUserPengumuman() {
+    try {
+        const res = await eel.get_pengumuman('Semua', 30)();
+        userPengumumanCache = (res && res.status && Array.isArray(res.data)) ? res.data : [];
+    } catch (err) {
+        console.warn('Gagal memuat pengumuman kos:', err);
+        userPengumumanCache = [];
+    }
+    userPengumumanIdx = 0;
+    renderUserPengumumanSpotlight();
 }
 
 function openAllPengumumanModal() {
