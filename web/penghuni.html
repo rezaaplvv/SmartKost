@@ -561,14 +561,16 @@
                      ==================================================== -->
                 <section class="admin-tab-panel" id="tab-tagihan">
 
-                    <!-- Row 1: Transfer Bank Card + Pembayaran QRIS Card (1:1 Reference) -->
+                    <!-- Row 1: Transfer Bank Card + Pembayaran QRIS Card (Soft Navy & Gold Style) -->
                     <div class="payment-methods-banner">
                         <!-- Left: Bank Transfer Showcase -->
                         <div class="payment-bank-showcase">
-                            <svg class="payment-bank-bg-decor" viewBox="0 0 320 160" fill="none"
+                            <div class="tkc-corner-arc" aria-hidden="true"></div>
+                            <svg class="payment-bank-bg-decor" viewBox="0 0 240 120" fill="none"
                                 preserveAspectRatio="none" aria-hidden="true">
-                                <path d="M90 160C140 85 215 110 320 15V160H90Z" fill="#FFE8A3" fill-opacity="0.45" />
-                                <path d="M165 160C210 110 265 130 320 75V160H165Z" fill="#FDE08D" fill-opacity="0.35" />
+                                <path d="M90 120C140 60 190 42 240 10V120H90Z" fill="#FFF3CC" />
+                                <path d="M135 120C168 78 206 60 240 38V120H135Z" fill="#FFC400" fill-opacity="0.34" />
+                                <path d="M175 120C196 96 218 82 240 68V120H175Z" fill="#101D38" fill-opacity="0.14" />
                             </svg>
 
                             <div class="payment-bank-left">
@@ -598,9 +600,30 @@
 
                         <!-- Right: QRIS Showcase -->
                         <div class="payment-qris-showcase">
-                            <div class="payment-qris-header">
-                                <h3>Pembayaran QRIS</h3>
-                                <p id="info-qris-status">Memuat status QRIS...</p>
+                            <div class="tkc-corner-arc" aria-hidden="true"></div>
+                            <svg class="payment-qris-bg-decor" viewBox="0 0 160 96" fill="none"
+                                preserveAspectRatio="none" aria-hidden="true">
+                                <path d="M54 96C88 54 124 38 160 12V96H54Z" fill="#E8EFF9" />
+                                <path d="M90 96C114 66 138 52 160 36V96H90Z" fill="#CBD5E1" fill-opacity="0.52" />
+                                <path d="M116 96C132 76 146 66 160 56V96H116Z" fill="#192B4D" fill-opacity="0.16" />
+                            </svg>
+
+                            <div class="payment-qris-header-row">
+                                <div class="payment-qris-icon-badge" aria-hidden="true">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                                        <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                                        <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                                        <path d="M14 14h3v3h-3z"></path>
+                                        <path d="M20 14v3h1"></path>
+                                        <path d="M14 20h7"></path>
+                                    </svg>
+                                </div>
+                                <div class="payment-qris-header">
+                                    <h3>Pembayaran QRIS</h3>
+                                    <p id="info-qris-status">Memuat status QRIS...</p>
+                                </div>
                             </div>
                             <div class="payment-qris-body" id="info-qris-action-area"></div>
                         </div>
