@@ -4650,11 +4650,11 @@ body.admin-body {
     background: #FFFFFF;
     border: 1px solid #E5EAF2;
     border-radius: 20px;
-    padding: 20px 22px;
-    min-height: 124px;
+    padding: 18px 18px;
+    min-height: 118px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 13px;
     box-shadow: 0 8px 24px rgba(16, 29, 56, 0.045), 0 2px 6px rgba(16, 29, 56, 0.02);
     transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
                 box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
@@ -4730,9 +4730,9 @@ body.admin-body {
 .exp-stat-icon {
     position: relative;
     z-index: 1;
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4740,8 +4740,8 @@ body.admin-body {
 }
 
 .exp-stat-icon .icon {
-    width: 22px;
-    height: 22px;
+    width: 19px;
+    height: 19px;
 }
 
 .exp-stat-icon.is-navy-gold {
@@ -4796,16 +4796,14 @@ body.admin-body {
 }
 
 .exp-stat-val {
-    font-size: 1.62rem;
+    font-size: clamp(1.16rem, 1.45vw, 1.38rem);
     font-weight: 800;
     color: #101D38;
-    line-height: 1.18;
-    margin-top: 4px;
+    line-height: 1.2;
+    margin-top: 3px;
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .pengeluaran-stat-card.is-navy-highlight .exp-stat-val {
@@ -4817,10 +4815,11 @@ body.admin-body {
 }
 
 .exp-stat-sub {
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-weight: 500;
     color: #64748B;
     margin-top: 4px;
+    padding-right: 26px;
 }
 
 .pengeluaran-stat-card.is-navy-highlight .exp-stat-sub {
@@ -4837,16 +4836,17 @@ body.admin-body {
 }
 
 .exp-stat-arrow {
-    position: relative;
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
     z-index: 1;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    align-self: flex-end;
+    pointer-events: none;
 }
 
 .exp-stat-arrow svg {
