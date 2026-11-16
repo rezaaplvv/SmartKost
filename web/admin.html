@@ -475,26 +475,77 @@
                      TAB 3: BOOKING ONLINE
                      ==================================================== -->
                 <section class="admin-tab-panel" id="tab-booking">
-                    <div class="admin-toolbar">
+                    <!-- Summary Strip Booking Online (Option 3: Elegant Gradient) -->
+                    <div class="pengeluaran-summary-grid">
+                        <div class="pengeluaran-stat-card is-navy-highlight">
+                            <svg class="exp-card-deco" viewBox="0 0 140 90" fill="none" aria-hidden="true">
+                                <path d="M40 90C76 48 108 26 140 8V90H40Z" fill="rgba(255, 255, 255, 0.05)" />
+                                <path d="M84 90C106 62 124 46 140 34V90H84Z" fill="rgba(255, 196, 0, 0.16)" />
+                            </svg>
+                            <div class="exp-stat-icon is-navy-gold" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">Menunggu Konfirmasi</span>
+                                <strong class="exp-stat-val" id="book-sum-pending">0 Permohonan</strong>
+                                <span class="exp-stat-sub">Perlu tinjauan &amp; persetujuan admin</span>
+                            </div>
+                        </div>
+
+                        <div class="pengeluaran-stat-card is-white-slate">
+                            <div class="tkc-corner-arc" aria-hidden="true"></div>
+                            <div class="exp-stat-icon is-emerald" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">Booking Disetujui</span>
+                                <strong class="exp-stat-val" id="book-sum-approved">0 Disetujui</strong>
+                                <span class="exp-stat-sub">Otomatis check-in &amp; terbit tagihan</span>
+                            </div>
+                        </div>
+
+                        <div class="pengeluaran-stat-card is-white-gold">
+                            <svg class="exp-card-deco" viewBox="0 0 130 76" fill="none" aria-hidden="true">
+                                <path d="M44 76C78 40 104 22 130 8V76H44Z" fill="#FFF3CC" />
+                                <path d="M76 76C98 52 114 38 130 28V76H76Z" fill="#FFC400" fill-opacity="0.7" />
+                                <path d="M100 76C112 62 121 52 130 44V76H100Z" fill="#101D38" />
+                            </svg>
+                            <div class="exp-stat-icon is-gold" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">Total Pengajuan Masuk</span>
+                                <strong class="exp-stat-val" id="book-sum-total">0 Pengajuan</strong>
+                                <span class="exp-stat-sub" id="book-sum-rejected">0 ditolak</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-toolbar penghuni-toolbar">
                         <div class="toolbar-filters">
-                            <select id="filter-booking-status" class="admin-select" onchange="loadBookingsAdmin()">
-                                <option value="Semua">Semua Status Booking</option>
-                                <option value="Pending">Menunggu Konfirmasi (Pending)</option>
-                                <option value="Disetujui">Disetujui</option>
-                                <option value="Ditolak">Ditolak</option>
-                            </select>
+                            <input type="hidden" id="filter-booking-status" value="Semua">
+                            <div class="penghuni-seg-tabs" id="booking-seg-tabs" role="tablist" aria-label="Filter Status Booking">
+                                <button type="button" class="penghuni-seg-btn active" data-status="Semua" onclick="setBookingStatusFilter('Semua')">Semua</button>
+                                <button type="button" class="penghuni-seg-btn" data-status="Pending" onclick="setBookingStatusFilter('Pending')">Menunggu</button>
+                                <button type="button" class="penghuni-seg-btn" data-status="Disetujui" onclick="setBookingStatusFilter('Disetujui')">Disetujui</button>
+                                <button type="button" class="penghuni-seg-btn" data-status="Ditolak" onclick="setBookingStatusFilter('Ditolak')">Ditolak</button>
+                            </div>
                         </div>
                         <div class="toolbar-actions">
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="loadBookingsAdmin()">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                            <div class="admin-search-input">
+                                <svg class="icon" style="color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input type="text" id="search-booking-admin" placeholder="Cari pemohon / kamar / HP..." oninput="renderBookingsRows()">
+                            </div>
+                            <button type="button" class="logs-refresh-btn" onclick="loadBookingsAdmin()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
                                 <span>Muat Ulang</span>
                             </button>
                         </div>
                     </div>
 
-                    <div class="panel-card">
+                    <div class="panel-card penghuni-table-card tagihan-table-card">
                         <div class="table-responsive">
-                            <table class="admin-table">
+                            <table class="admin-table tagihan-table booking-table">
                                 <thead>
                                     <tr>
                                         <th>Pemohon</th>
@@ -737,23 +788,77 @@
                      TAB 7: KELUHAN & PERBAIKAN
                      ==================================================== -->
                 <section class="admin-tab-panel" id="tab-keluhan">
-                    <div class="admin-toolbar">
-                        <div class="toolbar-filters">
-                            <select id="filter-keluhan-status" class="admin-select" onchange="loadKeluhanAdmin()">
-                                <option value="Semua">Semua Tiket Keluhan</option>
-                                <option value="Menunggu">Menunggu</option>
-                                <option value="Diproses">Diproses</option>
-                                <option value="Selesai">Selesai</option>
-                            </select>
+                    <!-- Summary Strip Keluhan & Perbaikan (Option 3: Elegant Gradient) -->
+                    <div class="pengeluaran-summary-grid">
+                        <div class="pengeluaran-stat-card is-navy-highlight">
+                            <svg class="exp-card-deco" viewBox="0 0 140 90" fill="none" aria-hidden="true">
+                                <path d="M40 90C76 48 108 26 140 8V90H40Z" fill="rgba(255, 255, 255, 0.05)" />
+                                <path d="M84 90C106 62 124 46 140 34V90H84Z" fill="rgba(255, 196, 0, 0.16)" />
+                            </svg>
+                            <div class="exp-stat-icon is-navy-gold" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">Tiket Aktif Ditangani</span>
+                                <strong class="exp-stat-val" id="keluhan-sum-open">0 Tiket</strong>
+                                <span class="exp-stat-sub" id="keluhan-sum-open-sub">0 menunggu, 0 diproses</span>
+                            </div>
                         </div>
-                        <div class="toolbar-actions">
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="loadKeluhanAdmin()">Muat Ulang</button>
+
+                        <div class="pengeluaran-stat-card is-white-slate">
+                            <div class="tkc-corner-arc" aria-hidden="true"></div>
+                            <div class="exp-stat-icon is-rose" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">Prioritas Tinggi</span>
+                                <strong class="exp-stat-val" id="keluhan-sum-high">0 Tiket</strong>
+                                <span class="exp-stat-sub">Keluhan aktif butuh tindakan cepat</span>
+                            </div>
+                        </div>
+
+                        <div class="pengeluaran-stat-card is-white-gold">
+                            <svg class="exp-card-deco" viewBox="0 0 130 76" fill="none" aria-hidden="true">
+                                <path d="M44 76C78 40 104 22 130 8V76H44Z" fill="#FFF3CC" />
+                                <path d="M76 76C98 52 114 38 130 28V76H76Z" fill="#FFC400" fill-opacity="0.7" />
+                                <path d="M100 76C112 62 121 52 130 44V76H100Z" fill="#101D38" />
+                            </svg>
+                            <div class="exp-stat-icon is-gold" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">Tiket Selesai</span>
+                                <strong class="exp-stat-val" id="keluhan-sum-done">0 Selesai</strong>
+                                <span class="exp-stat-sub" id="keluhan-sum-cost">Total biaya perbaikan: Rp 0</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="panel-card">
+                    <div class="admin-toolbar penghuni-toolbar">
+                        <div class="toolbar-filters">
+                            <input type="hidden" id="filter-keluhan-status" value="Semua">
+                            <div class="penghuni-seg-tabs" id="keluhan-seg-tabs" role="tablist" aria-label="Filter Status Keluhan">
+                                <button type="button" class="penghuni-seg-btn active" data-status="Semua" onclick="setKeluhanStatusFilter('Semua')">Semua</button>
+                                <button type="button" class="penghuni-seg-btn" data-status="Menunggu" onclick="setKeluhanStatusFilter('Menunggu')">Menunggu</button>
+                                <button type="button" class="penghuni-seg-btn" data-status="Diproses" onclick="setKeluhanStatusFilter('Diproses')">Diproses</button>
+                                <button type="button" class="penghuni-seg-btn" data-status="Selesai" onclick="setKeluhanStatusFilter('Selesai')">Selesai</button>
+                            </div>
+                        </div>
+                        <div class="toolbar-actions">
+                            <div class="admin-search-input">
+                                <svg class="icon" style="color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input type="text" id="search-keluhan-admin" placeholder="Cari pelapor / kamar / keluhan..." oninput="renderKeluhanRows()">
+                            </div>
+                            <button type="button" class="logs-refresh-btn" onclick="loadKeluhanAdmin()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                                <span>Muat Ulang</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-card penghuni-table-card tagihan-table-card">
                         <div class="table-responsive">
-                            <table class="admin-table">
+                            <table class="admin-table tagihan-table keluhan-table">
                                 <thead>
                                     <tr>
                                         <th>Waktu &amp; Pelapor</th>

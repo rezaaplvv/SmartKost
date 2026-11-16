@@ -1089,20 +1089,37 @@ async function handleHapusKamar(id, nomor) {
 /* ==========================================================
    3. BOOKING ONLINE
    ========================================================== */
-async function loadBookingsAdmin() {
-    const status = document.getElementById('filter-booking-status')?.value || 'Semua';
-    const res = await eel.get_booking(status === 'Semua' ? null : status)();
+function setBookingStatusFilter(statusVal) {
+    const hiddenInput = document.getElementById('filter-booking-status');
+    if (hiddenInput) hiddenInput.value = statusVal || 'Semua';
+    document.querySelectorAll('#booking-seg-tabs .penghuni-seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.status === (statusVal || 'Semua'));
+    });
+    renderBookingsRows();
+}
+
+function renderBookingsRows() {
     const tbody = document.getElementById('booking-table-body');
     if (!tbody) return;
 
-    if (!res.status || !res.data || res.data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">Belum ada permohonan booking.</td></tr>`;
+    const status = document.getElementById('filter-booking-status')?.value || 'Semua';
+    const q = (document.getElementById('search-booking-admin')?.value || '').trim().toLowerCase();
+
+    const filtered = (bookingsCache || []).filter(b => {
+        const matchStatus = status === 'Semua' || b.status === status;
+        const matchQuery = !q || [b.nama_pemohon, b.no_hp, b.pekerjaan, b.nomor_kamar, b.tipe, b.catatan]
+            .some(v => String(v || '').toLowerCase().includes(q));
+        return matchStatus && matchQuery;
+    });
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:28px;">Belum ada permohonan booking yang sesuai.</td></tr>`;
         return;
     }
 
-    bookingsCache = res.data;
-    tbody.innerHTML = res.data.map(b => {
+    tbody.innerHTML = filtered.map(b => {
         const badgeCls = b.status === 'Pending' ? 'badge-warning' : (b.status === 'Disetujui' ? 'badge-success' : 'badge-danger');
+        const statusLabel = b.status === 'Pending' ? 'Menunggu' : b.status;
         return `
             <tr>
                 <td>
@@ -1110,29 +1127,50 @@ async function loadBookingsAdmin() {
                     <span style="font-size:0.78rem;color:var(--text-muted);">${escapeHtml(b.no_hp)} • ${escapeHtml(b.pekerjaan || '-')}</span>
                 </td>
                 <td>
-                    <strong>Kamar ${escapeHtml(b.nomor_kamar)}</strong><br>
-                    <span style="font-size:0.78rem;color:var(--text-muted);">${escapeHtml(b.tipe)} (${formatRupiah(b.harga_sewa)})</span>
+                    <span class="booking-room-pill">Kamar ${escapeHtml(b.nomor_kamar)}</span><br>
+                    <span style="font-size:0.77rem;color:var(--text-muted);display:inline-block;margin-top:4px;">${escapeHtml(b.tipe)} (${formatRupiah(b.harga_sewa)})</span>
                 </td>
                 <td>
-                    ${formatDateIndo(b.tanggal_mulai)}<br>
+                    <strong>${formatDateIndo(b.tanggal_mulai)}</strong><br>
                     <span style="font-size:0.78rem;color:var(--text-muted);">Durasi: ${b.durasi_bulan} Bulan</span>
                 </td>
-                <td style="max-width:200px;font-size:0.8rem;">
-                    ${b.foto_ktp ? `<button type="button" class="btn btn-secondary btn-xs" onclick="openBookingKtp(${b.id})">Lihat KTP</button>` : '<span style="color:var(--text-muted);">Tanpa KTP</span>'}
-                    <div style="color:var(--text-muted);margin-top:4px;">${escapeHtml(b.catatan || b.alasan_penolakan || '')}</div>
+                <td style="max-width:210px;font-size:0.8rem;">
+                    ${b.foto_ktp ? `<button type="button" class="booking-ktp-btn" onclick="openBookingKtp(${b.id})">Lihat KTP</button>` : '<span style="color:var(--text-muted);">Tanpa KTP</span>'}
+                    ${(b.catatan || b.alasan_penolakan) ? `<div style="color:var(--text-muted);margin-top:5px;">${escapeHtml(b.catatan || b.alasan_penolakan)}</div>` : ''}
                 </td>
-                <td><span class="badge ${badgeCls}">${escapeHtml(b.status)}</span></td>
+                <td><span class="badge ${badgeCls}">${escapeHtml(statusLabel)}</span></td>
                 <td>
                     ${b.status === 'Pending' ? `
                         <div class="table-actions">
-                            <button type="button" class="btn btn-primary btn-xs" onclick="handleApproveBooking(${b.id}, '${escapeHtml(b.nama_pemohon)}')">Setujui</button>
-                            <button type="button" class="btn btn-danger btn-xs" onclick="openTolakBookingModal(${b.id})">Tolak</button>
+                            <button type="button" class="booking-approve-btn" onclick="handleApproveBooking(${b.id}, '${escapeHtml(b.nama_pemohon)}')">Setujui</button>
+                            <button type="button" class="booking-reject-btn" onclick="openTolakBookingModal(${b.id})">Tolak</button>
                         </div>
-                    ` : `<span style="font-size:0.78rem;color:var(--text-muted);">Diproses pada ${escapeHtml(b.waktu_pengajuan)}</span>`}
+                    ` : `<span style="font-size:0.77rem;color:var(--text-muted);">Diproses ${escapeHtml(b.waktu_pengajuan)}</span>`}
                 </td>
             </tr>
         `;
     }).join('');
+}
+
+async function loadBookingsAdmin() {
+    const res = await eel.get_booking(null)();
+    bookingsCache = (res && res.status && Array.isArray(res.data)) ? res.data : [];
+
+    const pendingCount = bookingsCache.filter(b => b.status === 'Pending').length;
+    const approvedCount = bookingsCache.filter(b => b.status === 'Disetujui').length;
+    const rejectedCount = bookingsCache.filter(b => b.status === 'Ditolak').length;
+
+    const elPending = document.getElementById('book-sum-pending');
+    const elApproved = document.getElementById('book-sum-approved');
+    const elTotal = document.getElementById('book-sum-total');
+    const elRejected = document.getElementById('book-sum-rejected');
+
+    if (elPending) elPending.textContent = `${pendingCount} Permohonan`;
+    if (elApproved) elApproved.textContent = `${approvedCount} Disetujui`;
+    if (elTotal) elTotal.textContent = `${bookingsCache.length} Pengajuan`;
+    if (elRejected) elRejected.textContent = `${rejectedCount} ditolak`;
+
+    renderBookingsRows();
 }
 
 function openBookingKtp(bookingId) {
@@ -2087,45 +2125,88 @@ async function handleHapusPengeluaran(id) {
 /* ==========================================================
    7. KELUHAN & PERBAIKAN
    ========================================================== */
-async function loadKeluhanAdmin() {
-    const status = document.getElementById('filter-keluhan-status')?.value || 'Semua';
-    const res = await eel.get_keluhan(status, null)();
+function setKeluhanStatusFilter(statusVal) {
+    const hiddenInput = document.getElementById('filter-keluhan-status');
+    if (hiddenInput) hiddenInput.value = statusVal || 'Semua';
+    document.querySelectorAll('#keluhan-seg-tabs .penghuni-seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.status === (statusVal || 'Semua'));
+    });
+    renderKeluhanRows();
+}
+
+function renderKeluhanRows() {
     const tbody = document.getElementById('keluhan-table-body');
     if (!tbody) return;
 
-    if (!res.status || !res.data || res.data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">Tidak ada tiket keluhan.</td></tr>`;
+    const status = document.getElementById('filter-keluhan-status')?.value || 'Semua';
+    const q = (document.getElementById('search-keluhan-admin')?.value || '').trim().toLowerCase();
+
+    const filtered = (keluhanCache || []).filter(c => {
+        const matchStatus = status === 'Semua' || c.status === status;
+        const matchQuery = !q || [c.nama_penghuni, c.nomor_kamar, c.judul, c.deskripsi, c.tindakan]
+            .some(v => String(v || '').toLowerCase().includes(q));
+        return matchStatus && matchQuery;
+    });
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:28px;">Tidak ada tiket keluhan yang sesuai.</td></tr>`;
         return;
     }
 
-    keluhanCache = res.data;
-    tbody.innerHTML = res.data.map(c => {
+    tbody.innerHTML = filtered.map(c => {
         const prioCls = c.prioritas === 'Tinggi' ? 'badge-danger' : (c.prioritas === 'Sedang' ? 'badge-warning' : 'badge-neutral');
         const stCls = c.status === 'Selesai' ? 'badge-success' : (c.status === 'Diproses' ? 'badge-warning' : 'badge-danger');
 
         return `
             <tr>
                 <td>
-                    <strong>${escapeHtml(c.nama_penghuni)}</strong> (Kamar ${escapeHtml(c.nomor_kamar)})<br>
-                    <span style="font-size:0.76rem;color:var(--text-muted);">${escapeHtml(c.waktu_lapor)}</span>
+                    <strong>${escapeHtml(c.nama_penghuni)}</strong>
+                    <span class="keluhan-time-meta" style="margin-left:4px;">Kamar ${escapeHtml(c.nomor_kamar)}</span><br>
+                    <span style="font-size:0.76rem;color:var(--text-muted);display:inline-block;margin-top:4px;">${escapeHtml(c.waktu_lapor)}</span>
                 </td>
-                <td style="max-width:260px;">
+                <td style="max-width:270px;">
                     <strong>${escapeHtml(c.judul)}</strong>
-                    <p style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">${escapeHtml(c.deskripsi)}</p>
-                    ${c.foto_keluhan ? `<button type="button" class="btn btn-secondary btn-xs" style="margin-top:4px;" onclick="openKeluhanFoto(${c.id})">Lihat Foto</button>` : ''}
+                    <p style="font-size:0.8rem;color:var(--text-muted);margin-top:3px;line-height:1.4;">${escapeHtml(c.deskripsi)}</p>
+                    ${c.foto_keluhan ? `<button type="button" class="booking-ktp-btn" style="margin-top:6px;" onclick="openKeluhanFoto(${c.id})">Lihat Foto</button>` : ''}
                 </td>
                 <td><span class="badge ${prioCls}">${escapeHtml(c.prioritas)}</span></td>
                 <td style="font-size:0.82rem;">
                     <div>${escapeHtml(c.tindakan || '-')}</div>
-                    ${c.biaya_perbaikan > 0 ? `<strong style="color:var(--danger);">${formatRupiah(c.biaya_perbaikan)}</strong>` : ''}
+                    ${c.biaya_perbaikan > 0 ? `<strong style="color:#EF4444;display:inline-block;margin-top:2px;">${formatRupiah(c.biaya_perbaikan)}</strong>` : ''}
                 </td>
                 <td><span class="badge ${stCls}">${escapeHtml(c.status)}</span></td>
                 <td>
-                    <button type="button" class="btn btn-primary btn-xs" onclick="openKeluhanModal(${c.id})">Update</button>
+                    <button type="button" class="keluhan-update-btn" onclick="openKeluhanModal(${c.id})">Update</button>
                 </td>
             </tr>
         `;
     }).join('');
+}
+
+async function loadKeluhanAdmin() {
+    const res = await eel.get_keluhan('Semua', null)();
+    keluhanCache = (res && res.status && Array.isArray(res.data)) ? res.data : [];
+
+    const waitingCount = keluhanCache.filter(c => c.status === 'Menunggu').length;
+    const processCount = keluhanCache.filter(c => c.status === 'Diproses').length;
+    const openCount = waitingCount + processCount;
+    const highOpenCount = keluhanCache.filter(c => c.status !== 'Selesai' && c.prioritas === 'Tinggi').length;
+    const doneList = keluhanCache.filter(c => c.status === 'Selesai');
+    const totalCost = keluhanCache.reduce((sum, c) => sum + (Number(c.biaya_perbaikan) || 0), 0);
+
+    const elOpen = document.getElementById('keluhan-sum-open');
+    const elOpenSub = document.getElementById('keluhan-sum-open-sub');
+    const elHigh = document.getElementById('keluhan-sum-high');
+    const elDone = document.getElementById('keluhan-sum-done');
+    const elCost = document.getElementById('keluhan-sum-cost');
+
+    if (elOpen) elOpen.textContent = `${openCount} Tiket`;
+    if (elOpenSub) elOpenSub.textContent = `${waitingCount} menunggu, ${processCount} diproses`;
+    if (elHigh) elHigh.textContent = `${highOpenCount} Tiket`;
+    if (elDone) elDone.textContent = `${doneList.length} Selesai`;
+    if (elCost) elCost.textContent = `Total biaya perbaikan: ${formatRupiah(totalCost)}`;
+
+    renderKeluhanRows();
 }
 
 function openKeluhanFoto(id) {

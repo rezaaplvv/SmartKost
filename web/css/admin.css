@@ -5850,4 +5850,134 @@ body.admin-body {
     }
 }
 
+/* ==========================================================
+   BOOKING ONLINE & KELUHAN PERBAIKAN — ELEGANT GRADIENT POLISH
+   ========================================================== */
+.exp-stat-icon.is-emerald {
+    background: #ECFDF5;
+    color: #15803D;
+    border: 1px solid #BBF7D0;
+}
+
+.exp-stat-icon.is-rose {
+    background: #FEF2F2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+}
+
+[data-theme="dark"] .exp-stat-icon.is-emerald {
+    background: rgba(34, 197, 94, 0.16);
+    color: #86EFAC;
+    border-color: rgba(34, 197, 94, 0.32);
+}
+
+[data-theme="dark"] .exp-stat-icon.is-rose {
+    background: rgba(239, 68, 68, 0.16);
+    color: #FCA5A5;
+    border-color: rgba(239, 68, 68, 0.32);
+}
+
+.booking-room-pill,
+.keluhan-time-meta {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 9999px;
+    background: #EEF2F7;
+    color: #101D38;
+    font-size: 0.74rem;
+    font-weight: 700;
+}
+
+[data-theme="dark"] .booking-room-pill,
+[data-theme="dark"] .keluhan-time-meta {
+    background: rgba(148, 163, 184, 0.16);
+    color: #E2E8F0;
+}
+
+.booking-ktp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 30px;
+    padding: 0 11px;
+    border-radius: 8px;
+    background: #F8FAFC;
+    border: 1px solid #CBD5E1;
+    color: #101D38;
+    font-family: inherit;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.booking-ktp-btn:hover {
+    border-color: #101D38;
+    background: #EEF2F7;
+}
+
+[data-theme="dark"] .booking-ktp-btn {
+    background: var(--sk-bg);
+    border-color: var(--sk-border);
+    color: var(--sk-text);
+}
+
+.booking-approve-btn,
+.keluhan-update-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 32px;
+    padding: 0 13px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #FFD95A 0%, #FFC400 100%);
+    border: 1px solid #F5B800;
+    color: #101D38;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.booking-approve-btn:hover,
+.keluhan-update-btn:hover {
+    background: #FFC400;
+    transform: translateY(-1px);
+}
+
+.booking-reject-btn {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 9px;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #DC2626;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.booking-reject-btn:hover {
+    background: #FEE2E2;
+    border-color: #FCA5A5;
+}
+
+[data-theme="dark"] .booking-reject-btn {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(248, 113, 113, 0.35);
+    color: #FCA5A5;
+}
+
+.booking-table .table-actions {
+    flex-wrap: nowrap;
+}
+
 

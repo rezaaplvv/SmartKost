@@ -1273,13 +1273,14 @@ function setupUserCsWidget() {
         const rawWa = escapeHtml(kosSettings?.no_wa || '081234567890');
 
         if (q === 'tagihan' || /tagihan|tunggakan|belum bayar|jatuh tempo|bayar sewa|nominal/.test(q)) {
-            const unpaid = userTagihanCache.filter(t => t.status_bayar === 'Belum Bayar');
-            const waiting = userTagihanCache.filter(t => t.status_bayar === 'Menunggu Konfirmasi');
+            const unpaid = userTagihanCache.filter(t => t.status === 'Belum Bayar');
+            const waiting = userTagihanCache.filter(t => t.status === 'Menunggu Konfirmasi');
             if (unpaid.length > 0) {
                 const totalUnpaid = unpaid.reduce((sum, t) => sum + (Number(t.total_bayar) || 0), 0);
                 const nearest = unpaid[0];
+                const dueDateStr = nearest.tgl_jatuh_tempo || nearest.jatuh_tempo || '-';
                 return {
-                    html: `Anda memiliki <strong>${unpaid.length} tagihan belum dibayar</strong> dengan total <strong>${formatRupiah(totalUnpaid)}</strong> (terdekat periode <strong>${escapeHtml(nearest.periode_bulan)}</strong>, jatuh tempo ${escapeHtml(formatDateIndo(nearest.tanggal_jatuh_tempo))}).<br>Keterlambatan dikenakan denda <strong>${formatRupiah(dendaPerHari)}/hari</strong>.`,
+                    html: `Anda memiliki <strong>${unpaid.length} tagihan belum dibayar</strong> dengan total <strong>${formatRupiah(totalUnpaid)}</strong> (terdekat periode <strong>${escapeHtml(nearest.bulan_tahun)}</strong>, jatuh tempo ${escapeHtml(dueDateStr)}).<br>Keterlambatan dikenakan denda <strong>${formatRupiah(dendaPerHari)}/hari</strong>.`,
                     cta: {
                         label: 'Bayar Tagihan Sekarang',
                         onClick: () => {
@@ -1390,8 +1391,8 @@ function setupUserCsWidget() {
         }
 
         if (q === 'kuitansi' || /kuitansi|struk|verifikasi|bukti|pending|menunggu|konfirmasi|lunas|cetak/.test(q)) {
-            const waiting = userTagihanCache.filter(t => t.status_bayar === 'Menunggu Konfirmasi').length;
-            const paid = userTagihanCache.filter(t => t.status_bayar === 'Lunas').length;
+            const waiting = userTagihanCache.filter(t => t.status === 'Menunggu Konfirmasi').length;
+            const paid = userTagihanCache.filter(t => t.status === 'Lunas').length;
             return {
                 html: `Setelah bukti transfer/QRIS diunggah, Admin akan memverifikasi pembayaran Anda (${waiting} menunggu konfirmasi, ${paid} sudah lunas).<br>Tagihan berstatus <strong>Lunas</strong> langsung memiliki tombol cetak/simpan <strong>Kuitansi Resmi</strong>.`,
                 cta: {
