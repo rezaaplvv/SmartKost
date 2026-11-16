@@ -2182,19 +2182,43 @@ function showExportResult(path) {
     }
 }
 
-async function loadLogsAdmin() {
-    const res = await eel.get_logs(50)();
+let logsCache = [];
+let logsRoleFilter = 'Semua';
+
+function setLogRoleFilter(roleVal) {
+    logsRoleFilter = roleVal || 'Semua';
+    document.querySelectorAll('#log-role-tabs .penghuni-seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.role === logsRoleFilter);
+    });
+    renderLogsAdmin();
+}
+
+function renderLogsAdmin() {
     const tbody = document.getElementById('logs-table-body');
+    const countEl = document.getElementById('logs-count-label');
     if (!tbody) return;
 
-    if (!res.status || !res.data || res.data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px;">Belum ada catatan log aktivitas.</td></tr>`;
+    const filterKey = String(logsRoleFilter || 'Semua').toLowerCase();
+    const rows = filterKey === 'semua'
+        ? logsCache
+        : logsCache.filter(l => String(l.role || '').toLowerCase() === filterKey);
+
+    if (countEl) {
+        countEl.textContent = filterKey === 'semua'
+            ? `${logsCache.length} catatan aktivitas terbaru admin dan penghuni`
+            : `Menampilkan ${rows.length} dari ${logsCache.length} catatan (role: ${logsRoleFilter})`;
+    }
+
+    if (!rows || rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px;">Belum ada catatan log aktivitas${filterKey !== 'semua' ? ` untuk role ${escapeHtml(logsRoleFilter)}` : ''}.</td></tr>`;
         return;
     }
 
-    tbody.innerHTML = res.data.map(l => {
-        const isRoleAdmin = String(l.role || '').toLowerCase() === 'admin';
-        const roleCls = isRoleAdmin ? 'log-role-pill role-admin' : 'log-role-pill';
+    tbody.innerHTML = rows.map(l => {
+        const roleLower = String(l.role || '').toLowerCase();
+        const roleCls = roleLower === 'admin'
+            ? 'log-role-pill role-admin'
+            : (roleLower === 'penghuni' ? 'log-role-pill role-penghuni' : 'log-role-pill');
         return `
             <tr>
                 <td style="white-space:nowrap;font-size:0.82rem;color:var(--sk-text-muted);">${escapeHtml(l.waktu || l.created_at || '-')}</td>
@@ -2205,6 +2229,12 @@ async function loadLogsAdmin() {
             </tr>
         `;
     }).join('');
+}
+
+async function loadLogsAdmin() {
+    const res = await eel.get_logs(50)();
+    logsCache = (res && res.status && Array.isArray(res.data)) ? res.data : [];
+    renderLogsAdmin();
 }
 
 /* ==========================================================
