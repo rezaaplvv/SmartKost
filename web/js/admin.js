@@ -721,9 +721,9 @@ function renderDenahRooms(list) {
                         </div>
                         <div class="denah-card-actions">
                             ${isTersedia
-                                ? `<button type="button" class="denah-btn denah-btn-checkin" onclick="openCheckinModal(${k.id})">Check-In</button>`
-                                : `<button type="button" class="denah-btn denah-btn-checkin" onclick="openKamarModal(${k.id})">Detail</button>`
-                            }
+                    ? `<button type="button" class="denah-btn denah-btn-checkin" onclick="openCheckinModal(${k.id})">Check-In</button>`
+                    : `<button type="button" class="denah-btn denah-btn-checkin" onclick="openKamarModal(${k.id})">Detail</button>`
+                }
                             <button type="button" class="denah-btn denah-btn-edit" onclick="openKamarModal(${k.id})">Edit</button>
                             <button type="button" class="denah-btn denah-btn-del" onclick="handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}')" title="Hapus Kamar">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
@@ -2230,7 +2230,7 @@ function setupAdminForms() {
             await loadKosSettings();
             try {
                 localStorage.setItem('smartkost_settings_updated', String(Date.now()));
-            } catch (_) {}
+            } catch (_) { }
         }
     });
 
