@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupUserSidebarNav();
     setupUserModals();
     setupUserForms();
+    setupUserCsWidget();
 
     await loadKosPaymentSettings();
     await refreshPortalState();
@@ -196,17 +197,21 @@ async function loadKosPaymentSettings() {
         console.warn('Gagal memuat pengaturan kos:', err);
     }
 
-    // Update link WhatsApp pengelola
-    const cleanWa = (kosSettings.no_wa || '081234567890').replace(/[^0-9]/g, '');
+    // Update link WhatsApp pengelola & footer Asisten CS
+    const rawWa = (kosSettings.no_wa || '081234567890').trim();
+    const cleanWa = rawWa.replace(/[^0-9]/g, '');
     const waNum = cleanWa.startsWith('0') ? '62' + cleanWa.slice(1) : cleanWa;
     const namaUser = userProfile?.nama_lengkap || currentUser?.nama_lengkap || 'Penghuni';
     const kamarLabel = userProfile?.nomor_kamar ? ` (Kamar ${userProfile.nomor_kamar})` : '';
     const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(`Halo Pengelola ${kosSettings.nama_kos || 'SmartKost Residence'}, saya ${namaUser}${kamarLabel} ingin menanyakan informasi terkait hunian kos.`)}`;
 
-    const btnWa1 = document.getElementById('btn-wa-pengelola');
     const btnWa2 = document.getElementById('btn-wa-unassigned');
-    if (btnWa1) btnWa1.href = waUrl;
     if (btnWa2) btnWa2.href = waUrl;
+
+    const csWaDisplay = document.getElementById('user-cs-wa-display');
+    const csWaLink = document.getElementById('user-cs-wa-link');
+    if (csWaDisplay) csWaDisplay.textContent = rawWa || '081234567890';
+    if (csWaLink) csWaLink.href = waUrl;
 
     // Update kartu info rekening di Tab Tagihan & Modal Pembayaran
     const bankName = kosSettings.nama_bank || 'Bank BCA';
@@ -1179,6 +1184,322 @@ function setupUserForms() {
         showToast(res.pesan, res.status ? 'success' : 'error');
         if (res.status) {
             e.target.reset();
+        }
+    });
+}
+
+/* ==========================================================
+   8. FLOATING CS ASSISTANT PENGHUNI (DATA-AWARE MINI CHAT)
+   ========================================================== */
+function setupUserCsWidget() {
+    const toggleBtn = document.getElementById('user-cs-toggle');
+    const closeBtn = document.getElementById('user-cs-close');
+    const popup = document.getElementById('user-cs-popup');
+    const messagesBox = document.getElementById('user-cs-messages');
+    const chatForm = document.getElementById('user-cs-form');
+    const chatInput = document.getElementById('user-cs-input');
+    const copyBtn = document.getElementById('user-cs-copy-wa');
+
+    if (!toggleBtn || !popup || !messagesBox) return;
+
+    let initializedGreeting = false;
+
+    const scrollToBottom = () => {
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    };
+
+    const appendBotMessage = (htmlContent, ctaConfig = null) => {
+        const row = document.createElement('div');
+        row.className = 'cs-msg-row bot';
+        const bubble = document.createElement('div');
+        bubble.className = 'cs-msg-bubble';
+        bubble.innerHTML = htmlContent;
+
+        if (ctaConfig && ctaConfig.label && typeof ctaConfig.onClick === 'function') {
+            const ctaWrap = document.createElement('div');
+            const ctaBtn = document.createElement('button');
+            ctaBtn.type = 'button';
+            ctaBtn.className = 'cs-msg-cta';
+            ctaBtn.textContent = ctaConfig.label;
+            ctaBtn.addEventListener('click', ctaConfig.onClick);
+            ctaWrap.appendChild(ctaBtn);
+            bubble.appendChild(ctaWrap);
+        }
+
+        row.appendChild(bubble);
+        messagesBox.appendChild(row);
+        scrollToBottom();
+    };
+
+    const appendUserMessage = (text) => {
+        const row = document.createElement('div');
+        row.className = 'cs-msg-row user';
+        const bubble = document.createElement('div');
+        bubble.className = 'cs-msg-bubble';
+        bubble.textContent = text;
+        row.appendChild(bubble);
+        messagesBox.appendChild(row);
+        scrollToBottom();
+    };
+
+    const setPopupOpen = (shouldOpen) => {
+        popup.classList.toggle('open', shouldOpen);
+        toggleBtn.classList.toggle('is-open', shouldOpen);
+        popup.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+        toggleBtn.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+
+        if (shouldOpen && !initializedGreeting) {
+            initializedGreeting = true;
+            const nama = escapeHtml(userProfile?.nama_lengkap || currentUser?.nama_lengkap || 'Penghuni');
+            const kosName = escapeHtml(kosSettings?.nama_kos || 'SmartKost Residence');
+            const kamarText = userProfile?.nomor_kamar ? ` (Kamar ${escapeHtml(userProfile.nomor_kamar)})` : '';
+            appendBotMessage(
+                `Halo, <strong>${nama}</strong>! Saya asisten <strong>${kosName}</strong>${kamarText}. Silakan pilih topik cepat di bawah atau ketik pertanyaan Anda.`
+            );
+        }
+
+        if (shouldOpen && chatInput) {
+            setTimeout(() => chatInput.focus(), 220);
+        }
+    };
+
+    const buildUserCsReply = (topicOrText) => {
+        const q = (topicOrText || '').toLowerCase();
+        const kosName = escapeHtml(kosSettings?.nama_kos || 'SmartKost Residence');
+        const dendaPerHari = Number(kosSettings?.denda_per_hari ?? 10000);
+        const bank = escapeHtml(kosSettings?.nama_bank || 'Bank BCA');
+        const norek = escapeHtml(kosSettings?.no_rekening || '8720-1928-33');
+        const atasNama = escapeHtml(kosSettings?.atas_nama_rekening || 'Pengelola SmartKost Residence');
+        const rawWa = escapeHtml(kosSettings?.no_wa || '081234567890');
+
+        if (q === 'tagihan' || /tagihan|tunggakan|belum bayar|jatuh tempo|bayar sewa|nominal/.test(q)) {
+            const unpaid = userTagihanCache.filter(t => t.status_bayar === 'Belum Bayar');
+            const waiting = userTagihanCache.filter(t => t.status_bayar === 'Menunggu Konfirmasi');
+            if (unpaid.length > 0) {
+                const totalUnpaid = unpaid.reduce((sum, t) => sum + (Number(t.total_bayar) || 0), 0);
+                const nearest = unpaid[0];
+                return {
+                    html: `Anda memiliki <strong>${unpaid.length} tagihan belum dibayar</strong> dengan total <strong>${formatRupiah(totalUnpaid)}</strong> (terdekat periode <strong>${escapeHtml(nearest.periode_bulan)}</strong>, jatuh tempo ${escapeHtml(formatDateIndo(nearest.tanggal_jatuh_tempo))}).<br>Keterlambatan dikenakan denda <strong>${formatRupiah(dendaPerHari)}/hari</strong>.`,
+                    cta: {
+                        label: 'Bayar Tagihan Sekarang',
+                        onClick: () => {
+                            setPopupOpen(false);
+                            handleQuickPayTrigger();
+                        }
+                    }
+                };
+            }
+            if (waiting.length > 0) {
+                return {
+                    html: `Tidak ada tagihan menunggak. Saat ini ada <strong>${waiting.length} pembayaran menunggu verifikasi Admin</strong>. Tarif denda keterlambatan berlaku <strong>${formatRupiah(dendaPerHari)}/hari</strong>.`,
+                    cta: {
+                        label: 'Lihat Status Tagihan',
+                        onClick: () => {
+                            setPopupOpen(false);
+                            switchUserTab('tagihan');
+                        }
+                    }
+                };
+            }
+            return {
+                html: `Semua tagihan sewa Anda sudah <strong>Lunas</strong> (tarif denda keterlambatan berlaku <strong>${formatRupiah(dendaPerHari)}/hari</strong> jika melewati jatuh tempo).`,
+                cta: {
+                    label: 'Buka Menu Tagihan',
+                    onClick: () => {
+                        setPopupOpen(false);
+                        switchUserTab('tagihan');
+                    }
+                }
+            };
+        }
+
+        if (q === 'pembayaran' || /rekening|transfer|qris|bank|bca|mandiri|scan|metode/.test(q)) {
+            const qrisStatus = kosSettings?.foto_qris
+                ? 'QRIS dinamis tersedia dan siap dipindai.'
+                : 'Saat ini pembayaran dilakukan via transfer rekening bank tujuan.';
+            return {
+                html: `Transfer sewa ke <strong>${bank}</strong> no. rekening <strong>${norek}</strong> a.n. <strong>${atasNama}</strong>.<br>${qrisStatus}`,
+                cta: kosSettings?.foto_qris
+                    ? {
+                        label: 'Tampilkan Barcode QRIS',
+                        onClick: () => {
+                            setPopupOpen(false);
+                            openQrisPreview();
+                        }
+                    }
+                    : {
+                        label: 'Buka Info Pembayaran',
+                        onClick: () => {
+                            setPopupOpen(false);
+                            switchUserTab('tagihan');
+                        }
+                    }
+            };
+        }
+
+        if (q === 'keluhan' || /keluhan|rusak|perbaikan|teknisi|ac|air|lampu|bocor|lapor|kendala/.test(q)) {
+            const aktif = userKeluhanCache.filter(k => k.status !== 'Selesai');
+            const selesai = userKeluhanCache.filter(k => k.status === 'Selesai');
+            const summaryLine = aktif.length > 0
+                ? `Ada <strong>${aktif.length} keluhan aktif</strong> yang sedang diproses/menunggu teknisi (terakhir: <em>${escapeHtml(aktif[0].judul)}</em> - ${escapeHtml(aktif[0].status)}).`
+                : `Saat ini tidak ada tiket keluhan terbuka${selesai.length > 0 ? ` (${selesai.length} riwayat selesai)` : ''}.`;
+            return {
+                html: `${summaryLine}<br>Anda bisa melampirkan foto kerusakan agar teknisi cepat menindaklanjuti.`,
+                cta: {
+                    label: userProfile?.kamar_id ? 'Lapor Keluhan Baru' : 'Buka Menu Keluhan',
+                    onClick: () => {
+                        setPopupOpen(false);
+                        if (userProfile?.kamar_id) {
+                            openLaporKeluhanModal();
+                        } else {
+                            switchUserTab('keluhan');
+                        }
+                    }
+                }
+            };
+        }
+
+        if (q === 'kamar' || /kamar|fasilitas|lantai|luas|wifi|alamat|hunian|lokasi/.test(q)) {
+            if (userProfile && userProfile.kamar_id) {
+                const nomor = escapeHtml(userProfile.nomor_kamar || '-');
+                const tipe = escapeHtml(userProfile.tipe_kamar || 'Reguler');
+                const lantai = escapeHtml(userProfile.lantai || 1);
+                const luas = escapeHtml(userProfile.luas_kamar || '3x4 m');
+                const fasilitas = escapeHtml(userProfile.fasilitas || 'Sesuai standar unit');
+                return {
+                    html: `Anda menempati <strong>Kamar ${nomor}</strong> (${tipe}, Lantai ${lantai}, luas ${luas}) dengan sewa <strong>${formatRupiah(userProfile.harga_sewa || 0)}/bln</strong>.<br><strong>Fasilitas:</strong> ${fasilitas}.`,
+                    cta: {
+                        label: 'Lihat Detail Kamar',
+                        onClick: () => {
+                            setPopupOpen(false);
+                            switchUserTab('overview');
+                        }
+                    }
+                };
+            }
+            return {
+                html: `Akun Anda belum terhubung ke unit kamar. Anda dapat memilih kamar yang berstatus <strong>Tersedia</strong> di Beranda atau menghubungi pengelola di <strong>${rawWa}</strong>.`,
+                cta: {
+                    label: 'Lihat Kamar Tersedia',
+                    onClick: () => {
+                        setPopupOpen(false);
+                        switchUserTab('overview');
+                    }
+                }
+            };
+        }
+
+        if (q === 'kuitansi' || /kuitansi|struk|verifikasi|bukti|pending|menunggu|konfirmasi|lunas|cetak/.test(q)) {
+            const waiting = userTagihanCache.filter(t => t.status_bayar === 'Menunggu Konfirmasi').length;
+            const paid = userTagihanCache.filter(t => t.status_bayar === 'Lunas').length;
+            return {
+                html: `Setelah bukti transfer/QRIS diunggah, Admin akan memverifikasi pembayaran Anda (${waiting} menunggu konfirmasi, ${paid} sudah lunas).<br>Tagihan berstatus <strong>Lunas</strong> langsung memiliki tombol cetak/simpan <strong>Kuitansi Resmi</strong>.`,
+                cta: {
+                    label: 'Buka Riwayat & Kuitansi',
+                    onClick: () => {
+                        setPopupOpen(false);
+                        switchUserTab('tagihan');
+                    }
+                }
+            };
+        }
+
+        if (q === 'aturan' || /aturan|tata tertib|peraturan|tamu|jam|denda|checkout|keluar|berhenti/.test(q)) {
+            const alamat = escapeHtml(kosSettings?.alamat || '-');
+            return {
+                html: `<strong>Tata Tertib &amp; Info ${kosName}:</strong><br>1. Pembayaran sewa dilakukan sebelum jatuh tempo (denda <strong>${formatRupiah(dendaPerHari)}/hari</strong>).<br>2. Jaga ketenangan, kebersihan area bersama, dan hemat listrik/air.<br>3. Lapor kerusakan fasilitas lewat menu <em>Keluhan &amp; Perbaikan</em>.<br>4. Konfirmasi ke pengelola jika membawa tamu menginap atau rencana check-out.<br><span style="color:var(--sk-text-muted);font-size:0.74rem;">Lokasi: ${alamat}</span>`
+            };
+        }
+
+        if (/wa|whatsapp|admin|pengelola|kontak|telepon|hubungi|cs/.test(q)) {
+            return {
+                html: `Anda dapat langsung menghubungi pengelola ${kosName} melalui WhatsApp di <strong>${rawWa}</strong> dengan klik tombol <strong>Buka WA</strong> di footer bawah widget ini.`,
+                cta: {
+                    label: 'Chat WA Pengelola',
+                    onClick: () => {
+                        const waLink = document.getElementById('user-cs-wa-link');
+                        if (waLink && waLink.href && waLink.href !== '#') {
+                            window.open(waLink.href, '_blank', 'noopener');
+                        }
+                    }
+                }
+            };
+        }
+
+        return {
+            html: `Maaf, saya belum menemukan jawaban spesifik untuk itu. Silakan pilih salah satu topik cepat di bawah (Tagihan, QRIS, Keluhan, Info Kamar, Kuitansi, Tata Tertib) atau hubungi pengelola di <strong>${rawWa}</strong>.`
+        };
+    };
+
+    const sendUserQuery = (displayText, topicKey = null) => {
+        appendUserMessage(displayText);
+
+        const typingRow = document.createElement('div');
+        typingRow.className = 'cs-msg-row bot';
+        typingRow.innerHTML = `<div class="cs-msg-bubble"><span class="cs-typing-dots"><span></span><span></span><span></span></span></div>`;
+        messagesBox.appendChild(typingRow);
+        scrollToBottom();
+
+        setTimeout(() => {
+            typingRow.remove();
+            const reply = buildUserCsReply(topicKey || displayText);
+            appendBotMessage(reply.html, reply.cta || null);
+        }, 300);
+    };
+
+    toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setPopupOpen(!popup.classList.contains('open'));
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => setPopupOpen(false));
+    }
+
+    document.querySelectorAll('#user-cs-quick-prompts .cs-quick-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const topic = chip.getAttribute('data-cs-topic') || '';
+            sendUserQuery(chip.textContent.trim(), topic);
+        });
+    });
+
+    if (chatForm && chatInput) {
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
+            chatInput.value = '';
+            sendUserQuery(text);
+        });
+    }
+
+    if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+            const rawWa = (kosSettings?.no_wa || '081234567890').trim();
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(rawWa);
+                } else {
+                    const tmp = document.createElement('textarea');
+                    tmp.value = rawWa;
+                    tmp.style.position = 'fixed';
+                    tmp.style.opacity = '0';
+                    document.body.appendChild(tmp);
+                    tmp.select();
+                    document.execCommand('copy');
+                    tmp.remove();
+                }
+                showToast(`Nomor WhatsApp (${rawWa}) berhasil disalin.`, 'success');
+            } catch (err) {
+                showToast(`Nomor WhatsApp pengelola: ${rawWa}`, 'info');
+            }
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (!popup.classList.contains('open')) return;
+        if (!e.target.closest('#user-cs-popup') && !e.target.closest('#user-cs-toggle')) {
+            setPopupOpen(false);
         }
     });
 }

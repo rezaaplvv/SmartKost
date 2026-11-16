@@ -1993,3 +1993,572 @@
     color: #FFC400;
 }
 
+/* ==========================================================
+   FLOATING CS ASSISTANT WIDGET & POPUP (PORTAL PENGHUNI)
+   ========================================================== */
+.floating-wa-btn {
+    position: fixed;
+    right: 26px;
+    bottom: 24px;
+    z-index: 95;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.floating-wa-label {
+    position: relative;
+    background: #FFFFFF;
+    color: #101D38;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 196, 0, 0.7);
+    box-shadow: 0 8px 20px rgba(16, 29, 56, 0.14);
+    white-space: nowrap;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease, box-shadow 0.25s ease;
+}
+
+.floating-wa-label::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    width: 8px;
+    height: 8px;
+    background: #FFFFFF;
+    border-right: 1px solid rgba(255, 196, 0, 0.7);
+    border-bottom: 1px solid rgba(255, 196, 0, 0.7);
+    transform: translateX(-50%) rotate(45deg);
+}
+
+[data-theme="dark"] .floating-wa-label {
+    background: #1E293B;
+    color: #F8FAFC;
+    border-color: rgba(255, 196, 0, 0.45);
+}
+
+[data-theme="dark"] .floating-wa-label::after {
+    background: #1E293B;
+    border-right-color: rgba(255, 196, 0, 0.45);
+    border-bottom-color: rgba(255, 196, 0, 0.45);
+}
+
+.floating-wa-btn.is-open .floating-wa-label {
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+}
+
+.floating-wa-avatar {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+    filter: drop-shadow(0 10px 22px rgba(16, 29, 56, 0.22));
+}
+
+.floating-wa-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.floating-wa-btn:hover .floating-wa-avatar {
+    transform: translateY(-3px) scale(1.06);
+    filter: drop-shadow(0 14px 28px rgba(16, 29, 56, 0.28));
+}
+
+.floating-wa-btn:hover .floating-wa-label {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(16, 29, 56, 0.18);
+}
+
+.cs-chat-popup {
+    position: fixed;
+    right: 26px;
+    bottom: 102px;
+    z-index: 105;
+    width: 372px;
+    max-width: calc(100vw - 32px);
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    border-radius: 20px;
+    box-shadow: 0 22px 54px rgba(16, 29, 56, 0.24), 0 4px 16px rgba(16, 29, 56, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(16px) scale(0.94);
+    transform-origin: bottom right;
+    transition:
+        opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.28s ease;
+}
+
+[data-theme="dark"] .cs-chat-popup {
+    background: var(--sk-card);
+    border-color: var(--sk-border);
+}
+
+.cs-chat-popup.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.cs-chat-header {
+    background: linear-gradient(135deg, #101D38 0%, #192B4D 100%);
+    color: #FFFFFF;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 2px solid rgba(255, 196, 0, 0.42);
+}
+
+.cs-chat-header-info {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+}
+
+.cs-header-avatar {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 196, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.cs-header-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.cs-header-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.25;
+}
+
+.cs-header-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.73rem;
+    color: #CBD5E1;
+    margin-top: 2px;
+}
+
+.cs-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22C55E;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.28);
+}
+
+.cs-close-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.08);
+    color: #E2E8F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.18s ease, color 0.18s ease;
+    flex-shrink: 0;
+}
+
+.cs-close-btn:hover {
+    background: rgba(255, 196, 0, 0.22);
+    color: #FFC400;
+}
+
+.cs-close-btn .icon {
+    width: 15px;
+    height: 15px;
+}
+
+.cs-chat-messages {
+    padding: 14px 14px 10px;
+    max-height: 248px;
+    min-height: 158px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #F5F7FB;
+}
+
+[data-theme="dark"] .cs-chat-messages {
+    background: var(--sk-bg);
+}
+
+.cs-msg-row {
+    display: flex;
+    flex-direction: column;
+    max-width: 89%;
+    animation: userCsPop 0.26s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.cs-msg-row.bot {
+    align-self: flex-start;
+}
+
+.cs-msg-row.user {
+    align-self: flex-end;
+}
+
+@keyframes userCsPop {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cs-msg-bubble {
+    padding: 9px 12px;
+    border-radius: 14px;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: #1E293B;
+    word-break: break-word;
+}
+
+.cs-msg-row.bot .cs-msg-bubble {
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 8px rgba(16, 29, 56, 0.04);
+}
+
+[data-theme="dark"] .cs-msg-row.bot .cs-msg-bubble {
+    background: var(--sk-card);
+    border-color: var(--sk-border);
+    color: var(--sk-text);
+}
+
+.cs-msg-row.user .cs-msg-bubble {
+    background: linear-gradient(135deg, #FFD95A 0%, #FFC400 100%);
+    color: #101D38;
+    font-weight: 600;
+    border-bottom-right-radius: 4px;
+}
+
+.cs-msg-cta {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: 9999px;
+    border: 1px solid rgba(16, 29, 56, 0.16);
+    background: #EEF2F7;
+    color: #101D38;
+    font-family: inherit;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+
+.cs-msg-cta:hover {
+    background: #101D38;
+    border-color: #101D38;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .cs-msg-cta {
+    background: rgba(255, 196, 0, 0.16);
+    border-color: rgba(255, 196, 0, 0.35);
+    color: #FFD95A;
+}
+
+[data-theme="dark"] .cs-msg-cta:hover {
+    background: #FFC400;
+    color: #101D38;
+}
+
+.cs-typing-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 2px;
+}
+
+.cs-typing-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #94A3B8;
+    animation: userCsDotBounce 1s infinite ease-in-out;
+}
+
+.cs-typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+.cs-typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes userCsDotBounce {
+    0%, 80%, 100% { opacity: 0.35; transform: translateY(0); }
+    40% { opacity: 1; transform: translateY(-3px); }
+}
+
+.cs-quick-prompts {
+    padding: 9px 12px;
+    background: #FFFFFF;
+    border-top: 1px solid #EDF2F7;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+[data-theme="dark"] .cs-quick-prompts {
+    background: var(--sk-card);
+    border-top-color: var(--sk-border);
+}
+
+.cs-quick-chip {
+    padding: 5px 10px;
+    border-radius: 9999px;
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #101D38;
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.16s ease, background-color 0.16s ease, transform 0.16s ease;
+}
+
+.cs-quick-chip:hover {
+    border-color: #FFC400;
+    background: #FFF9E6;
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .cs-quick-chip {
+    background: var(--sk-bg);
+    border-color: var(--sk-border);
+    color: var(--sk-text);
+}
+
+[data-theme="dark"] .cs-quick-chip:hover {
+    border-color: #FFC400;
+    background: rgba(255, 196, 0, 0.12);
+}
+
+.cs-chat-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    background: #FFFFFF;
+    border-top: 1px solid #EDF2F7;
+}
+
+[data-theme="dark"] .cs-chat-input-row {
+    background: var(--sk-card);
+    border-top-color: var(--sk-border);
+}
+
+.cs-chat-input-row input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #101D38;
+    border-radius: 9999px;
+    padding: 7px 13px;
+    font-family: inherit;
+    font-size: 0.79rem;
+    outline: none;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.cs-chat-input-row input:focus {
+    border-color: #101D38;
+    background: #FFFFFF;
+}
+
+[data-theme="dark"] .cs-chat-input-row input {
+    background: var(--sk-bg);
+    border-color: var(--sk-border);
+    color: var(--sk-text);
+}
+
+[data-theme="dark"] .cs-chat-input-row input:focus {
+    border-color: #FFC400;
+}
+
+.cs-send-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #FFD95A 0%, #FFC400 100%);
+    color: #101D38;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(255, 196, 0, 0.28);
+    transition: transform 0.16s ease, filter 0.16s ease;
+}
+
+.cs-send-btn:hover {
+    transform: scale(1.06);
+    filter: brightness(0.96);
+}
+
+.cs-send-btn .icon {
+    width: 15px;
+    height: 15px;
+}
+
+.cs-contact-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 14px;
+    background: #F8FAFC;
+    border-top: 1px solid #E5EAF2;
+}
+
+[data-theme="dark"] .cs-contact-footer {
+    background: rgba(15, 23, 42, 0.55);
+    border-top-color: var(--sk-border);
+}
+
+.cs-wa-number-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.cs-wa-number-meta span {
+    font-size: 0.66rem;
+    font-weight: 600;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.cs-wa-number-meta strong {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #101D38;
+}
+
+[data-theme="dark"] .cs-wa-number-meta strong {
+    color: var(--sk-text);
+}
+
+.cs-contact-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.cs-footer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.16s ease, background-color 0.16s ease, border-color 0.16s ease;
+}
+
+.cs-footer-btn .icon {
+    width: 13px;
+    height: 13px;
+}
+
+.cs-copy-btn {
+    background: #FFFFFF;
+    color: #101D38;
+    border: 1px solid #CBD5E1;
+}
+
+.cs-copy-btn:hover {
+    border-color: #101D38;
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .cs-copy-btn {
+    background: var(--sk-card);
+    color: var(--sk-text);
+    border-color: var(--sk-border);
+}
+
+.cs-wa-ext-btn {
+    background: #16A34A;
+    color: #FFFFFF;
+    border: 1px solid #16A34A;
+}
+
+.cs-wa-ext-btn:hover {
+    background: #15803D;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+    .floating-wa-btn {
+        right: 16px;
+        bottom: 16px;
+    }
+    .floating-wa-avatar {
+        width: 56px;
+        height: 56px;
+    }
+    .cs-chat-popup {
+        right: 14px;
+        bottom: 84px;
+        width: calc(100vw - 28px);
+    }
+}
+

@@ -361,7 +361,7 @@
                                     <div class="twc-text-col">
                                         <h3 id="user-welcome-banner-title">Layanan Cepat Penghuni</h3>
                                         <p id="user-welcome-banner-sub">Bayar tagihan sewa bulanan dengan Transfer/QRIS,
-                                            laporkan keluhan fasilitas, atau hubungi pengelola kos.</p>
+                                            laporkan keluhan fasilitas, dan pantau kuitansi resmi Anda.</p>
                                     </div>
                                 </div>
 
@@ -378,13 +378,6 @@
                                         </svg>
                                         <span>Lapor Keluhan</span>
                                     </button>
-                                    <a href="#" id="btn-wa-pengelola" target="_blank" class="twc-btn twc-btn-secondary">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
-                                            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
-                                        </svg>
-                                        <span>Hubungi Pengelola</span>
-                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -1286,6 +1279,71 @@
             </div>
         </div>
     </div>
+
+    <!-- ==========================================================
+         FLOATING CS ASSISTANT WIDGET & POPUP (Bottom Right)
+         ========================================================== -->
+    <div class="cs-chat-popup" id="user-cs-popup" aria-hidden="true">
+        <div class="cs-chat-header">
+            <div class="cs-chat-header-info">
+                <div class="cs-header-avatar">
+                    <img src="assets/img/cs.png" alt="CS SmartKost">
+                </div>
+                <div>
+                    <div class="cs-header-title">Asisten <span class="app-nama-kos">SmartKost</span></div>
+                    <div class="cs-header-status">
+                        <span class="cs-status-dot"></span>
+                        <span>Online &bull; Bantuan Penghuni</span>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="cs-close-btn" id="user-cs-close" aria-label="Tutup Bantuan CS">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+
+        <div class="cs-chat-messages" id="user-cs-messages"></div>
+
+        <div class="cs-quick-prompts" id="user-cs-quick-prompts">
+            <button type="button" class="cs-quick-chip" data-cs-topic="tagihan">Tagihan &amp; Denda</button>
+            <button type="button" class="cs-quick-chip" data-cs-topic="pembayaran">Rekening &amp; QRIS</button>
+            <button type="button" class="cs-quick-chip" data-cs-topic="keluhan">Status Keluhan</button>
+            <button type="button" class="cs-quick-chip" data-cs-topic="kamar">Kamar &amp; Fasilitas</button>
+            <button type="button" class="cs-quick-chip" data-cs-topic="kuitansi">Verifikasi &amp; Kuitansi</button>
+            <button type="button" class="cs-quick-chip" data-cs-topic="aturan">Tata Tertib Kos</button>
+        </div>
+
+        <form class="cs-chat-input-row" id="user-cs-form">
+            <input type="text" id="user-cs-input" placeholder="Tanyakan tagihan, QRIS, keluhan, atau aturan..." autocomplete="off">
+            <button type="submit" class="cs-send-btn" aria-label="Kirim Pesan">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </form>
+
+        <div class="cs-contact-footer">
+            <div class="cs-wa-number-meta">
+                <span>WhatsApp Pengelola</span>
+                <strong id="user-cs-wa-display">081234567890</strong>
+            </div>
+            <div class="cs-contact-actions">
+                <button type="button" class="cs-footer-btn cs-copy-btn" id="user-cs-copy-wa" title="Salin Nomor WhatsApp">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>Salin</span>
+                </button>
+                <a href="#" id="user-cs-wa-link" target="_blank" class="cs-footer-btn cs-wa-ext-btn" title="Chat Pengelola via WhatsApp">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    <span>Buka WA</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="floating-wa-btn" id="user-cs-toggle" title="Asisten Penghuni SmartKost" aria-label="Buka Asisten CS Penghuni" aria-expanded="false">
+        <span class="floating-wa-label">Butuh Bantuan?</span>
+        <span class="floating-wa-avatar">
+            <img src="assets/img/cs.png" alt="CS SmartKost - Butuh Bantuan?">
+        </span>
+    </button>
 
     <!-- Toast Notification Container -->
     <div id="toast-container" class="toast-container"></div>
