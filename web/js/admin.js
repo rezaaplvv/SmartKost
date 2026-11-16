@@ -845,8 +845,8 @@ async function openDetailKamarModal(kamarId) {
         ` : `
             <p class="kamar-occupant-empty">
                 ${isTersedia
-                    ? 'Unit kamar ini saat ini kosong dan siap menerima penghuni baru.'
-                    : 'Unit kamar sedang dalam status perbaikan sehingga belum ditempati penghuni.'}
+            ? 'Unit kamar ini saat ini kosong dan siap menerima penghuni baru.'
+            : 'Unit kamar sedang dalam status perbaikan sehingga belum ditempati penghuni.'}
             </p>
             ${isTersedia ? `
                 <div style="margin-top:10px;">
@@ -2363,6 +2363,54 @@ function openPengumumanModal(id = null) {
     openModal('modal-pengumuman');
 }
 
+async function handlePengumumanSubmit(e) {
+    if (e) e.preventDefault();
+
+    const btnEl = document.getElementById('btn-save-pengumuman');
+    const editId = document.getElementById('ann-edit-id')?.value;
+    const judul = (document.getElementById('ann-judul')?.value || '').trim();
+    const kategori = document.getElementById('ann-kategori')?.value || 'Info Umum';
+    const isi = (document.getElementById('ann-isi')?.value || '').trim();
+    const isPinned = Boolean(document.getElementById('ann-pinned')?.checked);
+
+    if (!judul || !isi) {
+        showToast('Judul dan isi pengumuman wajib diisi.', 'warning');
+        return false;
+    }
+
+    const origText = btnEl ? btnEl.textContent : '';
+    if (btnEl) {
+        btnEl.disabled = true;
+        btnEl.textContent = 'Menyimpan...';
+    }
+
+    try {
+        const res = editId
+            ? await eel.ubah_pengumuman(parseInt(editId, 10), judul, isi, kategori, isPinned, adminUsername())()
+            : await eel.tambah_pengumuman(judul, isi, kategori, isPinned, adminUsername())();
+
+        showToast(res?.pesan || 'Gagal memproses pengumuman.', res?.status ? 'success' : 'error');
+        if (res && res.status) {
+            closeModal('modal-pengumuman');
+            if (currentTab === 'pengumuman') {
+                await loadPengumumanAdmin();
+            } else {
+                await switchAdminTab('pengumuman');
+            }
+            notifyPengumumanUpdated();
+        }
+    } catch (err) {
+        console.error('Gagal menyimpan pengumuman:', err);
+        showToast('Terjadi kesalahan saat menyimpan pengumuman.', 'error');
+    } finally {
+        if (btnEl) {
+            btnEl.disabled = false;
+            btnEl.textContent = origText || (editId ? 'Simpan Perubahan' : 'Terbitkan Pengumuman');
+        }
+    }
+    return false;
+}
+
 async function handleTogglePinPengumuman(id) {
     const res = await eel.toggle_pin_pengumuman(id, adminUsername())();
     showToast(res.pesan, res.status ? 'success' : 'error');
@@ -2878,7 +2926,7 @@ function setupAdminForms() {
                 localStorage.setItem('smartkost_settings_updated', String(Date.now()));
             } catch (_) { }
             /*  */
-}
+        }
     });
 
     // Form Ganti Password Admin
@@ -2889,31 +2937,6 @@ function setupAdminForms() {
         const res = await eel.ganti_password(currentAdmin.id, lama, baru)();
         showToast(res.pesan, res.status ? 'success' : 'error');
         if (res.status) e.target.reset();
-    });
-
-    // Form Tambah / Edit Pengumuman Kos
-    document.getElementById('form-pengumuman')?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const editId = document.getElementById('ann-edit-id')?.value;
-        const judul = document.getElementById('ann-judul').value.trim();
-        const kategori = document.getElementById('ann-kategori').value;
-        const isi = document.getElementById('ann-isi').value.trim();
-        const isPinned = Boolean(document.getElementById('ann-pinned')?.checked);
-
-        const res = editId
-            ? await eel.ubah_pengumuman(parseInt(editId, 10), judul, isi, kategori, isPinned, adminUsername())()
-            : await eel.tambah_pengumuman(judul, isi, kategori, isPinned, adminUsername())();
-
-        showToast(res.pesan, res.status ? 'success' : 'error');
-        if (res.status) {
-            closeModal('modal-pengumuman');
-            if (currentTab === 'pengumuman') {
-                await loadPengumumanAdmin();
-            } else {
-                switchAdminTab('pengumuman');
-            }
-            notifyPengumumanUpdated();
-        }
     });
 }
 
