@@ -1945,29 +1945,122 @@ async function openKuitansiModal(tagihanId) {
 /* ==========================================================
    6. PENGELUARAN KOS
    ========================================================== */
+function getExpenseCategoryClass(kat) {
+    const k = String(kat || '').toLowerCase();
+    if (k.includes('listrik')) return 'cat-listrik';
+    if (k.includes('air')) return 'cat-air';
+    if (k.includes('wifi') || k.includes('internet')) return 'cat-internet';
+    if (k.includes('kebersihan')) return 'cat-kebersihan';
+    if (k.includes('maintenance') || k.includes('perbaikan')) return 'cat-maintenance';
+    return 'cat-lainnya';
+}
+
+function resetPengeluaranFilter() {
+    const katEl = document.getElementById('filter-pengeluaran-kategori');
+    const blnEl = document.getElementById('filter-pengeluaran-bulan');
+    const searchEl = document.getElementById('search-pengeluaran-admin');
+    if (katEl) katEl.value = 'Semua';
+    if (blnEl) blnEl.value = '';
+    if (searchEl) searchEl.value = '';
+    loadPengeluaranAdmin();
+}
+
+function filterPengeluaranTable() {
+    renderPengeluaranRows(pengeluaranCache);
+}
+
+function renderPengeluaranRows(rawList) {
+    const tbody = document.getElementById('pengeluaran-table-body');
+    if (!tbody) return;
+
+    const query = (document.getElementById('search-pengeluaran-admin')?.value || '').trim().toLowerCase();
+    const filtered = query
+        ? rawList.filter(e =>
+            String(e.keterangan || '').toLowerCase().includes(query) ||
+            String(e.kategori || '').toLowerCase().includes(query)
+        )
+        : rawList;
+
+    // Update Summary Strip
+    const totalNominal = filtered.reduce((acc, item) => acc + (Number(item.nominal) || 0), 0);
+    const notaCount = filtered.filter(item => Boolean(item.bukti_nota)).length;
+    const catTotals = {};
+    filtered.forEach(item => {
+        const key = item.kategori || 'Lainnya';
+        catTotals[key] = (catTotals[key] || 0) + (Number(item.nominal) || 0);
+    });
+    const topCatEntry = Object.entries(catTotals).sort((a, b) => b[1] - a[1])[0];
+
+    const blnVal = document.getElementById('filter-pengeluaran-bulan')?.value;
+    const katVal = document.getElementById('filter-pengeluaran-kategori')?.value || 'Semua';
+
+    const elTotal = document.getElementById('exp-sum-total');
+    const elPeriod = document.getElementById('exp-sum-period');
+    const elCount = document.getElementById('exp-sum-count');
+    const elNotaCount = document.getElementById('exp-sum-nota-count');
+    const elTopCat = document.getElementById('exp-sum-top-cat');
+    const elTopVal = document.getElementById('exp-sum-top-val');
+
+    if (elTotal) elTotal.textContent = formatRupiah(totalNominal);
+    if (elPeriod) {
+        const parts = [];
+        if (katVal !== 'Semua') parts.push(katVal);
+        if (blnVal) parts.push(`Periode ${blnVal}`);
+        elPeriod.textContent = parts.length ? parts.join(' • ') : 'Semua periode tampil';
+    }
+    if (elCount) elCount.textContent = `${filtered.length} Transaksi`;
+    if (elNotaCount) elNotaCount.textContent = `${notaCount} disertai bukti nota`;
+    if (elTopCat) elTopCat.textContent = topCatEntry ? topCatEntry[0] : '-';
+    if (elTopVal) elTopVal.textContent = topCatEntry ? `${formatRupiah(topCatEntry[1])}` : 'Rp 0';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:34px 20px;">Tidak ada catatan pengeluaran ditemukan.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(e => `
+        <tr>
+            <td class="tagihan-nowrap">
+                <span class="tagihan-period-text">${escapeHtml(e.tgl_format || formatDateIndo(e.tanggal))}</span>
+            </td>
+            <td class="tagihan-nowrap">
+                <span class="exp-cat-pill ${getExpenseCategoryClass(e.kategori)}">
+                    <span class="exp-cat-dot"></span>
+                    <span>${escapeHtml(e.kategori)}</span>
+                </span>
+            </td>
+            <td>
+                <div class="tagihan-tenant-name">${escapeHtml(e.keterangan)}</div>
+            </td>
+            <td class="tagihan-nowrap">
+                <span class="exp-nominal-text">${formatRupiah(e.nominal)}</span>
+            </td>
+            <td class="tagihan-nowrap">
+                ${e.bukti_nota ? `
+                    <button type="button" class="tagihan-act-pill" onclick="openNotaPreview(${e.id})" title="Lihat Bukti Nota">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <span>Nota</span>
+                    </button>
+                ` : '<span style="color:var(--text-muted);font-size:0.8rem;">&mdash;</span>'}
+            </td>
+            <td style="text-align:right;" class="tagihan-nowrap">
+                <div class="tagihan-actions-row">
+                    <button type="button" class="penghuni-act-btn checkout" onclick="handleHapusPengeluaran(${e.id})" title="Hapus Catatan Pengeluaran">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
 async function loadPengeluaranAdmin() {
     const kat = document.getElementById('filter-pengeluaran-kategori')?.value || 'Semua';
     const bln = document.getElementById('filter-pengeluaran-bulan')?.value || null;
     const res = await eel.get_pengeluaran(bln, kat)();
-    const tbody = document.getElementById('pengeluaran-table-body');
-    if (!tbody) return;
 
-    if (!res.status || !res.data || res.data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">Belum ada catatan pengeluaran.</td></tr>`;
-        return;
-    }
-
-    pengeluaranCache = res.data;
-    tbody.innerHTML = res.data.map(e => `
-        <tr>
-            <td>${escapeHtml(e.tgl_format || formatDateIndo(e.tanggal))}</td>
-            <td><span class="badge badge-neutral">${escapeHtml(e.kategori)}</span></td>
-            <td>${escapeHtml(e.keterangan)}</td>
-            <td><strong style="color:var(--danger);">${formatRupiah(e.nominal)}</strong></td>
-            <td>${e.bukti_nota ? `<button type="button" class="btn btn-secondary btn-xs" onclick="openNotaPreview(${e.id})">Lihat Nota</button>` : '<span style="color:var(--text-muted);font-size:0.78rem;">-</span>'}</td>
-            <td><button type="button" class="btn btn-danger btn-xs" onclick="handleHapusPengeluaran(${e.id})">Hapus</button></td>
-        </tr>
-    `).join('');
+    pengeluaranCache = (res && res.status && Array.isArray(res.data)) ? res.data : [];
+    renderPengeluaranRows(pengeluaranCache);
 }
 
 function openNotaPreview(id) {

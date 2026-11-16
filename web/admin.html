@@ -637,9 +637,17 @@
                                 <option value="Maintenance">Maintenance</option>
                                 <option value="Lainnya">Lainnya</option>
                             </select>
-                            <input type="month" id="filter-pengeluaran-bulan" class="admin-select" onchange="loadPengeluaranAdmin()">
+                            <input type="month" id="filter-pengeluaran-bulan" class="admin-select tagihan-month-input" onchange="loadPengeluaranAdmin()">
+                            <button type="button" class="tagihan-reset-btn" onclick="resetPengeluaranFilter()" title="Reset Filter">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                                <span>Reset</span>
+                            </button>
                         </div>
                         <div class="toolbar-actions">
+                            <div class="admin-search-input">
+                                <svg class="icon" style="color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input type="text" id="search-pengeluaran-admin" placeholder="Cari keterangan / kategori..." oninput="filterPengeluaranTable()">
+                            </div>
                             <button type="button" class="btn btn-primary btn-sm" onclick="openPengeluaranModal()">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                                 <span>Catat Pengeluaran Baru</span>
@@ -647,9 +655,43 @@
                         </div>
                     </div>
 
-                    <div class="panel-card">
+                    <!-- Summary Strip Pengeluaran Operasional -->
+                    <div class="pengeluaran-summary-grid">
+                        <div class="pengeluaran-stat-card">
+                            <div class="exp-stat-icon is-rose" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">TOTAL PENGELUARAN</span>
+                                <strong class="exp-stat-val" id="exp-sum-total">Rp 0</strong>
+                                <span class="exp-stat-sub" id="exp-sum-period">Semua periode tampil</span>
+                            </div>
+                        </div>
+                        <div class="pengeluaran-stat-card">
+                            <div class="exp-stat-icon is-slate" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">JUMLAH CATATAN</span>
+                                <strong class="exp-stat-val" id="exp-sum-count">0 Transaksi</strong>
+                                <span class="exp-stat-sub" id="exp-sum-nota-count">0 disertai bukti nota</span>
+                            </div>
+                        </div>
+                        <div class="pengeluaran-stat-card">
+                            <div class="exp-stat-icon is-gold" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">KATEGORI TERBESAR</span>
+                                <strong class="exp-stat-val" id="exp-sum-top-cat">-</strong>
+                                <span class="exp-stat-sub" id="exp-sum-top-val">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-card penghuni-table-card tagihan-table-card">
                         <div class="table-responsive">
-                            <table class="admin-table">
+                            <table class="admin-table tagihan-table">
                                 <thead>
                                     <tr>
                                         <th>Tanggal</th>
@@ -657,7 +699,7 @@
                                         <th>Keterangan</th>
                                         <th>Nominal</th>
                                         <th>Bukti Nota</th>
-                                        <th>Aksi</th>
+                                        <th style="text-align:right;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="pengeluaran-table-body"></tbody>
