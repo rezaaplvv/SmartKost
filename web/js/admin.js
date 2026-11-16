@@ -650,23 +650,16 @@ async function loadOverviewActionList() {
    2. DENAH & MANAJEMEN KAMAR
    ========================================================== */
 function setRoomViewMode(mode) {
-    roomViewMode = mode;
+    roomViewMode = (mode === 'table') ? 'table' : 'denah';
     const btnDenah = document.getElementById('btn-view-denah');
     const btnTable = document.getElementById('btn-view-table');
     const denahBox = document.getElementById('kamar-denah-container');
     const tableBox = document.getElementById('kamar-table-container');
 
-    if (mode === 'denah') {
-        btnDenah.className = 'btn btn-primary btn-sm';
-        btnTable.className = 'btn btn-secondary btn-sm';
-        denahBox.style.display = 'block';
-        tableBox.style.display = 'none';
-    } else {
-        btnDenah.className = 'btn btn-secondary btn-sm';
-        btnTable.className = 'btn btn-primary btn-sm';
-        denahBox.style.display = 'none';
-        tableBox.style.display = 'block';
-    }
+    if (btnDenah) btnDenah.classList.toggle('active', roomViewMode === 'denah');
+    if (btnTable) btnTable.classList.toggle('active', roomViewMode === 'table');
+    if (denahBox) denahBox.style.display = roomViewMode === 'denah' ? 'block' : 'none';
+    if (tableBox) tableBox.style.display = roomViewMode === 'table' ? 'block' : 'none';
 }
 
 async function loadRoomsAdmin() {
@@ -1790,11 +1783,21 @@ async function handleCheckoutPenghuni(id, nama) {
 /* ==========================================================
    5. TAGIHAN, PEMBAYARAN & KUITANSI RESMI
    ========================================================== */
+function setTagihanStatusFilter(statusVal) {
+    const hiddenInput = document.getElementById('filter-tagihan-status');
+    if (hiddenInput) hiddenInput.value = statusVal;
+
+    document.querySelectorAll('#tagihan-seg-tabs .penghuni-seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-status') === statusVal);
+    });
+
+    loadTagihanAdmin();
+}
+
 function resetTagihanFilter() {
-    document.getElementById('filter-tagihan-status').value = 'Semua';
     document.getElementById('filter-tagihan-bulan').value = '';
     document.getElementById('search-tagihan-admin').value = '';
-    loadTagihanAdmin();
+    setTagihanStatusFilter('Semua');
 }
 
 async function loadTagihanAdmin() {
@@ -1807,15 +1810,20 @@ async function loadTagihanAdmin() {
     if (!tbody) return;
 
     if (!res.status || !res.data || res.data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px;">Tidak ada data tagihan.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:34px 20px;">Tidak ada data tagihan ditemukan.</td></tr>`;
         return;
     }
 
     tagihanCache = res.data;
     tbody.innerHTML = res.data.map(t => {
-        let badgeCls = 'badge-danger';
-        if (t.status === 'Lunas') badgeCls = 'badge-success';
-        else if (t.status === 'Menunggu Konfirmasi') badgeCls = 'badge-warning';
+        let statusTone = 'is-unpaid';
+        let statusLabel = t.status || 'Belum Bayar';
+        if (t.status === 'Lunas') {
+            statusTone = 'is-paid';
+        } else if (t.status === 'Menunggu Konfirmasi') {
+            statusTone = 'is-waiting';
+            statusLabel = 'Menunggu';
+        }
 
         const cleanWa = (t.no_hp_penghuni || '').replace(/[^0-9]/g, '');
         const waNum = cleanWa.startsWith('0') ? '62' + cleanWa.slice(1) : cleanWa;
@@ -1823,31 +1831,52 @@ async function loadTagihanAdmin() {
 
         return `
             <tr>
-                <td><strong>${escapeHtml(t.kode_invoice)}</strong></td>
-                <td>${escapeHtml(t.bulan_tahun)}</td>
-                <td>
-                    <strong>${escapeHtml(t.nama_penghuni)}</strong><br>
-                    <span style="font-size:0.76rem;color:var(--text-muted);">Kamar ${escapeHtml(t.nomor_kamar)} (${escapeHtml(t.tipe_kamar)})</span>
+                <td class="tagihan-nowrap">
+                    <span class="tagihan-inv-code">${escapeHtml(t.kode_invoice)}</span>
                 </td>
-                <td><strong>${formatRupiah(t.total_bayar)}</strong></td>
-                <td>
-                    ${escapeHtml(t.tgl_jatuh_tempo || t.jatuh_tempo)}
-                    ${t.is_telat ? `<br><span class="badge badge-danger" style="font-size:0.68rem;padding:2px 8px;">Telat ${t.hari_telat} Hari</span>` : ''}
+                <td class="tagihan-nowrap">
+                    <span class="tagihan-period-text">${escapeHtml(t.bulan_tahun)}</span>
                 </td>
-                <td><span class="badge ${badgeCls}">${escapeHtml(t.status)}</span></td>
                 <td>
-                    <div class="table-actions">
+                    <div class="tagihan-tenant-name">${escapeHtml(t.nama_penghuni)}</div>
+                    <div class="tagihan-tenant-sub">Kamar ${escapeHtml(t.nomor_kamar)} &bull; ${escapeHtml(t.tipe_kamar)}</div>
+                </td>
+                <td class="tagihan-nowrap">
+                    <span class="tagihan-amount-text">${formatRupiah(t.total_bayar)}</span>
+                </td>
+                <td class="tagihan-nowrap">
+                    <div class="tagihan-due-date">${escapeHtml(t.tgl_jatuh_tempo || t.jatuh_tempo)}</div>
+                    ${t.is_telat ? `<span class="tagihan-late-note">Telat ${t.hari_telat} hari</span>` : ''}
+                </td>
+                <td class="tagihan-nowrap">
+                    <span class="tagihan-status-pill ${statusTone}">
+                        <span class="tagihan-status-dot"></span>
+                        <span>${escapeHtml(statusLabel)}</span>
+                    </span>
+                </td>
+                <td style="text-align:right;" class="tagihan-nowrap">
+                    <div class="tagihan-actions-row">
                         ${t.status === 'Menunggu Konfirmasi' ? `
-                            ${t.bukti_transfer ? `<button type="button" class="btn btn-secondary btn-xs" onclick="openBuktiTransfer(${t.id})">Bukti</button>` : ''}
-                            <button type="button" class="btn btn-success btn-xs" onclick="handleVerifikasiTagihan(${t.id}, 'Lunas')">Verifikasi</button>
-                            <button type="button" class="btn btn-danger btn-xs" onclick="handleVerifikasiTagihan(${t.id}, 'Belum Bayar')">Tolak</button>
+                            ${t.bukti_transfer ? `
+                                <button type="button" class="tagihan-act-pill" onclick="openBuktiTransfer(${t.id})" title="Lihat Bukti Transfer">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                                    <span>Bukti</span>
+                                </button>
+                            ` : ''}
+                            <button type="button" class="tagihan-act-pill is-verify" onclick="handleVerifikasiTagihan(${t.id}, 'Lunas')">Verifikasi</button>
+                            <button type="button" class="penghuni-act-btn checkout" onclick="handleVerifikasiTagihan(${t.id}, 'Belum Bayar')" title="Tolak Bukti Pembayaran">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
                         ` : ''}
                         ${t.status === 'Belum Bayar' ? `
-                            <button type="button" class="btn btn-primary btn-xs" onclick="openBayarAdminModal(${t.id})">Lunaskan</button>
-                            ${waNum ? `<a href="https://wa.me/${waNum}?text=${waText}" target="_blank" class="btn btn-wa btn-xs">Ingatkan WA</a>` : ''}
+                            <button type="button" class="tagihan-act-pill is-pay" onclick="openBayarAdminModal(${t.id})">Lunaskan</button>
+                            ${waNum ? `<a href="https://wa.me/${waNum}?text=${waText}" target="_blank" class="penghuni-act-btn wa" title="Ingatkan via WhatsApp">${WHATSAPP_SVG_ICON}</a>` : ''}
                         ` : ''}
                         ${t.status === 'Lunas' ? `
-                            <button type="button" class="btn btn-secondary btn-xs" onclick="openKuitansiModal(${t.id})">Kuitansi</button>
+                            <button type="button" class="tagihan-act-pill" onclick="openKuitansiModal(${t.id})">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                <span>Kuitansi</span>
+                            </button>
                         ` : ''}
                     </div>
                 </td>
