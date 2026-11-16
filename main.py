@@ -23,6 +23,7 @@ import modules.kamar as kamar_mod
 import modules.penghuni as penghuni_mod
 import modules.keuangan as keuangan_mod
 import modules.laporan as laporan_mod
+import modules.pengumuman as pengumuman_mod
 
 # Inisialisasi folder frontend web
 WEB_DIR = os.path.join(BASE_DIR, "web")
@@ -233,6 +234,31 @@ def update_status_keluhan(keluhan_id, status_baru, tindakan="", biaya_perbaikan=
 
 
 # ==========================================================
+# 5b. EXPOSE PAPAN PENGUMUMAN KOS
+# ==========================================================
+
+@eel.expose
+def get_pengumuman(kategori=None, limit=50):
+    return pengumuman_mod.get_daftar_pengumuman(kategori, limit)
+
+@eel.expose
+def tambah_pengumuman(judul, isi, kategori="Info Umum", is_pinned=False, admin_user="admin"):
+    return pengumuman_mod.tambah_pengumuman(judul, isi, kategori, is_pinned, admin_user)
+
+@eel.expose
+def ubah_pengumuman(pengumuman_id, judul, isi, kategori="Info Umum", is_pinned=False, admin_user="admin"):
+    return pengumuman_mod.ubah_pengumuman(pengumuman_id, judul, isi, kategori, is_pinned, admin_user)
+
+@eel.expose
+def toggle_pin_pengumuman(pengumuman_id, admin_user="admin"):
+    return pengumuman_mod.toggle_pin_pengumuman(pengumuman_id, admin_user)
+
+@eel.expose
+def hapus_pengumuman(pengumuman_id, admin_user="admin"):
+    return pengumuman_mod.hapus_pengumuman(pengumuman_id, admin_user)
+
+
+# ==========================================================
 # 6. EXPOSE LAPORAN & ANALITIK PANDAS
 # ==========================================================
 
@@ -281,6 +307,7 @@ def start_app():
         print("Silakan pastikan XAMPP/MySQL aktif dan jalankan: python init_db.py\n")
     else:
         print(f"\n[DATABASE OK]: {pesan_db}\n")
+        pengumuman_mod.ensure_pengumuman_table()
 
     # Jalankan Eel dengan fallback jika browser tertentu tidak tersedia
     try:

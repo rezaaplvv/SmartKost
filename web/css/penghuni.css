@@ -2562,3 +2562,216 @@
     }
 }
 
+/* ==========================================================
+   PAPAN PENGUMUMAN PENGHUNI (STRIP BERANDA & MODAL)
+   ========================================================== */
+.user-announcement-strip {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    border-radius: 16px;
+    background: linear-gradient(120deg, #FFFFFF 0%, #FFFDF7 100%);
+    border: 1px solid #E5EAF2;
+    border-left: 4px solid #101D38;
+    box-shadow: 0 8px 22px rgba(16, 29, 56, 0.045), 0 2px 6px rgba(16, 29, 56, 0.02);
+}
+
+.user-announcement-strip.kat-maintenance {
+    border-left-color: #FFC400;
+    background: linear-gradient(120deg, #FFFFFF 0%, #FFFBEB 100%);
+}
+
+.user-announcement-strip.kat-penting {
+    border-left-color: #EF4444;
+    background: linear-gradient(120deg, #FFFFFF 0%, #FEF2F2 100%);
+}
+
+[data-theme="dark"] .user-announcement-strip {
+    background: var(--sk-card);
+    border-color: var(--sk-border);
+    border-left-color: #FFC400;
+}
+
+[data-theme="dark"] .user-announcement-strip.kat-penting {
+    border-left-color: #F87171;
+}
+
+.user-ann-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #101D38;
+    color: #FFC400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.user-ann-icon .icon {
+    width: 19px;
+    height: 19px;
+}
+
+.user-ann-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-ann-meta-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.user-ann-cat-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 9999px;
+    font-size: 0.69rem;
+    font-weight: 700;
+    background: #EEF2F7;
+    color: #101D38;
+}
+
+.user-ann-cat-pill.kat-maintenance {
+    background: #FFF3CC;
+    color: #92400E;
+}
+
+.user-ann-cat-pill.kat-penting {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+[data-theme="dark"] .user-ann-cat-pill {
+    background: rgba(148, 163, 184, 0.16);
+    color: #E2E8F0;
+}
+
+[data-theme="dark"] .user-ann-cat-pill.kat-maintenance {
+    background: rgba(255, 196, 0, 0.16);
+    color: #FFD95A;
+}
+
+[data-theme="dark"] .user-ann-cat-pill.kat-penting {
+    background: rgba(239, 68, 68, 0.16);
+    color: #FCA5A5;
+}
+
+.user-ann-pin-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: #101D38;
+    color: #FFC400;
+    font-size: 0.67rem;
+    font-weight: 700;
+}
+
+.user-ann-date {
+    font-size: 0.72rem;
+    color: #64748B;
+}
+
+.user-ann-title {
+    font-size: 0.94rem;
+    font-weight: 700;
+    color: #101D38;
+    margin: 0 0 2px;
+    line-height: 1.3;
+}
+
+[data-theme="dark"] .user-ann-title {
+    color: var(--sk-text);
+}
+
+.user-ann-body {
+    font-size: 0.81rem;
+    color: #475569;
+    margin: 0;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+[data-theme="dark"] .user-ann-body {
+    color: var(--sk-text-muted);
+}
+
+.user-ann-more-btn {
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 10px;
+    background: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    color: #101D38;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.16s ease;
+}
+
+.user-ann-more-btn .icon {
+    width: 14px;
+    height: 14px;
+}
+
+.user-ann-more-btn:hover {
+    background: #101D38;
+    border-color: #101D38;
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .user-ann-more-btn {
+    background: var(--sk-bg);
+    border-color: var(--sk-border);
+    color: var(--sk-text);
+}
+
+.user-ann-modal-card {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: #F8FAFC;
+    border: 1px solid #E5EAF2;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+[data-theme="dark"] .user-ann-modal-card {
+    background: var(--sk-bg);
+    border-color: var(--sk-border);
+}
+
+.user-ann-modal-card .user-ann-body {
+    display: block;
+    -webkit-line-clamp: unset;
+    white-space: pre-line;
+}
+
+@media (max-width: 780px) {
+    .user-announcement-strip {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .user-ann-more-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+

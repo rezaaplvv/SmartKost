@@ -23,6 +23,7 @@ let currentTagihanFilter = 'Semua';
 let userTagihanCache = [];
 let userKeluhanCache = [];
 let availableRoomsCache = [];
+let userPengumumanCache = [];
 
 const USER_TAB_META = {
     overview: {
@@ -80,6 +81,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             await loadKosPaymentSettings();
         } else if (e.key === 'smartkost_rooms_updated') {
             await refreshPortalState();
+        } else if (e.key === 'smartkost_pengumuman_updated') {
+            await loadUserPengumuman();
         }
     });
 
@@ -372,15 +375,21 @@ async function refreshPortalState() {
         if (unassignedView) unassignedView.style.display = 'none';
 
         renderActiveRoomCard();
-        await loadUserTagihan();
-        await loadUserKeluhan();
+        await Promise.all([
+            loadUserTagihan(),
+            loadUserKeluhan(),
+            loadUserPengumuman()
+        ]);
     } else {
         if (activeView) activeView.style.display = 'none';
         if (unassignedView) unassignedView.style.display = 'block';
 
         await loadUnassignedState();
-        await loadUserTagihan();
-        await loadUserKeluhan();
+        await Promise.all([
+            loadUserTagihan(),
+            loadUserKeluhan(),
+            loadUserPengumuman()
+        ]);
     }
 }
 
@@ -1272,6 +1281,27 @@ function setupUserCsWidget() {
         const atasNama = escapeHtml(kosSettings?.atas_nama_rekening || 'Pengelola SmartKost Residence');
         const rawWa = escapeHtml(kosSettings?.no_wa || '081234567890');
 
+        if (q === 'pengumuman' || /pengumuman|info terbaru|pemberitahuan|jadwal|berita|maintenance/.test(q)) {
+            if (!userPengumumanCache || userPengumumanCache.length === 0) {
+                return {
+                    html: `Saat ini belum ada pengumuman terbaru dari pengelola <strong>${kosName}</strong>.`
+                };
+            }
+            const topItems = userPengumumanCache.slice(0, 2).map((p, idx) =>
+                `${idx + 1}. <strong>[${escapeHtml(p.kategori)}] ${escapeHtml(p.judul)}</strong><br><span style="opacity:0.9;">${escapeHtml(p.isi)}</span>`
+            ).join('<br><br>');
+            return {
+                html: `Berikut pengumuman terbaru pengelola:<br><br>${topItems}`,
+                cta: {
+                    label: `Lihat Semua (${userPengumumanCache.length})`,
+                    onClick: () => {
+                        setPopupOpen(false);
+                        openAllPengumumanModal();
+                    }
+                }
+            };
+        }
+
         if (q === 'tagihan' || /tagihan|tunggakan|belum bayar|jatuh tempo|bayar sewa|nominal/.test(q)) {
             const unpaid = userTagihanCache.filter(t => t.status === 'Belum Bayar');
             const waiting = userTagihanCache.filter(t => t.status === 'Menunggu Konfirmasi');
@@ -1503,5 +1533,81 @@ function setupUserCsWidget() {
             setPopupOpen(false);
         }
     });
+}
+
+/* ==========================================================
+   9. PAPAN PENGUMUMAN PENGELOLA (STRIP BERANDA & MODAL)
+   ========================================================== */
+function getUserAnnKatClass(kategori) {
+    if (kategori === 'Penting') return 'kat-penting';
+    if (kategori === 'Maintenance') return 'kat-maintenance';
+    return 'kat-info';
+}
+
+async function loadUserPengumuman() {
+    const stripEl = document.getElementById('user-pengumuman-strip');
+    try {
+        const res = await eel.get_pengumuman('Semua', 30)();
+        userPengumumanCache = (res && res.status && Array.isArray(res.data)) ? res.data : [];
+    } catch (err) {
+        console.warn('Gagal memuat pengumuman kos:', err);
+        userPengumumanCache = [];
+    }
+
+    if (!stripEl) return;
+
+    if (!userPengumumanCache.length) {
+        stripEl.style.display = 'none';
+        return;
+    }
+
+    const top = userPengumumanCache[0];
+    const katCls = getUserAnnKatClass(top.kategori);
+
+    stripEl.className = `user-announcement-strip ${katCls}`;
+    stripEl.style.display = 'flex';
+
+    const elKat = document.getElementById('user-ann-top-kat');
+    const elPin = document.getElementById('user-ann-top-pin');
+    const elDate = document.getElementById('user-ann-top-date');
+    const elTitle = document.getElementById('user-ann-top-title');
+    const elIsi = document.getElementById('user-ann-top-isi');
+    const elMoreLabel = document.getElementById('user-ann-more-label');
+
+    if (elKat) {
+        elKat.className = `user-ann-cat-pill ${katCls}`;
+        elKat.textContent = top.kategori || 'Info Umum';
+    }
+    if (elPin) elPin.style.display = top.is_pinned ? 'inline-flex' : 'none';
+    if (elDate) elDate.textContent = top.waktu_buat || '-';
+    if (elTitle) elTitle.textContent = top.judul || '-';
+    if (elIsi) elIsi.textContent = top.isi || '-';
+    if (elMoreLabel) elMoreLabel.textContent = `Semua Pengumuman (${userPengumumanCache.length})`;
+}
+
+function openAllPengumumanModal() {
+    const listBox = document.getElementById('modal-user-pengumuman-list');
+    if (!listBox) return;
+
+    if (!userPengumumanCache || userPengumumanCache.length === 0) {
+        listBox.innerHTML = `<div style="text-align:center;color:var(--sk-text-muted);padding:24px;">Belum ada pengumuman dari pengelola.</div>`;
+    } else {
+        listBox.innerHTML = userPengumumanCache.map(item => {
+            const katCls = getUserAnnKatClass(item.kategori);
+            return `
+                <article class="user-ann-modal-card">
+                    <div class="user-ann-meta-row">
+                        <span class="user-ann-cat-pill ${katCls}">${escapeHtml(item.kategori || 'Info Umum')}</span>
+                        ${item.is_pinned ? `<span class="user-ann-pin-tag">Disematkan</span>` : ''}
+                        <span class="user-ann-date">${escapeHtml(item.waktu_buat || '-')}</span>
+                    </div>
+                    <h4 class="user-ann-title">${escapeHtml(item.judul)}</h4>
+                    <p class="user-ann-body">${escapeHtml(item.isi)}</p>
+                </article>
+            `;
+        }).join('');
+    }
+
+    openModal('modal-user-pengumuman');
 }
 

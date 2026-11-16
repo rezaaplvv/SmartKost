@@ -160,6 +160,18 @@ CREATE TABLE IF NOT EXISTS log_aktivitas (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 10. Tabel Papan Pengumuman Kos
+CREATE TABLE IF NOT EXISTS pengumuman (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    judul VARCHAR(160) NOT NULL,
+    isi TEXT NOT NULL,
+    kategori ENUM('Info Umum', 'Maintenance', 'Penting') NOT NULL DEFAULT 'Info Umum',
+    is_pinned TINYINT(1) NOT NULL DEFAULT 0,
+    dibuat_oleh VARCHAR(80) DEFAULT 'admin',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Default Data: Profil Kos
 INSERT INTO pengaturan_kos (nama_kos, tagline, deskripsi, alamat, no_wa, denda_per_hari)
 VALUES (

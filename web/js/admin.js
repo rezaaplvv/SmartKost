@@ -15,6 +15,7 @@ let penghuniCache = [];
 let tagihanCache = [];
 let pengeluaranCache = [];
 let keluhanCache = [];
+let pengumumanCache = [];
 
 // Chart.js instances
 let cashflowChart = null;
@@ -151,6 +152,10 @@ const TAB_META = {
         title: 'Keluhan & Perbaikan',
         subtitle: 'Pantau dan tindak lanjuti tiket laporan kerusakan fasilitas dari penghuni'
     },
+    pengumuman: {
+        title: 'Papan Pengumuman Kos',
+        subtitle: 'Terbitkan informasi resmi, jadwal pemeliharaan, atau pemberitahuan penting ke Portal Penghuni'
+    },
     laporan: {
         title: 'Ekspor Laporan & Log Aktivitas',
         subtitle: 'Kelola dan unduh laporan serta lihat aktivitas sistem dengan mudah.'
@@ -268,6 +273,7 @@ async function switchAdminTab(tabName) {
     else if (tabName === 'tagihan') await loadTagihanAdmin();
     else if (tabName === 'pengeluaran') await loadPengeluaranAdmin();
     else if (tabName === 'keluhan') await loadKeluhanAdmin();
+    else if (tabName === 'pengumuman') await loadPengumumanAdmin();
     else if (tabName === 'laporan') await loadLogsAdmin();
     else if (tabName === 'pengaturan') await loadKosSettings();
 }
@@ -2226,6 +2232,157 @@ function openKeluhanModal(id) {
 }
 
 /* ==========================================================
+   7b. PAPAN PENGUMUMAN KOS
+   ========================================================== */
+function notifyPengumumanUpdated() {
+    try {
+        localStorage.setItem('smartkost_pengumuman_updated', String(Date.now()));
+    } catch (_) { }
+}
+
+function setPengumumanKatFilter(katVal) {
+    const hiddenInput = document.getElementById('filter-pengumuman-kategori');
+    if (hiddenInput) hiddenInput.value = katVal || 'Semua';
+    document.querySelectorAll('#pengumuman-seg-tabs .penghuni-seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.kat === (katVal || 'Semua'));
+    });
+    renderPengumumanAdmin();
+}
+
+function getPengumumanKatClass(kategori) {
+    if (kategori === 'Penting') return 'kat-penting';
+    if (kategori === 'Maintenance') return 'kat-maintenance';
+    return 'kat-info';
+}
+
+function renderPengumumanAdmin() {
+    const container = document.getElementById('pengumuman-admin-list');
+    if (!container) return;
+
+    const kat = document.getElementById('filter-pengumuman-kategori')?.value || 'Semua';
+    const q = (document.getElementById('search-pengumuman-admin')?.value || '').trim().toLowerCase();
+
+    const filtered = (pengumumanCache || []).filter(item => {
+        const matchKat = kat === 'Semua' || item.kategori === kat;
+        const matchQuery = !q || [item.judul, item.isi, item.kategori, item.dibuat_oleh]
+            .some(v => String(v || '').toLowerCase().includes(q));
+        return matchKat && matchQuery;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<div class="panel-card" style="grid-column:1 / -1;text-align:center;color:var(--text-muted);padding:34px;">Belum ada pengumuman yang sesuai. Klik <strong>Buat Pengumuman</strong> untuk menerbitkan informasi baru ke penghuni.</div>`;
+        return;
+    }
+
+    container.innerHTML = filtered.map(item => {
+        const isPinned = Boolean(item.is_pinned);
+        const katCls = getPengumumanKatClass(item.kategori);
+        return `
+            <article class="ann-admin-card ${isPinned ? 'is-pinned' : ''}">
+                <div class="ann-card-top">
+                    <div class="ann-badges-row">
+                        <span class="ann-cat-pill ${katCls}">${escapeHtml(item.kategori)}</span>
+                        ${isPinned ? `
+                            <span class="ann-pin-pill">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg>
+                                <span>Disematkan</span>
+                            </span>
+                        ` : ''}
+                    </div>
+                    <span class="ann-meta-date">${escapeHtml(item.waktu_buat || '-')}</span>
+                </div>
+                <h4 class="ann-card-title">${escapeHtml(item.judul)}</h4>
+                <p class="ann-card-body">${escapeHtml(item.isi)}</p>
+                <div class="ann-card-footer">
+                    <span class="ann-author-meta">Oleh ${escapeHtml(item.dibuat_oleh || 'admin')}</span>
+                    <div class="ann-card-actions">
+                        <button type="button" class="ann-action-btn ${isPinned ? 'is-pin-active' : ''}" onclick="handleTogglePinPengumuman(${item.id})">${isPinned ? 'Lepas Pin' : 'Sematkan'}</button>
+                        <button type="button" class="ann-action-btn" onclick="openPengumumanModal(${item.id})">Edit</button>
+                        <button type="button" class="ann-action-btn is-danger" onclick="handleHapusPengumuman(${item.id})">Hapus</button>
+                    </div>
+                </div>
+            </article>
+        `;
+    }).join('');
+}
+
+async function loadPengumumanAdmin() {
+    const res = await eel.get_pengumuman('Semua', 100)();
+    pengumumanCache = (res && res.status && Array.isArray(res.data)) ? res.data : [];
+
+    const total = pengumumanCache.length;
+    const pinnedCount = pengumumanCache.filter(x => Boolean(x.is_pinned)).length;
+    const urgentCount = pengumumanCache.filter(x => x.kategori === 'Penting' || x.kategori === 'Maintenance').length;
+
+    const elTotal = document.getElementById('ann-sum-total');
+    const elPinned = document.getElementById('ann-sum-pinned');
+    const elUrgent = document.getElementById('ann-sum-urgent');
+    const elLatest = document.getElementById('ann-sum-latest');
+
+    if (elTotal) elTotal.textContent = `${total} Informasi`;
+    if (elPinned) elPinned.textContent = `${pinnedCount} Disematkan`;
+    if (elUrgent) elUrgent.textContent = `${urgentCount} Pengumuman`;
+    if (elLatest) {
+        elLatest.textContent = total > 0
+            ? `Terakhir: ${pengumumanCache[0].waktu_buat || '-'}`
+            : 'Belum ada terbitan terbaru';
+    }
+
+    renderPengumumanAdmin();
+}
+
+function openPengumumanModal(id = null) {
+    const form = document.getElementById('form-pengumuman');
+    if (form) form.reset();
+
+    const titleEl = document.getElementById('modal-pengumuman-title');
+    const btnEl = document.getElementById('btn-save-pengumuman');
+    const editIdEl = document.getElementById('ann-edit-id');
+
+    if (id) {
+        const item = pengumumanCache.find(x => x.id === id);
+        if (!item) return;
+        if (editIdEl) editIdEl.value = item.id;
+        if (titleEl) titleEl.textContent = 'Edit Pengumuman Kos';
+        if (btnEl) btnEl.textContent = 'Simpan Perubahan';
+        document.getElementById('ann-judul').value = item.judul || '';
+        document.getElementById('ann-kategori').value = item.kategori || 'Info Umum';
+        document.getElementById('ann-isi').value = item.isi || '';
+        document.getElementById('ann-pinned').checked = Boolean(item.is_pinned);
+    } else {
+        if (editIdEl) editIdEl.value = '';
+        if (titleEl) titleEl.textContent = 'Buat Pengumuman Baru';
+        if (btnEl) btnEl.textContent = 'Terbitkan Pengumuman';
+        document.getElementById('ann-kategori').value = 'Info Umum';
+        document.getElementById('ann-pinned').checked = false;
+    }
+
+    if (typeof syncCustomSelectValue === 'function') {
+        syncCustomSelectValue(document.getElementById('ann-kategori'));
+    }
+    openModal('modal-pengumuman');
+}
+
+async function handleTogglePinPengumuman(id) {
+    const res = await eel.toggle_pin_pengumuman(id, adminUsername())();
+    showToast(res.pesan, res.status ? 'success' : 'error');
+    if (res.status) {
+        await loadPengumumanAdmin();
+        notifyPengumumanUpdated();
+    }
+}
+
+async function handleHapusPengumuman(id) {
+    if (!confirm('Hapus pengumuman ini dari papan informasi penghuni?')) return;
+    const res = await eel.hapus_pengumuman(id, adminUsername())();
+    showToast(res.pesan, res.status ? 'success' : 'error');
+    if (res.status) {
+        await loadPengumumanAdmin();
+        notifyPengumumanUpdated();
+    }
+}
+
+/* ==========================================================
    8. EKSPOR PANDAS & LOG AKTIVITAS
    ========================================================== */
 async function handleExportKeuanganExcel() {
@@ -2732,6 +2889,31 @@ function setupAdminForms() {
         const res = await eel.ganti_password(currentAdmin.id, lama, baru)();
         showToast(res.pesan, res.status ? 'success' : 'error');
         if (res.status) e.target.reset();
+    });
+
+    // Form Tambah / Edit Pengumuman Kos
+    document.getElementById('form-pengumuman')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('ann-edit-id')?.value;
+        const judul = document.getElementById('ann-judul').value.trim();
+        const kategori = document.getElementById('ann-kategori').value;
+        const isi = document.getElementById('ann-isi').value.trim();
+        const isPinned = Boolean(document.getElementById('ann-pinned')?.checked);
+
+        const res = editId
+            ? await eel.ubah_pengumuman(parseInt(editId, 10), judul, isi, kategori, isPinned, adminUsername())()
+            : await eel.tambah_pengumuman(judul, isi, kategori, isPinned, adminUsername())();
+
+        showToast(res.pesan, res.status ? 'success' : 'error');
+        if (res.status) {
+            closeModal('modal-pengumuman');
+            if (currentTab === 'pengumuman') {
+                await loadPengumumanAdmin();
+            } else {
+                switchAdminTab('pengumuman');
+            }
+            notifyPengumumanUpdated();
+        }
     });
 }
 

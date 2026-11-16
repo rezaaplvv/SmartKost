@@ -5980,4 +5980,263 @@ body.admin-body {
     flex-wrap: nowrap;
 }
 
+/* ==========================================================
+   PAPAN PENGUMUMAN KOS (ADMIN MANAGEMENT)
+   ========================================================== */
+.pengumuman-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.ann-admin-card {
+    position: relative;
+    overflow: hidden;
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    border-radius: 18px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 8px 24px rgba(16, 29, 56, 0.04), 0 2px 6px rgba(16, 29, 56, 0.02);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ann-admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(16, 29, 56, 0.08);
+    border-color: #CBD5E1;
+}
+
+.ann-admin-card.is-pinned {
+    border-color: rgba(255, 196, 0, 0.55);
+    background: linear-gradient(155deg, #FFFFFF 0%, #FFFDF6 100%);
+}
+
+[data-theme="dark"] .ann-admin-card {
+    background: var(--sk-card);
+    border-color: var(--sk-border);
+}
+
+[data-theme="dark"] .ann-admin-card.is-pinned {
+    border-color: rgba(255, 196, 0, 0.35);
+    background: var(--sk-card);
+}
+
+.ann-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ann-badges-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.ann-cat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.ann-cat-pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.ann-cat-pill.kat-info {
+    background: #EEF2F7;
+    color: #101D38;
+}
+
+.ann-cat-pill.kat-maintenance {
+    background: #FFF3CC;
+    color: #92400E;
+}
+
+.ann-cat-pill.kat-penting {
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+[data-theme="dark"] .ann-cat-pill.kat-info {
+    background: rgba(148, 163, 184, 0.16);
+    color: #E2E8F0;
+}
+
+[data-theme="dark"] .ann-cat-pill.kat-maintenance {
+    background: rgba(255, 196, 0, 0.16);
+    color: #FFD95A;
+}
+
+[data-theme="dark"] .ann-cat-pill.kat-penting {
+    background: rgba(239, 68, 68, 0.16);
+    color: #FCA5A5;
+}
+
+.ann-pin-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 9999px;
+    background: #101D38;
+    color: #FFC400;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.ann-pin-pill svg {
+    width: 11px;
+    height: 11px;
+}
+
+.ann-meta-date {
+    font-size: 0.75rem;
+    color: #64748B;
+    white-space: nowrap;
+}
+
+.ann-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #101D38;
+    line-height: 1.35;
+    margin: 0;
+}
+
+[data-theme="dark"] .ann-card-title {
+    color: var(--sk-text);
+}
+
+.ann-card-body {
+    font-size: 0.84rem;
+    color: #475569;
+    line-height: 1.55;
+    white-space: pre-line;
+    margin: 0;
+    flex: 1;
+}
+
+[data-theme="dark"] .ann-card-body {
+    color: var(--sk-text-muted);
+}
+
+.ann-card-footer {
+    padding-top: 12px;
+    border-top: 1px solid #EDF2F7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+[data-theme="dark"] .ann-card-footer {
+    border-top-color: var(--sk-border);
+}
+
+.ann-author-meta {
+    font-size: 0.75rem;
+    color: #64748B;
+}
+
+.ann-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ann-action-btn {
+    height: 30px;
+    padding: 0 11px;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    background: #F8FAFC;
+    color: #101D38;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.ann-action-btn:hover {
+    border-color: #101D38;
+    background: #EEF2F7;
+}
+
+.ann-action-btn.is-pin-active {
+    background: #FFF3CC;
+    border-color: #FCD34D;
+    color: #92400E;
+}
+
+.ann-action-btn.is-danger {
+    background: #FEF2F2;
+    border-color: #FECACA;
+    color: #DC2626;
+}
+
+.ann-action-btn.is-danger:hover {
+    background: #FEE2E2;
+}
+
+[data-theme="dark"] .ann-action-btn {
+    background: var(--sk-bg);
+    border-color: var(--sk-border);
+    color: var(--sk-text);
+}
+
+[data-theme="dark"] .ann-action-btn.is-pin-active {
+    background: rgba(255, 196, 0, 0.16);
+    border-color: rgba(255, 196, 0, 0.35);
+    color: #FFD95A;
+}
+
+[data-theme="dark"] .ann-action-btn.is-danger {
+    background: rgba(239, 68, 68, 0.14);
+    border-color: rgba(248, 113, 113, 0.32);
+    color: #FCA5A5;
+}
+
+.ann-pin-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: #101D38;
+    cursor: pointer;
+}
+
+[data-theme="dark"] .ann-pin-checkbox {
+    color: var(--sk-text);
+}
+
+.ann-pin-checkbox input {
+    width: 16px;
+    height: 16px;
+    accent-color: #101D38;
+}
+
+@media (max-width: 920px) {
+    .pengumuman-admin-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 

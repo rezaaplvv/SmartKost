@@ -71,6 +71,12 @@
                     </span>
                     <span class="sidebar-badge badge-orange" id="badge-active-keluhan" style="display:none;">0</span>
                 </button>
+                <button type="button" class="sidebar-link" data-tab="pengumuman">
+                    <span class="sidebar-link-main">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
+                        <span>Pengumuman Kos</span>
+                    </span>
+                </button>
 
                 <div class="sidebar-section-label">KEUANGAN &amp; LAPORAN</div>
                 <button type="button" class="sidebar-link" data-tab="tagihan">
@@ -308,6 +314,10 @@
                                 <button type="button" class="qa-btn qa-btn-light" onclick="handleExportKeuanganExcel()">
                                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                                     <span>Ekspor Excel</span>
+                                </button>
+                                <button type="button" class="qa-btn qa-btn-light" onclick="openPengumumanModal()">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
+                                    <span>Buat Pengumuman</span>
                                 </button>
                             </div>
                         </div>
@@ -872,6 +882,82 @@
                                 <tbody id="keluhan-table-body"></tbody>
                             </table>
                         </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     TAB 7b: PAPAN PENGUMUMAN KOS (Admin -> Portal Penghuni)
+                     ==================================================== -->
+                <section class="admin-tab-panel" id="tab-pengumuman">
+                    <div class="pengeluaran-summary-grid">
+                        <div class="pengeluaran-stat-card is-navy-highlight">
+                            <svg class="exp-card-deco" viewBox="0 0 140 90" fill="none" aria-hidden="true">
+                                <path d="M40 90C76 48 108 26 140 8V90H40Z" fill="rgba(255, 255, 255, 0.05)" />
+                                <path d="M84 90C106 62 124 46 140 34V90H84Z" fill="rgba(255, 196, 0, 0.16)" />
+                            </svg>
+                            <div class="exp-stat-icon is-navy-gold" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">Pengumuman Aktif</span>
+                                <strong class="exp-stat-val" id="ann-sum-total">0 Informasi</strong>
+                                <span class="exp-stat-sub">Tampil otomatis di Portal Penghuni</span>
+                            </div>
+                        </div>
+
+                        <div class="pengeluaran-stat-card is-white-slate">
+                            <div class="tkc-corner-arc" aria-hidden="true"></div>
+                            <div class="exp-stat-icon is-slate" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"></path></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">Disematkan (Pinned)</span>
+                                <strong class="exp-stat-val" id="ann-sum-pinned">0 Disematkan</strong>
+                                <span class="exp-stat-sub">Prioritas tampil paling atas</span>
+                            </div>
+                        </div>
+
+                        <div class="pengeluaran-stat-card is-white-gold">
+                            <svg class="exp-card-deco" viewBox="0 0 130 76" fill="none" aria-hidden="true">
+                                <path d="M44 76C78 40 104 22 130 8V76H44Z" fill="#FFF3CC" />
+                                <path d="M76 76C98 52 114 38 130 28V76H76Z" fill="#FFC400" fill-opacity="0.7" />
+                                <path d="M100 76C112 62 121 52 130 44V76H100Z" fill="#101D38" />
+                            </svg>
+                            <div class="exp-stat-icon is-gold" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            </div>
+                            <div class="exp-stat-body">
+                                <span class="exp-stat-label">Penting &amp; Maintenance</span>
+                                <strong class="exp-stat-val" id="ann-sum-urgent">0 Pengumuman</strong>
+                                <span class="exp-stat-sub" id="ann-sum-latest">Belum ada terbitan terbaru</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-toolbar penghuni-toolbar">
+                        <div class="toolbar-filters">
+                            <input type="hidden" id="filter-pengumuman-kategori" value="Semua">
+                            <div class="penghuni-seg-tabs" id="pengumuman-seg-tabs" role="tablist" aria-label="Filter Kategori Pengumuman">
+                                <button type="button" class="penghuni-seg-btn active" data-kat="Semua" onclick="setPengumumanKatFilter('Semua')">Semua</button>
+                                <button type="button" class="penghuni-seg-btn" data-kat="Info Umum" onclick="setPengumumanKatFilter('Info Umum')">Info Umum</button>
+                                <button type="button" class="penghuni-seg-btn" data-kat="Maintenance" onclick="setPengumumanKatFilter('Maintenance')">Maintenance</button>
+                                <button type="button" class="penghuni-seg-btn" data-kat="Penting" onclick="setPengumumanKatFilter('Penting')">Penting</button>
+                            </div>
+                        </div>
+                        <div class="toolbar-actions">
+                            <div class="admin-search-input">
+                                <svg class="icon" style="color:var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input type="text" id="search-pengumuman-admin" placeholder="Cari judul atau isi pengumuman..." oninput="renderPengumumanAdmin()">
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="openPengumumanModal()">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <span>Buat Pengumuman</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pengumuman-admin-grid" id="pengumuman-admin-list">
+                        <div class="panel-card" style="text-align:center;color:var(--text-muted);padding:32px;">Memuat papan pengumuman...</div>
                     </div>
                 </section>
 
@@ -1781,6 +1867,49 @@
             <div class="penghuni-drawer-body" id="detail-kamar-body">
                 <p style="color:var(--text-muted);font-size:0.88rem;">Memuat detail kamar...</p>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal 9b: Buat / Edit Pengumuman Kos -->
+    <div class="modal-backdrop" id="modal-pengumuman">
+        <div class="modal-dialog" style="max-width:520px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-pengumuman-title">Buat Pengumuman Baru</h3>
+                <button type="button" class="modal-close-btn" data-close-modal>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="form-pengumuman">
+                <div class="modal-body">
+                    <input type="hidden" id="ann-edit-id">
+                    <div class="form-row">
+                        <div class="form-group" style="flex:2;">
+                            <label class="form-label" for="ann-judul">Judul Pengumuman *</label>
+                            <input type="text" id="ann-judul" class="form-control" placeholder="Contoh: Jadwal Kuras Tandon Air" required>
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label class="form-label" for="ann-kategori">Kategori *</label>
+                            <select id="ann-kategori" class="form-control">
+                                <option value="Info Umum">Info Umum</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Penting">Penting</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="ann-isi">Isi Pengumuman *</label>
+                        <textarea id="ann-isi" class="form-control" rows="4" placeholder="Tuliskan detail informasi yang perlu diketahui seluruh penghuni..." required></textarea>
+                    </div>
+                    <label class="ann-pin-checkbox">
+                        <input type="checkbox" id="ann-pinned">
+                        <span>Sematkan di paling atas (tampil prioritas di Beranda Penghuni)</span>
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close-modal>Batal</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save-pengumuman">Terbitkan Pengumuman</button>
+                </div>
+            </form>
         </div>
     </div>
 
