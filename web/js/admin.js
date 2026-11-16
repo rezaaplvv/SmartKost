@@ -2240,6 +2240,47 @@ async function loadLogsAdmin() {
 /* ==========================================================
    9. PENGATURAN PROFIL KOS & FORM SUBMIT HANDLERS
    ========================================================== */
+function updateKosSettingsSummary(hasQrisOverride) {
+    const nama = document.getElementById('set-nama-kos')?.value.trim() || 'SmartKost Residence';
+    const noWa = document.getElementById('set-no-wa')?.value.trim() || '-';
+    const dendaVal = parseInt(document.getElementById('set-denda')?.value, 10);
+    const bank = document.getElementById('set-nama-bank')?.value.trim() || 'Bank BCA';
+    const rek = document.getElementById('set-no-rekening')?.value.trim() || '-';
+    const atasNama = document.getElementById('set-atas-nama')?.value.trim() || '-';
+
+    const elNama = document.getElementById('sum-set-nama');
+    const elWa = document.getElementById('sum-set-wa');
+    const elDenda = document.getElementById('sum-set-denda');
+    const elRek = document.getElementById('sum-set-rekening');
+    const elAn = document.getElementById('sum-set-atas-nama');
+    const elQris = document.getElementById('sum-set-qris-status');
+
+    if (elNama) elNama.textContent = nama;
+    if (elWa) elWa.textContent = noWa;
+    if (elDenda) elDenda.textContent = formatRupiah(Number.isNaN(dendaVal) ? 10000 : dendaVal);
+    if (elRek) elRek.textContent = `${bank} • ${rek}`;
+    if (elAn) elAn.textContent = `a.n. ${atasNama}`;
+
+    const qrisPreview = document.getElementById('set-qris-preview');
+    const isQrisReady = typeof hasQrisOverride === 'boolean'
+        ? hasQrisOverride
+        : Boolean(qrisPreview && qrisPreview.style.display !== 'none' && qrisPreview.getAttribute('src'));
+
+    if (elQris) {
+        elQris.textContent = isQrisReady ? 'QRIS Aktif' : 'Belum Diunggah';
+        elQris.classList.toggle('is-ready', isQrisReady);
+        elQris.classList.toggle('is-missing', !isQrisReady);
+    }
+}
+
+function toggleAdminPassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const willShow = input.type === 'password';
+    input.type = willShow ? 'text' : 'password';
+    if (btn) btn.classList.toggle('is-visible', willShow);
+}
+
 async function loadKosSettings() {
     try {
         const res = await eel.get_pengaturan()();
@@ -2266,6 +2307,7 @@ async function loadKosSettings() {
                 const qrisEmpty = document.getElementById('set-qris-empty');
                 const btnClearQris = document.getElementById('btn-clear-qris');
                 const clearFlag = document.getElementById('set-qris-clear-flag');
+                const fileNameEl = document.getElementById('set-qris-filename');
                 if (clearFlag) clearFlag.value = '0';
 
                 if (d.foto_qris) {
@@ -2275,14 +2317,17 @@ async function loadKosSettings() {
                     }
                     if (qrisEmpty) qrisEmpty.style.display = 'none';
                     if (btnClearQris) btnClearQris.style.display = 'inline-flex';
+                    if (fileNameEl) fileNameEl.textContent = 'QRIS aktif tersimpan (unggah ulang jika ingin mengganti)';
                 } else {
                     if (qrisPreview) {
                         qrisPreview.src = '';
                         qrisPreview.style.display = 'none';
                     }
-                    if (qrisEmpty) qrisEmpty.style.display = 'block';
+                    if (qrisEmpty) qrisEmpty.style.display = 'flex';
                     if (btnClearQris) btnClearQris.style.display = 'none';
+                    if (fileNameEl) fileNameEl.textContent = 'Format JPG atau PNG (tampil di portal pembayaran)';
                 }
+                updateKosSettingsSummary(Boolean(d.foto_qris));
             }
         }
     } catch (err) {
@@ -2296,14 +2341,17 @@ function clearQrisSetting() {
     const qrisEmpty = document.getElementById('set-qris-empty');
     const btnClearQris = document.getElementById('btn-clear-qris');
     const clearFlag = document.getElementById('set-qris-clear-flag');
+    const fileNameEl = document.getElementById('set-qris-filename');
     if (qrisFile) qrisFile.value = '';
     if (qrisPreview) {
         qrisPreview.src = '';
         qrisPreview.style.display = 'none';
     }
-    if (qrisEmpty) qrisEmpty.style.display = 'block';
+    if (qrisEmpty) qrisEmpty.style.display = 'flex';
     if (btnClearQris) btnClearQris.style.display = 'none';
     if (clearFlag) clearFlag.value = '1';
+    if (fileNameEl) fileNameEl.textContent = 'QRIS dihapus (klik Simpan untuk menerapkan)';
+    updateKosSettingsSummary(false);
 }
 
 function setupAdminForms() {
@@ -2530,6 +2578,7 @@ function setupAdminForms() {
         const qrisEmpty = document.getElementById('set-qris-empty');
         const btnClearQris = document.getElementById('btn-clear-qris');
         const clearFlag = document.getElementById('set-qris-clear-flag');
+        const fileNameEl = document.getElementById('set-qris-filename');
         if (qrisPreview && b64) {
             qrisPreview.src = b64;
             qrisPreview.style.display = 'block';
@@ -2537,6 +2586,13 @@ function setupAdminForms() {
         if (qrisEmpty) qrisEmpty.style.display = 'none';
         if (btnClearQris) btnClearQris.style.display = 'inline-flex';
         if (clearFlag) clearFlag.value = '0';
+        if (fileNameEl) fileNameEl.textContent = `File dipilih: ${file.name}`;
+        updateKosSettingsSummary(true);
+    });
+
+    // Live sync ringkasan aktif saat mengetik pengaturan kos
+    ['set-nama-kos', 'set-no-wa', 'set-denda', 'set-nama-bank', 'set-no-rekening', 'set-atas-nama'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', () => updateKosSettingsSummary());
     });
 
     // Form Pengaturan Kos
