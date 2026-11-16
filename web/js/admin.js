@@ -296,9 +296,17 @@ function setupModals() {
         });
     }
 
+    const kamarDetailModal = document.getElementById('modal-detail-kamar');
+    if (kamarDetailModal) {
+        kamarDetailModal.addEventListener('click', (e) => {
+            if (e.target === kamarDetailModal) closeDetailKamarModal();
+        });
+    }
+
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeDetailPenghuniDrawer();
+            closeDetailKamarModal();
         }
     });
 }
@@ -703,7 +711,7 @@ function renderDenahRooms(list) {
             const isTersedia = k.status === 'Tersedia';
             return `
                 <article class="denah-room-card status-${escapeHtml(k.status)}">
-                    <div class="denah-room-photo" onclick="previewKamarPhoto(${k.id})" title="Klik untuk melihat foto kamar">
+                    <div class="denah-room-photo" onclick="openDetailKamarModal(${k.id})" title="Klik untuk melihat detail &amp; galeri kamar">
                         <img src="${photoUrl}" alt="Foto Kamar ${escapeHtml(k.nomor_kamar)}">
                     </div>
                     <div class="denah-room-body">
@@ -713,17 +721,19 @@ function renderDenahRooms(list) {
                                     <div class="denah-room-no">Kamar ${escapeHtml(k.nomor_kamar)}</div>
                                     <div class="denah-room-meta">${escapeHtml(k.tipe)} &bull; Lt ${lt} &bull; ${escapeHtml(k.luas_kamar || '3x4 m')}</div>
                                 </div>
-                                <button type="button" class="denah-more-btn" onclick="openKamarModal(${k.id})" title="Lihat detail &amp; edit kamar">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle></svg>
-                                </button>
+                                <span class="denah-status-pill status-${escapeHtml(k.status)}">${escapeHtml(k.status)}</span>
                             </div>
                             <div class="denah-room-price">${formatRupiah(k.harga_sewa)}<span>/bln</span></div>
                         </div>
                         <div class="denah-card-actions">
-                            ${isTersedia
-                    ? `<button type="button" class="denah-btn denah-btn-checkin" onclick="openCheckinModal(${k.id})">Check-In</button>`
-                    : `<button type="button" class="denah-btn denah-btn-checkin" onclick="openKamarModal(${k.id})">Detail</button>`
-                }
+                            ${isTersedia ? `
+                                <button type="button" class="denah-btn denah-btn-checkin" onclick="openCheckinModal(${k.id})">Check-In</button>
+                                <button type="button" class="denah-btn denah-btn-detail-icon" onclick="openDetailKamarModal(${k.id})" title="Detail Kamar">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                            ` : `
+                                <button type="button" class="denah-btn denah-btn-checkin" onclick="openDetailKamarModal(${k.id})">Detail</button>
+                            `}
                             <button type="button" class="denah-btn denah-btn-edit" onclick="openKamarModal(${k.id})">Edit</button>
                             <button type="button" class="denah-btn denah-btn-del" onclick="handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}')" title="Hapus Kamar">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>
@@ -755,6 +765,184 @@ function previewKamarPhoto(kamarId) {
     openImagePreview(getRoomPhotoUrl(k), `Foto Kamar ${k.nomor_kamar} (${k.tipe})`);
 }
 
+async function openDetailKamarModal(kamarId) {
+    const modal = document.getElementById('modal-detail-kamar');
+    const titleEl = document.getElementById('detail-kamar-title');
+    const statusEl = document.getElementById('detail-kamar-status');
+    const subEl = document.getElementById('detail-kamar-sub');
+    const bodyEl = document.getElementById('detail-kamar-body');
+    if (!modal || !bodyEl) return;
+
+    const cached = roomsCache.find(r => r.id === kamarId);
+    if (cached) {
+        if (titleEl) titleEl.textContent = `Kamar ${cached.nomor_kamar}`;
+        if (subEl) subEl.textContent = `Tipe ${cached.tipe} • Lantai ${cached.lantai || 1} • ${cached.luas_kamar || '3x4 m'}`;
+        if (statusEl) {
+            statusEl.textContent = cached.status;
+            statusEl.className = `badge ${cached.status === 'Tersedia' ? 'badge-success' : (cached.status === 'Terisi' ? 'badge-neutral' : 'badge-warning')}`;
+        }
+    }
+
+    bodyEl.innerHTML = `<p style="color:var(--text-muted);font-size:0.88rem;">Memuat detail fasilitas, galeri &amp; penghuni kamar...</p>`;
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+
+    try {
+        const res = await eel.get_kamar_detail(kamarId)();
+        if (!res || !res.status || !res.data) {
+            bodyEl.innerHTML = `<p style="color:var(--danger);font-size:0.88rem;">${escapeHtml(res?.pesan || 'Gagal memuat detail kamar.')}</p>`;
+            return;
+        }
+
+        const k = res.data;
+        const gallery = getRoomGallery(k);
+        const isTersedia = k.status === 'Tersedia';
+        const badgeCls = isTersedia ? 'badge-success' : (k.status === 'Terisi' ? 'badge-neutral' : 'badge-warning');
+        if (titleEl) titleEl.textContent = `Kamar ${k.nomor_kamar}`;
+        if (subEl) subEl.textContent = `Tipe ${k.tipe} • Lantai ${k.lantai || 1} • ${k.luas_kamar || '3x4 m'}`;
+        if (statusEl) {
+            statusEl.textContent = k.status;
+            statusEl.className = `badge ${badgeCls}`;
+        }
+
+        const fasilitasList = String(k.fasilitas || '')
+            .split(',')
+            .map(s => s.trim())
+            .filter(Boolean);
+        const fasilitasHtml = fasilitasList.length > 0
+            ? fasilitasList.map(f => `<span class="kamar-fasilitas-chip">${escapeHtml(f)}</span>`).join('')
+            : `<span style="font-size:0.8rem;color:var(--sk-text-muted);">Belum ada fasilitas tercatat.</span>`;
+
+        const cleanWa = (k.no_hp_penghuni || '').replace(/[^0-9]/g, '');
+        const waNum = cleanWa.startsWith('0') ? '62' + cleanWa.slice(1) : cleanWa;
+
+        const occupantHtml = k.penghuni_id ? `
+            <div class="kamar-occupant-box">
+                <div class="kamar-occupant-head">
+                    <div class="penghuni-avatar">${escapeHtml(getNameInitials(k.nama_penghuni))}</div>
+                    <div>
+                        <strong>${escapeHtml(k.nama_penghuni || '-')}</strong>
+                        <span>${escapeHtml([k.pekerjaan, k.asal_kota].filter(Boolean).join(' • ') || 'Penghuni Aktif')}</span>
+                    </div>
+                </div>
+                <div class="drawer-info-grid">
+                    <div class="drawer-info-item">
+                        <span>No. HP / WA</span>
+                        <strong>${escapeHtml(k.no_hp_penghuni || '-')}</strong>
+                    </div>
+                    <div class="drawer-info-item">
+                        <span>Tanggal Masuk</span>
+                        <strong>${escapeHtml(k.tgl_masuk_penghuni || '-')}</strong>
+                    </div>
+                </div>
+                <div class="drawer-quick-group" style="margin-top:4px;">
+                    <button type="button" class="drawer-pill-btn primary" onclick="closeDetailKamarModal(); openDetailPenghuniDrawer(${k.penghuni_id});">
+                        <span>Lihat Profil Penghuni</span>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </button>
+                    ${waNum ? `<a href="https://wa.me/${waNum}" target="_blank" class="drawer-pill-btn wa">${WHATSAPP_SVG_ICON}<span>WA</span></a>` : ''}
+                </div>
+            </div>
+        ` : `
+            <p class="kamar-occupant-empty">
+                ${isTersedia
+                    ? 'Unit kamar ini saat ini kosong dan siap menerima penghuni baru.'
+                    : 'Unit kamar sedang dalam status perbaikan sehingga belum ditempati penghuni.'}
+            </p>
+            ${isTersedia ? `
+                <div style="margin-top:10px;">
+                    <button type="button" class="drawer-pill-btn primary" onclick="closeDetailKamarModal(); openCheckinModal(${k.id});">
+                        <span>Check-In Penghuni ke Kamar Ini</span>
+                    </button>
+                </div>
+            ` : ''}
+        `;
+
+        bodyEl.innerHTML = `
+            <div class="kamar-detail-gallery">
+                <div class="kamar-detail-main-wrap" id="kamar-detail-main-trigger" title="Klik untuk memperbesar foto">
+                    <img id="kamar-detail-main-img" src="${gallery[0]}" alt="Kamar ${escapeHtml(k.nomor_kamar)}" class="kamar-detail-main-img">
+                    <span class="kamar-detail-zoom-hint">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <span>Perbesar Foto</span>
+                    </span>
+                </div>
+                ${gallery.length > 1 ? `
+                    <div class="kamar-detail-thumbs">
+                        ${gallery.map((src, i) => `
+                            <div class="kamar-detail-thumb${i === 0 ? ' active' : ''}" data-kamar-src="${escapeHtml(src)}">
+                                <img src="${src}" alt="Foto ${i + 1}">
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+
+            <div class="kamar-detail-action-bar">
+                <div class="kamar-detail-price-wrap">
+                    <span>Tarif Sewa Bulanan</span>
+                    <strong>${formatRupiah(k.harga_sewa)} <small>/ bln</small></strong>
+                </div>
+                <div class="drawer-quick-group">
+                    ${isTersedia ? `
+                        <button type="button" class="drawer-pill-btn primary" onclick="closeDetailKamarModal(); openCheckinModal(${k.id});">Check-In</button>
+                    ` : ''}
+                    <button type="button" class="drawer-pill-btn" onclick="closeDetailKamarModal(); openKamarModal(${k.id});">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        <span>Edit Kamar</span>
+                    </button>
+                    <button type="button" class="drawer-pill-btn danger" onclick="closeDetailKamarModal(); handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}');">
+                        <span>Hapus</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="drawer-two-col">
+                <div class="drawer-section-card">
+                    <div class="drawer-section-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        <span>Fasilitas &amp; Deskripsi</span>
+                    </div>
+                    <div class="kamar-fasilitas-chips">${fasilitasHtml}</div>
+                    <p class="kamar-detail-desc">${escapeHtml(k.deskripsi || 'Unit kamar nyaman dengan perawatan rutin SmartKost.')}</p>
+                </div>
+
+                <div class="drawer-section-card">
+                    <div class="drawer-section-title">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span>Penghuni Saat Ini</span>
+                    </div>
+                    ${occupantHtml}
+                </div>
+            </div>
+        `;
+
+        const mainImg = document.getElementById('kamar-detail-main-img');
+        const mainTrigger = document.getElementById('kamar-detail-main-trigger');
+        mainTrigger?.addEventListener('click', () => {
+            openImagePreview(mainImg?.src || gallery[0], `Kamar ${k.nomor_kamar} (${k.tipe})`);
+        });
+
+        bodyEl.querySelectorAll('.kamar-detail-thumb').forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                const newSrc = thumb.getAttribute('data-kamar-src');
+                if (mainImg && newSrc) mainImg.src = newSrc;
+                bodyEl.querySelectorAll('.kamar-detail-thumb').forEach(t => t.classList.remove('active'));
+                thumb.classList.add('active');
+            });
+        });
+    } catch (err) {
+        bodyEl.innerHTML = `<p style="color:var(--danger);font-size:0.88rem;">Terjadi kesalahan saat mengambil detail kamar.</p>`;
+    }
+}
+
+function closeDetailKamarModal() {
+    const modal = document.getElementById('modal-detail-kamar');
+    if (!modal || !modal.classList.contains('open')) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+}
+
 function renderTableRooms(list) {
     const tbody = document.getElementById('kamar-table-body');
     if (!tbody) return;
@@ -768,22 +956,34 @@ function renderTableRooms(list) {
         const photoUrl = getRoomPhotoUrl(k);
         return `
             <tr>
-                <td>
+                <td class="kamar-table-nowrap">
                     <div style="display:flex;align-items:center;gap:10px;">
-                        <img src="${photoUrl}" alt="Kamar ${escapeHtml(k.nomor_kamar)}" class="denah-table-thumb" onclick="previewKamarPhoto(${k.id})" title="Lihat Foto">
-                        <strong>${escapeHtml(k.nomor_kamar)}</strong>
+                        <img src="${photoUrl}" alt="Kamar ${escapeHtml(k.nomor_kamar)}" class="denah-table-thumb" onclick="openDetailKamarModal(${k.id})" title="Lihat Detail Kamar">
+                        <span class="kamar-table-no">${escapeHtml(k.nomor_kamar)}</span>
                     </div>
                 </td>
-                <td>Lantai ${k.lantai}</td>
-                <td>${escapeHtml(k.tipe)} <span style="color:var(--text-muted);font-size:0.8rem;">(${escapeHtml(k.luas_kamar || '-')})</span></td>
-                <td><strong>${formatRupiah(k.harga_sewa)}</strong></td>
-                <td style="max-width:220px;font-size:0.8rem;color:var(--text-muted);">${escapeHtml(k.fasilitas || '-')}</td>
-                <td><span class="badge ${badgeCls}">${escapeHtml(k.status)}</span></td>
+                <td class="kamar-table-nowrap">Lantai ${k.lantai || 1}</td>
                 <td>
-                    <div class="table-actions">
-                        <button type="button" class="btn btn-secondary btn-xs" onclick="openKamarModal(${k.id})">Edit</button>
-                        ${k.status === 'Tersedia' ? `<button type="button" class="btn btn-primary btn-xs" onclick="openCheckinModal(${k.id})">Check-In</button>` : ''}
-                        <button type="button" class="btn btn-danger btn-xs" onclick="handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}')">Hapus</button>
+                    <span class="kamar-table-type">${escapeHtml(k.tipe)}</span>
+                    <span class="kamar-table-size">${escapeHtml(k.luas_kamar || '3x4 m')}</span>
+                </td>
+                <td class="kamar-table-nowrap"><strong>${formatRupiah(k.harga_sewa)}</strong></td>
+                <td style="max-width:230px;font-size:0.8rem;color:var(--text-muted);">${escapeHtml(k.fasilitas || '-')}</td>
+                <td class="kamar-table-nowrap"><span class="badge ${badgeCls}">${escapeHtml(k.status)}</span></td>
+                <td style="text-align:right;" class="kamar-table-nowrap">
+                    <div class="kamar-table-actions">
+                        <button type="button" class="penghuni-act-btn" onclick="openDetailKamarModal(${k.id})" title="Detail Kamar">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        </button>
+                        <button type="button" class="penghuni-act-btn" onclick="openKamarModal(${k.id})" title="Edit Kamar">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                        </button>
+                        ${k.status === 'Tersedia' ? `
+                            <button type="button" class="btn btn-primary btn-xs" onclick="openCheckinModal(${k.id})">Check-In</button>
+                        ` : ''}
+                        <button type="button" class="penghuni-act-btn checkout" onclick="handleHapusKamar(${k.id}, '${escapeHtml(k.nomor_kamar)}')" title="Hapus Kamar">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
+                        </button>
                     </div>
                 </td>
             </tr>
@@ -2231,7 +2431,8 @@ function setupAdminForms() {
             try {
                 localStorage.setItem('smartkost_settings_updated', String(Date.now()));
             } catch (_) { }
-        }
+            /*  */
+}
     });
 
     // Form Ganti Password Admin

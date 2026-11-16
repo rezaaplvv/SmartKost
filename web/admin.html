@@ -451,7 +451,7 @@
 
                     <div class="panel-card" id="kamar-table-container" style="display:none;">
                         <div class="table-responsive">
-                            <table class="admin-table">
+                            <table class="admin-table kamar-table">
                                 <thead>
                                     <tr>
                                         <th>No. Kamar</th>
@@ -460,7 +460,7 @@
                                         <th>Tarif / Bulan</th>
                                         <th>Fasilitas</th>
                                         <th>Status</th>
-                                        <th>Aksi</th>
+                                        <th style="text-align:right;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="kamar-table-body"></tbody>
@@ -1425,6 +1425,39 @@
 
             <div class="penghuni-drawer-body" id="drawer-penghuni-body">
                 <p style="color:var(--text-muted);font-size:0.88rem;">Memuat detail penghuni...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Center Detail Modal: Detail Kamar, Galeri Foto, Fasilitas & Penghuni Aktif -->
+    <div class="penghuni-drawer-backdrop" id="modal-detail-kamar" aria-hidden="true">
+        <div class="penghuni-drawer-panel" role="dialog" aria-labelledby="detail-kamar-title">
+            <div class="penghuni-drawer-header">
+                <div class="penghuni-drawer-deco" aria-hidden="true">
+                    <svg viewBox="0 0 220 120" fill="none">
+                        <path d="M220 0C170 42 135 82 115 120H220V0Z" fill="rgba(255, 255, 255, 0.06)"/>
+                        <path d="M220 48C184 74 160 98 146 120H220V48Z" fill="#FFC400" fill-opacity="0.22"/>
+                    </svg>
+                </div>
+                <div class="penghuni-drawer-identity">
+                    <div class="kamar-detail-icon-box" aria-hidden="true">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
+                    </div>
+                    <div>
+                        <div class="penghuni-drawer-title-row">
+                            <h3 id="detail-kamar-title">Memuat Kamar...</h3>
+                            <span class="badge badge-neutral" id="detail-kamar-status">-</span>
+                        </div>
+                        <span class="penghuni-drawer-user" id="detail-kamar-sub">-</span>
+                    </div>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeDetailKamarModal()" aria-label="Tutup Detail Kamar">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <div class="penghuni-drawer-body" id="detail-kamar-body">
+                <p style="color:var(--text-muted);font-size:0.88rem;">Memuat detail kamar...</p>
             </div>
         </div>
     </div>
