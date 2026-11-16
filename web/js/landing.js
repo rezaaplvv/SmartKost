@@ -255,6 +255,20 @@ async function loadKosProfile() {
             const waDisplay = document.getElementById('cs-wa-number-display');
             if (waDisplay) waDisplay.textContent = rawWa;
 
+            const guideWaEl = document.getElementById('guide-wa-display');
+            const guideBankEl = document.getElementById('guide-bank-display');
+            const footerWaEl = document.getElementById('footer-wa-display');
+            const footerBankEl = document.getElementById('footer-bank-info');
+            const footerDendaEl = document.getElementById('footer-denda-info');
+
+            const bankLabel = d.nama_bank || 'Bank BCA';
+            const dendaLabel = formatRupiah(d.denda_per_hari ?? 10000);
+            if (guideWaEl) guideWaEl.textContent = rawWa;
+            if (guideBankEl) guideBankEl.textContent = `${bankLabel} & QRIS`;
+            if (footerWaEl) footerWaEl.textContent = rawWa;
+            if (footerBankEl) footerBankEl.textContent = `Transfer ${bankLabel} & QRIS Resmi`;
+            if (footerDendaEl) footerDendaEl.textContent = `${dendaLabel} / hari keterlambatan`;
+
             const waLinks = document.querySelectorAll('.app-wa-link');
             const cleanWa = rawWa.replace(/[^0-9]/g, '');
             const kosLabel = encodeURIComponent(d.nama_kos || 'Kost Cemara');
@@ -304,6 +318,14 @@ async function loadRoomCatalog() {
                 lastRoomsSignature = nextSignature;
                 allRooms = resKamar.data;
                 renderRoomCards();
+            }
+            const liveTextEl = document.getElementById('catalog-live-text');
+            if (liveTextEl) {
+                const availRooms = allRooms.filter(r => r.status === 'Tersedia');
+                const prices = availRooms.map(r => Number(r.harga_sewa) || 0).filter(p => p > 0);
+                const minPrice = prices.length ? Math.min(...prices) : 0;
+                const pricePart = minPrice > 0 ? ` • Mulai ${formatRupiah(minPrice)}/bln` : '';
+                liveTextEl.textContent = `${availRooms.length} Tersedia dari ${allRooms.length} Unit${pricePart}`;
             }
         } else {
             lastRoomsSignature = '';
@@ -974,6 +996,16 @@ function escapeHtmlSafe(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+function openLandingCsWidget() {
+    const popup = document.getElementById('cs-chat-popup');
+    const toggleBtn = document.getElementById('cs-widget-toggle');
+    if (popup && toggleBtn) {
+        if (!popup.classList.contains('open')) {
+            setTimeout(() => toggleBtn.click(), 0);
+        }
+    }
 }
 
 function setupCsWidget() {
