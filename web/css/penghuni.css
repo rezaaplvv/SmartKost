@@ -958,39 +958,388 @@
     cursor: zoom-in;
 }
 
-/* Profil & Avatar Editor */
-.profile-avatar-editor {
+/* Profil & Avatar Editor (Hero Banner + 2 Balanced Cards) */
+.profil-hero-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(155deg, #FFFFFF 0%, #FAFBFD 100%);
+    border: 1px solid #E5EAF2;
+    border-radius: 22px;
+    padding: 22px 26px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: 0 8px 24px rgba(16, 29, 56, 0.045), 0 2px 6px rgba(16, 29, 56, 0.02);
+}
+
+[data-theme="dark"] .profil-hero-card {
+    background: var(--sk-card);
+    border-color: var(--sk-border);
+}
+
+.profil-hero-deco {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 210px;
+    height: 112px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+[data-theme="dark"] .profil-hero-deco {
+    opacity: 0.25;
+}
+
+.profil-hero-left {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     gap: 18px;
-    padding: 16px;
-    border-radius: 16px;
-    background: var(--sk-bg);
-    border: 1px solid var(--sk-border);
-    margin-bottom: 18px;
+    min-width: 0;
+}
+
+.profil-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
 }
 
 .profile-avatar-circle {
-    width: 72px;
-    height: 72px;
+    width: 78px;
+    height: 78px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #FFE066 0%, #FFC928 100%);
-    color: #111827;
-    font-size: 1.65rem;
+    background: #101D38;
+    color: #FFFFFF;
+    font-size: 1.7rem;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
-    border: 3px solid #FFFFFF;
-    box-shadow: 0 6px 16px rgba(255, 201, 40, 0.3);
+    border: 3px solid #FFC400;
+    box-shadow: 0 8px 20px rgba(16, 29, 56, 0.16), 0 0 0 4px rgba(255, 217, 90, 0.22);
 }
 
 .profile-avatar-circle img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.profil-avatar-cam {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #101D38;
+    border: 2px solid #FFFFFF;
+    color: #FFC400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(16, 29, 56, 0.22);
+    transition: transform 0.16s ease, background-color 0.16s ease;
+}
+
+.profil-avatar-cam:hover {
+    transform: scale(1.08);
+    background: #FFC400;
+    color: #101D38;
+}
+
+.profil-avatar-cam .icon {
+    width: 13px;
+    height: 13px;
+}
+
+.profil-hero-meta {
+    min-width: 0;
+}
+
+.profil-hero-name-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.profil-hero-name-row h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #101D38;
+    margin: 0;
+    line-height: 1.25;
+}
+
+[data-theme="dark"] .profil-hero-name-row h3 {
+    color: #F8FAFC;
+}
+
+.profil-username-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    background: #EEF2F7;
+    border: 1px solid #E2E8F0;
+    color: #192B4D;
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+[data-theme="dark"] .profil-username-pill {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--sk-border);
+    color: #CBD5E1;
+}
+
+.profil-hero-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.profil-kamar-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px;
+    border-radius: 9999px;
+    background: #FFF8DC;
+    border: 1px solid rgba(255, 196, 0, 0.45);
+    color: #101D38;
+    font-size: 0.77rem;
+    font-weight: 700;
+}
+
+.profil-kamar-pill .icon {
+    width: 13px;
+    height: 13px;
+    color: #D97706;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .profil-kamar-pill {
+    background: rgba(255, 196, 0, 0.14);
+    color: #FFE066;
+}
+
+.profil-hero-hint {
+    font-size: 0.77rem;
+    color: #64748B;
+    margin: 0;
+}
+
+.profil-hero-actions {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+.profil-upload-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 9999px;
+    background: #FFFFFF;
+    border: 1px solid #E5EAF2;
+    color: #101D38;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16, 29, 56, 0.05);
+    transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+    white-space: nowrap;
+}
+
+.profil-upload-pill .icon {
+    width: 15px;
+    height: 15px;
+    color: #192B4D;
+}
+
+.profil-upload-pill:hover {
+    border-color: #FFC400;
+    background: #FFFBEB;
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .profil-upload-pill {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--sk-border);
+    color: #F8FAFC;
+}
+
+[data-theme="dark"] .profil-upload-pill .icon {
+    color: #FFC400;
+}
+
+.sk-file-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* 2 Balanced Form Cards Grid */
+.profil-cards-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.profil-form-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    border: 1px solid #E5EAF2;
+    background: #FFFFFF;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 24px rgba(16, 29, 56, 0.045), 0 2px 6px rgba(16, 29, 56, 0.02);
+}
+
+[data-theme="dark"] .profil-form-card {
+    background: var(--sk-card);
+    border-color: var(--sk-border);
+}
+
+.profil-card-header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+[data-theme="dark"] .profil-card-header {
+    border-bottom-color: var(--sk-border);
+}
+
+.profil-form-flex {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.profil-form-footer {
+    margin-top: auto;
+    padding-top: 8px;
+}
+
+.profil-pass-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.profil-pass-wrap .form-control {
+    padding-right: 42px;
+}
+
+.profil-eye-btn {
+    position: absolute;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #64748B;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.profil-eye-btn:hover {
+    background: #EEF2F7;
+    color: #101D38;
+}
+
+.profil-eye-btn.is-visible {
+    color: #101D38;
+}
+
+.profil-eye-btn .icon {
+    width: 15px;
+    height: 15px;
+}
+
+.profil-btn-gold,
+.profil-btn-navy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 22px;
+    border-radius: 9999px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.profil-btn-gold .icon,
+.profil-btn-navy .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.profil-btn-gold {
+    background: #FFC400;
+    color: #101D38;
+    box-shadow: 0 6px 18px rgba(255, 196, 0, 0.3);
+}
+
+.profil-btn-gold:hover {
+    background: #F5B800;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(255, 196, 0, 0.38);
+}
+
+.profil-btn-navy {
+    width: 100%;
+    background: #101D38;
+    color: #FFFFFF;
+    box-shadow: 0 6px 18px rgba(16, 29, 56, 0.18);
+}
+
+.profil-btn-navy:hover {
+    background: #192B4D;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(16, 29, 56, 0.24);
+}
+
+@media (max-width: 960px) {
+    .profil-cards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profil-hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 /* Unassigned / Calon Penghuni State */

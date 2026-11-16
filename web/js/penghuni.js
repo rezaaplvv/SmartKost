@@ -954,19 +954,24 @@ function populateProfileForm() {
     const nama = userProfile?.nama_lengkap || currentUser?.nama_lengkap || '';
     const username = userProfile?.username || currentUser?.username || '';
     const kamarInfo = userProfile?.nomor_kamar
-        ? `Kamar ${userProfile.nomor_kamar} (${userProfile.tipe_kamar || 'Reguler'} • Lantai ${userProfile.lantai || 1})`
+        ? `Kamar ${userProfile.nomor_kamar} • ${userProfile.tipe_kamar || 'Reguler'} • Lantai ${userProfile.lantai || 1}`
         : 'Belum Terdaftar di Kamar Aktif';
 
-    const fUsername = document.getElementById('profil-username');
-    const fKamar = document.getElementById('profil-kamar-info');
+    const heroName = document.getElementById('profil-hero-name');
+    const heroUser = document.getElementById('profil-hero-username');
+    const heroKamar = document.getElementById('profil-hero-kamar-text');
     const fNama = document.getElementById('profil-nama');
     const fNohp = document.getElementById('profil-nohp');
     const fPekerjaan = document.getElementById('profil-pekerjaan');
     const fAsal = document.getElementById('profil-asal');
     const avatarCircle = document.getElementById('profil-avatar-preview');
+    const fotoStatus = document.getElementById('profil-foto-status');
 
-    if (fUsername) fUsername.value = username;
-    if (fKamar) fKamar.value = kamarInfo;
+    if (heroName) heroName.textContent = nama || 'Penghuni SmartKost';
+    if (heroUser) heroUser.textContent = `@${username || 'penghuni'}`;
+    if (heroKamar) heroKamar.textContent = kamarInfo;
+    if (fotoStatus) fotoStatus.textContent = 'Format JPG/PNG. Otomatis tampil di header portal & data penghuni.';
+
     if (fNama) fNama.value = nama;
     if (fNohp) fNohp.value = userProfile?.no_hp || '';
     if (fPekerjaan) fPekerjaan.value = userProfile?.pekerjaan || '';
@@ -978,6 +983,19 @@ function populateProfileForm() {
         } else {
             avatarCircle.textContent = (nama.trim().charAt(0) || 'P').toUpperCase();
         }
+    }
+}
+
+function toggleProfilPassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    if (btn) {
+        btn.classList.toggle('is-visible', show);
+        btn.innerHTML = show
+            ? '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>'
+            : '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
     }
 }
 
@@ -1003,9 +1021,13 @@ function setupUserForms() {
     document.getElementById('profil-foto-file')?.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         const avatarCircle = document.getElementById('profil-avatar-preview');
+        const fotoStatus = document.getElementById('profil-foto-status');
         if (file && avatarCircle) {
             const b64 = await fileToBase64(file);
             avatarCircle.innerHTML = `<img src="${b64}" alt="Preview Profil">`;
+            if (fotoStatus) {
+                fotoStatus.textContent = `Foto baru dipilih (${file.name}) — klik "Simpan Perubahan Biodata" untuk menyimpan.`;
+            }
         }
     });
 
