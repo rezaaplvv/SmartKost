@@ -2660,32 +2660,34 @@ textarea.form-control {
     }
 }
 
-/* Footer (3 Kolom Padat & Selaras Dark Navy + Golden Yellow) */
+/* Footer (Minimalis, Ringkas & Banyak Ruang Kosong) */
 .footer {
-    background: linear-gradient(145deg, #101D38 0%, #162544 100%);
+    background: #101D38;
     color: #94A3B8;
-    padding: 48px 0 24px;
-    border-top: 3px solid #FFC400;
+    padding: 30px 0 22px;
+    border-top: 2px solid #FFC400;
 }
 
-.footer-grid {
-    display: grid;
-    grid-template-columns: 1.55fr 1fr 1.35fr;
-    gap: 40px;
-    margin-bottom: 34px;
-}
-
-.footer-brand-hdr {
+.footer-minimal-top {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding-bottom: 18px;
+}
+
+.footer-minimal-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
 }
 
 .footer-logo-badge {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
     background: linear-gradient(135deg, #FFD95A 0%, #FFC400 100%);
     color: #101D38;
     display: inline-flex;
@@ -2694,88 +2696,37 @@ textarea.form-control {
     flex-shrink: 0;
 }
 
-.footer-brand h3 {
-    color: #FFFFFF;
-    font-size: 1.24rem;
-    margin: 0;
-    font-weight: 800;
-}
-
-.footer-brand p {
-    font-size: 0.87rem;
-    line-height: 1.6;
-    color: #CBD5E1;
-    max-width: 360px;
-    margin-bottom: 14px;
-}
-
-.footer-address-row {
-    display: inline-flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #E2E8F0;
-    font-size: 0.8rem;
-    line-height: 1.45;
-}
-
-.footer-address-row .icon {
-    width: 15px;
-    height: 15px;
-    color: #FFC400;
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-.footer-col h4 {
+.footer-minimal-name {
+    display: block;
     color: #FFFFFF;
     font-size: 0.96rem;
     font-weight: 700;
-    margin-bottom: 14px;
+    line-height: 1.25;
 }
 
-.footer-col ul {
-    list-style: none;
+.footer-minimal-addr {
+    display: block;
+    color: #94A3B8;
+    font-size: 0.78rem;
+    margin-top: 2px;
 }
 
-.footer-col ul li {
-    margin-bottom: 9px;
+.footer-minimal-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 22px;
 }
 
-.footer-col ul a {
+.footer-minimal-links a {
     color: #CBD5E1;
-    font-size: 0.86rem;
+    font-size: 0.84rem;
+    font-weight: 500;
     transition: color 0.16s ease;
 }
 
-.footer-col ul a:hover {
+.footer-minimal-links a:hover {
     color: #FFC400;
-}
-
-.footer-info-list {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-}
-
-.footer-info-item {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-}
-
-.footer-info-lbl {
-    font-size: 0.72rem;
-    color: #94A3B8;
-}
-
-.footer-info-item strong {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #F8FAFC;
 }
 
 .footer-bottom {
@@ -2784,15 +2735,10 @@ textarea.form-control {
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 10px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 0.82rem;
-    color: #94A3B8;
-}
-
-.footer-bottom-tag {
-    color: #CBD5E1;
-    font-weight: 600;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.78rem;
+    color: #64748B;
 }
 
 /* Responsive Media Queries (Tablet & Mobile only - Desktop >=1024px preserved 1:1) */
@@ -3388,305 +3334,6 @@ textarea.form-control {
     border-radius: 50%;
     background: #16A34A;
     box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
-}
-
-/* Strip Alur Sewa & Lokasi Pengelola */
-.landing-guide-section {
-    padding: 12px 0 56px;
-}
-
-.landing-guide-grid {
-    display: grid;
-    grid-template-columns: 1.38fr 1fr;
-    gap: 20px;
-    align-items: stretch;
-}
-
-.guide-steps-card {
-    background: #FFFFFF;
-    border: 1px solid #E5EAF2;
-    border-radius: 22px;
-    padding: 24px 26px;
-    box-shadow: 0 10px 28px rgba(16, 29, 56, 0.05);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-[data-theme="dark"] .guide-steps-card {
-    background: var(--bg-surface);
-    border-color: var(--border-color);
-}
-
-.guide-steps-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.guide-steps-head h3 {
-    font-size: 1.24rem;
-    font-weight: 800;
-    color: #101D38;
-    margin: 0;
-}
-
-[data-theme="dark"] .guide-steps-head h3 {
-    color: var(--text-main);
-}
-
-.guide-login-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 36px;
-    padding: 0 14px;
-    border-radius: 9999px;
-    background: #EEF2F7;
-    border: 1px solid #DDE5F0;
-    color: #101D38;
-    font-family: inherit;
-    font-size: 0.78rem;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.16s ease;
-}
-
-.guide-login-pill .icon {
-    width: 14px;
-    height: 14px;
-}
-
-.guide-login-pill:hover {
-    background: #101D38;
-    border-color: #101D38;
-    color: #FFFFFF;
-}
-
-[data-theme="dark"] .guide-login-pill {
-    background: var(--bg-surface-alt);
-    border-color: var(--border-color);
-    color: var(--text-main);
-}
-
-.guide-steps-row {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-}
-
-.guide-step-item {
-    padding: 16px;
-    border-radius: 16px;
-    background: #F8FAFC;
-    border: 1px solid #E5EAF2;
-}
-
-[data-theme="dark"] .guide-step-item {
-    background: var(--bg-surface-alt);
-    border-color: var(--border-color);
-}
-
-.guide-step-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 9px;
-    background: #101D38;
-    color: #FFC400;
-    font-size: 0.74rem;
-    font-weight: 800;
-    margin-bottom: 10px;
-}
-
-.guide-step-item h4 {
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: #101D38;
-    margin: 0 0 5px;
-}
-
-[data-theme="dark"] .guide-step-item h4 {
-    color: var(--text-main);
-}
-
-.guide-step-item p {
-    font-size: 0.79rem;
-    color: var(--text-muted);
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* Right Highlight Card */
-.guide-contact-card {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(135deg, #101D38 0%, #192B4D 100%);
-    border: 1px solid rgba(255, 196, 0, 0.28);
-    border-radius: 22px;
-    padding: 24px 26px;
-    color: #FFFFFF;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 18px;
-    box-shadow: 0 16px 36px rgba(16, 29, 56, 0.2);
-}
-
-.guide-contact-wave {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 185px;
-    height: 112px;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.guide-contact-top,
-.guide-contact-meta,
-.guide-contact-actions {
-    position: relative;
-    z-index: 1;
-}
-
-.guide-contact-badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 9999px;
-    background: rgba(255, 196, 0, 0.16);
-    border: 1px solid rgba(255, 196, 0, 0.35);
-    color: #FFD95A;
-    font-size: 0.7rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-}
-
-.guide-contact-top h3 {
-    font-size: 1.24rem;
-    font-weight: 800;
-    color: #FFFFFF;
-    margin: 0 0 8px;
-}
-
-.guide-contact-address {
-    display: flex;
-    align-items: flex-start;
-    gap: 7px;
-    font-size: 0.83rem;
-    color: rgba(226, 232, 240, 0.86);
-    line-height: 1.48;
-    margin: 0;
-}
-
-.guide-contact-address .icon {
-    width: 15px;
-    height: 15px;
-    color: #FFC400;
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-.guide-contact-meta {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 12px 14px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.guide-contact-meta span {
-    display: block;
-    font-size: 0.69rem;
-    color: rgba(226, 232, 240, 0.72);
-    margin-bottom: 2px;
-}
-
-.guide-contact-meta strong {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #FFFFFF;
-}
-
-.guide-contact-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.guide-btn-gold {
-    flex: 1;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 0 16px;
-    border-radius: 11px;
-    background: linear-gradient(135deg, #FFD95A 0%, #FFC400 100%);
-    border: 1px solid #F5B800;
-    color: #101D38;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: transform 0.16s ease, background-color 0.16s ease;
-}
-
-.guide-btn-gold .icon {
-    width: 15px;
-    height: 15px;
-}
-
-.guide-btn-gold:hover {
-    background: #FFC400;
-    transform: translateY(-1px);
-    color: #101D38;
-}
-
-.guide-btn-ghost {
-    height: 40px;
-    padding: 0 14px;
-    border-radius: 11px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    color: #FFFFFF;
-    font-family: inherit;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 0.16s ease, border-color 0.16s ease;
-}
-
-.guide-btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 196, 0, 0.55);
-}
-
-@media (max-width: 992px) {
-    .landing-guide-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 640px) {
-    .guide-steps-row {
-        grid-template-columns: 1fr;
-    }
-    .guide-contact-meta {
-        grid-template-columns: 1fr;
-    }
-    .guide-contact-actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
 }
 
 

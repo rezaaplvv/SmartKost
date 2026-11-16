@@ -37,7 +37,6 @@
             <ul class="nav-links" id="nav-links-pill">
                 <li><a href="#beranda" class="active">Beranda</a></li>
                 <li><a href="#katalog">Katalog Kamar</a></li>
-                <li><a href="#panduan-sewa">Cara Sewa</a></li>
                 <li><a href="#kontak">Hubungi Kami</a></li>
             </ul>
 
@@ -346,139 +345,34 @@
     </section>
 
     <!-- ==========================================================
-         3b. STRIP ALUR SEWA & KONTAK PENGELOLA (RINGKAS DESKTOP APP)
-         ========================================================== -->
-    <section class="landing-guide-section" id="panduan-sewa">
-        <div class="container">
-            <div class="landing-guide-grid reveal-on-scroll">
-                <!-- Kiri: 3 Langkah Singkat Sewa Kos -->
-                <div class="guide-steps-card">
-                    <div class="guide-steps-head">
-                        <div>
-                            <span class="catalog-eyebrow">Alur Mudah</span>
-                            <h3>Cara Pesan &amp; Huni Kamar</h3>
-                        </div>
-                        <button type="button" class="guide-login-pill" onclick="openLoginModal()">
-                            <span>Masuk Portal</span>
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                        </button>
-                    </div>
-                    <div class="guide-steps-row">
-                        <div class="guide-step-item">
-                            <span class="guide-step-num">01</span>
-                            <h4>Pilih &amp; Booking</h4>
-                            <p>Pilih kamar berstatus <strong>Tersedia</strong>, lalu isi formulir pengajuan &amp; KTP.</p>
-                        </div>
-                        <div class="guide-step-item">
-                            <span class="guide-step-num">02</span>
-                            <h4>Verifikasi Admin</h4>
-                            <p>Pengelola memverifikasi pengajuan dan mengaktifkan akun penghuni Anda.</p>
-                        </div>
-                        <div class="guide-step-item">
-                            <span class="guide-step-num">03</span>
-                            <h4>Bayar &amp; Huni</h4>
-                            <p>Lunasi sewa via Transfer atau QRIS melalui Portal Penghuni dan cetak kuitansi.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Kanan: Kartu Highlight Dark Navy (Lokasi & Kontak Langsung) -->
-                <div class="guide-contact-card">
-                    <svg class="guide-contact-wave" viewBox="0 0 180 110" fill="none" aria-hidden="true">
-                        <path d="M40 110C88 60 132 34 180 12V110H40Z" fill="rgba(255, 255, 255, 0.05)" />
-                        <path d="M96 110C128 74 156 54 180 42V110H96Z" fill="rgba(255, 196, 0, 0.16)" />
-                    </svg>
-                    <div class="guide-contact-top">
-                        <span class="guide-contact-badge">Lokasi &amp; Layanan</span>
-                        <h3 class="app-nama-kos">SmartKost Residence</h3>
-                        <p class="guide-contact-address">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                            <span class="app-alamat">Jl. Cemara No. 18, Bandung</span>
-                        </p>
-                    </div>
-                    <div class="guide-contact-meta">
-                        <div>
-                            <span>WhatsApp Pengelola</span>
-                            <strong id="guide-wa-display">081234567890</strong>
-                        </div>
-                        <div>
-                            <span>Pembayaran Resmi</span>
-                            <strong id="guide-bank-display">Transfer &amp; QRIS</strong>
-                        </div>
-                    </div>
-                    <div class="guide-contact-actions">
-                        <a href="#" target="_blank" class="guide-btn-gold app-wa-link">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                            <span>Chat WhatsApp</span>
-                        </a>
-                        <button type="button" class="guide-btn-ghost" onclick="openLandingCsWidget()">
-                            <span>Tanya Asisten CS</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ==========================================================
-         4. FOOTER (3 KOLOM PADAT & DINAMIS DARI DATABASE)
+         4. FOOTER (MINIMALIS & RINGKAS)
          ========================================================== -->
     <footer class="footer" id="kontak">
         <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand reveal-on-scroll" style="--reveal-delay: 0ms;">
-                    <div class="footer-brand-hdr">
-                        <div class="brand-icon-house footer-logo-badge" aria-hidden="true">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                            </svg>
-                        </div>
-                        <h3 class="app-nama-kos">SmartKost Residence</h3>
+            <div class="footer-minimal-top">
+                <div class="footer-minimal-brand">
+                    <div class="footer-logo-badge" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                        </svg>
                     </div>
-                    <p class="app-deskripsi">Hunian eksklusif nyaman, bersih, dan strategis dengan pengelolaan terintegrasi.</p>
-                    <div class="footer-address-row">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                        <span class="app-alamat">Jl. Cemara No. 18, Bandung</span>
+                    <div>
+                        <strong class="footer-minimal-name app-nama-kos">SmartKost Residence</strong>
+                        <span class="footer-minimal-addr app-alamat">Jl. Cemara No. 18, Bandung</span>
                     </div>
                 </div>
 
-                <div class="footer-col reveal-on-scroll" style="--reveal-delay: 100ms;">
-                    <h4>Akses &amp; Navigasi</h4>
-                    <ul>
-                        <li><a href="#beranda">Beranda Utama</a></li>
-                        <li><a href="#katalog">Katalog &amp; Harga Kamar</a></li>
-                        <li><a href="#panduan-sewa">Cara Pesan Kamar</a></li>
-                        <li><a href="javascript:void(0)" onclick="openLoginModal()">Login Penghuni &amp; Admin</a></li>
-                        <li><a href="javascript:void(0)" onclick="openLandingCsWidget()">Asisten CS SmartKost</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-col reveal-on-scroll" style="--reveal-delay: 200ms;">
-                    <h4>Layanan &amp; Pembayaran</h4>
-                    <div class="footer-info-list">
-                        <div class="footer-info-item">
-                            <span class="footer-info-lbl">WhatsApp Pengelola</span>
-                            <strong id="footer-wa-display">081234567890</strong>
-                        </div>
-                        <div class="footer-info-item">
-                            <span class="footer-info-lbl">Metode Pembayaran</span>
-                            <strong id="footer-bank-info">Transfer Bank BCA &amp; QRIS</strong>
-                        </div>
-                        <div class="footer-info-item">
-                            <span class="footer-info-lbl">Kebijakan Denda</span>
-                            <strong id="footer-denda-info">Rp 10.000 / hari keterlambatan</strong>
-                        </div>
-                    </div>
-                    <a href="#" target="_blank" class="btn btn-primary btn-sm app-wa-link" style="margin-top:14px;">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                        <span>Hubungi Pengelola</span>
-                    </a>
-                </div>
+                <nav class="footer-minimal-links" aria-label="Tautan Footer">
+                    <a href="#beranda">Beranda</a>
+                    <a href="#katalog">Katalog Kamar</a>
+                    <a href="javascript:void(0)" onclick="openLoginModal()">Login</a>
+                    <a href="#" target="_blank" class="app-wa-link">WhatsApp</a>
+                </nav>
             </div>
 
-            <div class="footer-bottom reveal-on-scroll" style="--reveal-delay: 260ms;">
-                <p>&copy; 2026 <span class="app-nama-kos">SmartKost Residence</span>. Seluruh hak cipta dilindungi.</p>
-                <p class="footer-bottom-tag">Sistem Manajemen Hunian Terintegrasi</p>
+            <div class="footer-bottom">
+                <p>&copy; 2026 <span class="app-nama-kos">SmartKost Residence</span></p>
+                <p id="footer-wa-display">081234567890</p>
             </div>
         </div>
     </footer>

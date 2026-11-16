@@ -255,19 +255,8 @@ async function loadKosProfile() {
             const waDisplay = document.getElementById('cs-wa-number-display');
             if (waDisplay) waDisplay.textContent = rawWa;
 
-            const guideWaEl = document.getElementById('guide-wa-display');
-            const guideBankEl = document.getElementById('guide-bank-display');
             const footerWaEl = document.getElementById('footer-wa-display');
-            const footerBankEl = document.getElementById('footer-bank-info');
-            const footerDendaEl = document.getElementById('footer-denda-info');
-
-            const bankLabel = d.nama_bank || 'Bank BCA';
-            const dendaLabel = formatRupiah(d.denda_per_hari ?? 10000);
-            if (guideWaEl) guideWaEl.textContent = rawWa;
-            if (guideBankEl) guideBankEl.textContent = `${bankLabel} & QRIS`;
-            if (footerWaEl) footerWaEl.textContent = rawWa;
-            if (footerBankEl) footerBankEl.textContent = `Transfer ${bankLabel} & QRIS Resmi`;
-            if (footerDendaEl) footerDendaEl.textContent = `${dendaLabel} / hari keterlambatan`;
+            if (footerWaEl) footerWaEl.textContent = `WhatsApp: ${rawWa}`;
 
             const waLinks = document.querySelectorAll('.app-wa-link');
             const cleanWa = rawWa.replace(/[^0-9]/g, '');
