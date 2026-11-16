@@ -184,117 +184,116 @@
 
                     <!-- STATE A: PENGHUNI SUDAH PUNYA KAMAR AKTIF -->
                     <div id="resident-active-view">
-                        <!-- Row 1: 3 KPI Highlight Cards (Senada 1:1 Admin Console) -->
-                        <div class="kpi-grid-primary">
+                        <!-- Row 1: 3 Dashboard Summary Cards (Soft Navy Accent) -->
+                        <div class="tenant-kpi-grid">
                             <!-- Card 1: Tagihan Aktif -->
-                            <div class="kpi-card kpi-card-income">
-                                <div class="kpi-top">
-                                    <div class="kpi-top-left">
-                                        <div class="kpi-left-icon gold-soft">
-                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
-                                                <path
-                                                    d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1">
-                                                </path>
-                                                <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path>
-                                            </svg>
+                            <div class="tenant-kpi-card tkc-unpaid">
+                                <div class="tkc-corner-arc" aria-hidden="true"></div>
+                                <div class="tkc-body">
+                                    <div class="tkc-top">
+                                        <div class="tkc-top-left">
+                                            <div class="tkc-icon-box is-navy-gold">
+                                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+                                                    <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+                                                    <circle cx="17.5" cy="14" r="1" fill="#FFC400" stroke="#FFC400"/>
+                                                </svg>
+                                            </div>
+                                            <span class="tkc-title">TAGIHAN AKTIF</span>
                                         </div>
-                                        <span class="kpi-title-caps">TAGIHAN AKTIF</span>
+                                        <button type="button" class="tkc-chevron-btn" onclick="switchUserTab('tagihan')" title="Lihat tagihan">
+                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="6 9 12 15 18 9"/>
+                                            </svg>
+                                        </button>
                                     </div>
-                                    <div class="kpi-icon-badge gold">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2h-4a3 3 0 0 1 0-6h4V7zm-4 5a1 1 0 1 0 0 2h5v-2h-5z" />
+                                    <div class="tkc-value" id="user-kpi-unpaid">Rp 0</div>
+                                    <div class="tkc-status" id="user-kpi-unpaid-sub">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
+                                        <span>Semua tagihan telah lunas</span>
                                     </div>
+                                    <button type="button" class="tkc-link" onclick="switchUserTab('tagihan')">
+                                        <span>Lihat &amp; Bayar Tagihan</span>
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                            <polyline points="12 5 19 12 12 19"/>
+                                        </svg>
+                                    </button>
                                 </div>
-                                <div class="kpi-value-lg" id="user-kpi-unpaid">Rp 0</div>
-                                <div class="kpi-growth-positive" id="user-kpi-unpaid-sub">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2.3">
-                                        <polyline points="20 6 9 17 4 12"></polyline>
-                                    </svg>
-                                    <span>Semua tagihan telah lunas</span>
-                                </div>
-                                <button type="button" class="kpi-detail-link" onclick="switchUserTab('tagihan')">
-                                    <span>Lihat &amp; Bayar Tagihan</span>
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        <polyline points="12 5 19 12 12 19"></polyline>
-                                    </svg>
-                                </button>
                             </div>
 
-                            <!-- Card 2: Total Pembayaran Lunas -->
-                            <div class="kpi-card kpi-card-expense">
-                                <div class="kpi-top">
-                                    <div class="kpi-top-left">
-                                        <div class="kpi-left-icon gray-soft">
-                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2">
-                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z">
-                                                </path>
-                                                <polyline points="14 2 14 8 20 8"></polyline>
-                                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                            </svg>
+                            <!-- Card 2: Pembayaran Lunas -->
+                            <div class="tenant-kpi-card tkc-paid">
+                                <div class="tkc-corner-arc" aria-hidden="true"></div>
+                                <div class="tkc-body">
+                                    <div class="tkc-top">
+                                        <div class="tkc-top-left">
+                                            <div class="tkc-icon-box is-slate">
+                                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                                    <polyline points="14 2 14 8 20 8"/>
+                                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                                </svg>
+                                            </div>
+                                            <span class="tkc-title">PEMBAYARAN LUNAS</span>
                                         </div>
-                                        <span class="kpi-title-caps">PEMBAYARAN LUNAS</span>
+                                        <button type="button" class="tkc-chevron-btn" onclick="switchUserTab('tagihan')" title="Lihat kuitansi">
+                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="6 9 12 15 18 9"/>
+                                            </svg>
+                                        </button>
                                     </div>
-                                    <div class="kpi-icon-badge neutral" onclick="switchUserTab('tagihan')"
-                                        title="Lihat kuitansi">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                            stroke-width="2">
-                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                    <div class="tkc-value" id="user-kpi-paid">Rp 0</div>
+                                    <div class="tkc-sub-muted" id="user-kpi-paid-count">0 kuitansi terverifikasi</div>
+                                    <button type="button" class="tkc-link" onclick="switchUserTab('tagihan')">
+                                        <span>Unduh Kuitansi Resmi</span>
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                            <polyline points="12 5 19 12 12 19"/>
                                         </svg>
-                                    </div>
+                                    </button>
                                 </div>
-                                <div class="kpi-value-lg" id="user-kpi-paid">Rp 0</div>
-                                <div class="kpi-sub-muted" id="user-kpi-paid-count">0 kuitansi terverifikasi</div>
-                                <button type="button" class="kpi-detail-link" onclick="switchUserTab('tagihan')">
-                                    <span>Unduh Kuitansi Resmi</span>
-                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        <polyline points="12 5 19 12 12 19"></polyline>
-                                    </svg>
-                                </button>
                             </div>
 
                             <!-- Card 3: Unit Kamar Hunian -->
-                            <div class="kpi-card kpi-card-profit">
-                                <div class="kpi-top">
-                                    <div class="kpi-top-left">
-                                        <div class="kpi-left-icon profit-trend">
-                                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2.2">
-                                                <path d="M2 4v16"></path>
-                                                <path d="M2 8h18a2 2 0 0 1 2 2v10"></path>
-                                                <path d="M2 17h20"></path>
-                                                <path d="M6 8v9"></path>
-                                            </svg>
-                                        </div>
-                                        <span class="kpi-title-caps">UNIT KAMAR HUNIAN</span>
-                                    </div>
-                                    <div class="kpi-icon-plain">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M12 3L3 10.5v9.5a1 1 0 0 0 1 1h5v-6h6v6h5a1 1 0 0 0 1-1v-9.5L12 3z" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="kpi-value-lg" id="user-kpi-room">Kamar -</div>
-                                <div class="kpi-profit-status" id="user-kpi-room-meta">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                                        <path
-                                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.41 14.59L6.7 12.7l1.41-1.41 2.48 2.47 5.29-5.3 1.42 1.42-6.71 6.71z">
-                                        </path>
+                            <div class="tenant-kpi-card tkc-room">
+                                <div class="tkc-corner-arc is-gold" aria-hidden="true"></div>
+                                <div class="tkc-wave-deco" aria-hidden="true">
+                                    <svg viewBox="0 0 120 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M120 12C90 18 68 38 46 72H120V12Z" fill="#FFF3CC"/>
+                                        <path d="M120 26C98 34 78 52 62 72H120V26Z" fill="#FFC400" fill-opacity="0.72"/>
+                                        <path d="M120 42C102 48 88 58 76 72H120V42Z" fill="#101D38"/>
                                     </svg>
-                                    <span>Status Hunian Aktif</span>
                                 </div>
-                                <div class="profit-bars-decor" aria-hidden="true">
-                                    <span></span><span></span><span></span><span></span>
+                                <div class="tkc-body">
+                                    <div class="tkc-top">
+                                        <div class="tkc-top-left">
+                                            <div class="tkc-icon-box is-gold">
+                                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M2 4v16"/>
+                                                    <path d="M2 8h18a2 2 0 0 1 2 2v10"/>
+                                                    <path d="M2 17h20"/>
+                                                    <path d="M6 8v9"/>
+                                                </svg>
+                                            </div>
+                                            <span class="tkc-title">UNIT KAMAR HUNIAN</span>
+                                        </div>
+                                        <span class="tkc-room-house-icon" aria-hidden="true">
+                                            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12 3L3 10.5v9.5a1 1 0 0 0 1 1h5v-6h6v6h5a1 1 0 0 0 1-1v-9.5L12 3z"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="tkc-value" id="user-kpi-room">Kamar -</div>
+                                    <div class="tkc-room-meta" id="user-kpi-room-meta">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.41 14.59L6.7 12.7l1.41-1.41 2.48 2.47 5.29-5.3 1.42 1.42-6.71 6.71z"/>
+                                        </svg>
+                                        <span>Status Hunian Aktif</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
