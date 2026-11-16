@@ -655,43 +655,68 @@
                         </div>
                     </div>
 
-                    <!-- Summary Strip Pengeluaran Operasional -->
+                    <!-- Summary Strip Pengeluaran Operasional (Option 3: Elegant Gradient) -->
                     <div class="pengeluaran-summary-grid">
-                        <div class="pengeluaran-stat-card">
-                            <div class="exp-stat-icon is-rose" aria-hidden="true">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        <!-- Card 1: Total Pengeluaran (Dark Navy Highlight) -->
+                        <div class="pengeluaran-stat-card is-navy-highlight">
+                            <svg class="exp-card-deco" viewBox="0 0 140 90" fill="none" aria-hidden="true">
+                                <path d="M40 90C76 48 108 26 140 8V90H40Z" fill="rgba(255, 255, 255, 0.05)" />
+                                <path d="M84 90C106 62 124 46 140 34V90H84Z" fill="rgba(255, 196, 0, 0.16)" />
+                            </svg>
+                            <div class="exp-stat-icon is-navy-gold" aria-hidden="true">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <ellipse cx="12" cy="6" rx="7" ry="3"></ellipse>
+                                    <path d="M5 6v6c0 1.66 3.13 3 7 3s7-1.34 7-3V6"></path>
+                                    <path d="M5 12v6c0 1.66 3.13 3 7 3s7-1.34 7-3v-6"></path>
+                                </svg>
                             </div>
                             <div class="exp-stat-body">
-                                <span class="exp-stat-label">TOTAL PENGELUARAN</span>
+                                <span class="exp-stat-label">Total Pengeluaran</span>
                                 <strong class="exp-stat-val" id="exp-sum-total">Rp 0</strong>
                                 <span class="exp-stat-sub" id="exp-sum-period">Semua periode tampil</span>
                             </div>
+                            <span class="exp-stat-arrow is-navy" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </span>
                         </div>
-                        <div class="pengeluaran-stat-card">
+
+                        <!-- Card 2: Jumlah Catatan (Clean White + Soft Blue-Gray Icon) -->
+                        <div class="pengeluaran-stat-card is-white-slate">
+                            <div class="tkc-corner-arc" aria-hidden="true"></div>
                             <div class="exp-stat-icon is-slate" aria-hidden="true">
                                 <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
                             </div>
                             <div class="exp-stat-body">
-                                <span class="exp-stat-label">JUMLAH CATATAN</span>
+                                <span class="exp-stat-label">Jumlah Catatan</span>
                                 <strong class="exp-stat-val" id="exp-sum-count">0 Transaksi</strong>
                                 <span class="exp-stat-sub" id="exp-sum-nota-count">0 disertai bukti nota</span>
                             </div>
+                            <span class="exp-stat-arrow is-light" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                            </span>
                         </div>
-                        <div class="pengeluaran-stat-card">
+
+                        <!-- Card 3: Kategori Terbesar (Clean White + Soft Gold Wave) -->
+                        <div class="pengeluaran-stat-card is-white-gold">
+                            <svg class="exp-card-deco" viewBox="0 0 130 76" fill="none" aria-hidden="true">
+                                <path d="M44 76C78 40 104 22 130 8V76H44Z" fill="#FFF3CC" />
+                                <path d="M76 76C98 52 114 38 130 28V76H76Z" fill="#FFC400" fill-opacity="0.7" />
+                                <path d="M100 76C112 62 121 52 130 44V76H100Z" fill="#101D38" />
+                            </svg>
                             <div class="exp-stat-icon is-gold" aria-hidden="true">
-                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                             </div>
                             <div class="exp-stat-body">
-                                <span class="exp-stat-label">KATEGORI TERBESAR</span>
+                                <span class="exp-stat-label">Kategori Terbesar</span>
                                 <strong class="exp-stat-val" id="exp-sum-top-cat">-</strong>
                                 <span class="exp-stat-sub" id="exp-sum-top-val">Rp 0</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="panel-card penghuni-table-card tagihan-table-card">
+                    <div class="panel-card penghuni-table-card tagihan-table-card exp-table-card">
                         <div class="table-responsive">
-                            <table class="admin-table tagihan-table">
+                            <table class="admin-table tagihan-table exp-table">
                                 <thead>
                                     <tr>
                                         <th>Tanggal</th>
