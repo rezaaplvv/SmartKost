@@ -1607,6 +1607,26 @@ body.admin-body {
     color: var(--sk-text-muted);
 }
 
+.denah-size-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background: #F5F7FB;
+    border: 1px solid #E2E8F0;
+    color: #475569;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+[data-theme="dark"] .denah-size-pill {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--sk-border);
+    color: #CBD5E1;
+}
+
 .denah-status-pill {
     display: inline-flex;
     align-items: center;
