@@ -86,12 +86,12 @@ body.admin-body {
     width: 44px;
     height: 44px;
     border-radius: 14px;
-    background: linear-gradient(135deg, #FFE066 0%, #FFC928 100%);
-    color: #ffffff;
-    box-shadow: 0 6px 14px rgba(255, 201, 40, 0.35);
+    background: #0E1B36;
+    box-shadow: 0 6px 14px rgba(16, 29, 56, 0.18);
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
     flex-shrink: 0;
 }
 
@@ -1779,15 +1779,28 @@ body.admin-body {
 .denah-btn-del {
     width: 34px;
     padding: 0;
-    background: #FEF2F2;
-    border-color: #FECACA;
-    color: #EF4444;
+    background: #FFFFFF;
+    border-color: #E2E8F0;
+    color: #111827;
     flex-shrink: 0;
 }
 
 .denah-btn-del:hover {
-    background: #EF4444;
-    border-color: #EF4444;
+    background: #F8FAFC;
+    border-color: #111827;
+    color: #111827;
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .denah-btn-del {
+    background: var(--sk-card);
+    border-color: var(--sk-border);
+    color: #F8FAFC;
+}
+
+[data-theme="dark"] .denah-btn-del:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #94A3B8;
     color: #FFFFFF;
 }
 

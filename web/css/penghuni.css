@@ -676,12 +676,12 @@
     width: 30px;
     height: 30px;
     border-radius: 9px;
-    background: linear-gradient(135deg, #FFE066 0%, #FFC928 100%);
-    color: #FFFFFF;
+    background: #0E1B36;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 10px rgba(255, 201, 40, 0.3);
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(16, 29, 56, 0.18);
 }
 
 .qris-frame-brand-name {

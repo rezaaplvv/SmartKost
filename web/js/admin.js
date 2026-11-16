@@ -722,7 +722,6 @@ function renderDenahRooms(list) {
                                     <div class="denah-room-no">Kamar ${escapeHtml(k.nomor_kamar)}</div>
                                     <div class="denah-room-meta">${escapeHtml(k.tipe)} &bull; Lt ${lt} &bull; ${escapeHtml(k.luas_kamar || '3x4 m')}</div>
                                 </div>
-                                <span class="denah-status-pill status-${escapeHtml(k.status)}">${escapeHtml(k.status)}</span>
                             </div>
                             <div class="denah-room-price">${formatRupiah(k.harga_sewa)}<span>/bln</span></div>
                         </div>

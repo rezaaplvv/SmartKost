@@ -174,14 +174,23 @@ a:hover {
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #FCD971 0%, #F9C00A 100%);
+    background: #0E1B36;
+    border: 1px solid rgba(255, 255, 255, 0.16);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #101020;
-    box-shadow: 0 4px 14px rgba(249, 192, 10, 0.35);
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(10, 18, 38, 0.28);
     flex-shrink: 0;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.app-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.16);
+    display: block;
 }
 
 .brand:hover .brand-icon-house {
@@ -1866,12 +1875,12 @@ a:hover {
     width: 34px;
     height: 34px;
     border-radius: 10px;
-    background: #FFFFFF;
-    color: #F5B700;
+    background: #0E1B36;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(249, 192, 10, 0.22);
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(16, 29, 56, 0.18);
     flex-shrink: 0;
 }
 
@@ -2685,14 +2694,15 @@ textarea.form-control {
 }
 
 .footer-logo-badge {
-    width: 32px;
-    height: 32px;
-    border-radius: 9px;
-    background: linear-gradient(135deg, #FFD95A 0%, #FFC400 100%);
-    color: #101D38;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #0E1B36;
+    border: 1px solid rgba(255, 255, 255, 0.18);
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
     flex-shrink: 0;
 }
 
