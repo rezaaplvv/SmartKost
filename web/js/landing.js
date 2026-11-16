@@ -308,14 +308,6 @@ async function loadRoomCatalog() {
                 allRooms = resKamar.data;
                 renderRoomCards();
             }
-            const liveTextEl = document.getElementById('catalog-live-text');
-            if (liveTextEl) {
-                const availRooms = allRooms.filter(r => r.status === 'Tersedia');
-                const prices = availRooms.map(r => Number(r.harga_sewa) || 0).filter(p => p > 0);
-                const minPrice = prices.length ? Math.min(...prices) : 0;
-                const pricePart = minPrice > 0 ? ` • Mulai ${formatRupiah(minPrice)}/bln` : '';
-                liveTextEl.textContent = `${availRooms.length} Tersedia dari ${allRooms.length} Unit${pricePart}`;
-            }
         } else {
             lastRoomsSignature = '';
             renderEmptyCatalog('Belum ada data kamar terdaftar di sistem.');
